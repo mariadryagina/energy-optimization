@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-path_to_file = "/Users/a518244/Python/measurePointConsumptionPrice.xlsx"
+path_to_file = "/Users/a518244/Python/energy-optimization/measurePointConsumptionPrice.xlsx"
 
 df = pd.read_excel(path_to_file)
 

@@ -62,9 +62,6 @@ load_oct = load[:, 274:305]
 load_nov = load[:, 305:335]
 load_dec = load[:, 335:366]
 
-print(load_jan)
-print(load_feb)
-
 # Calculate the sum of all values in each row of load_jan
 load_jan_sums = load_jan.sum(axis=0) / 24
 print("Total load in January:", load_jan_sums)
@@ -83,8 +80,8 @@ for i, value in enumerate(jan_daytype):
 load_jan_weekday = np.array(load_jan_weekday).T
 load_jan_weekend = np.array(load_jan_weekend).T
 
-#print("Weekday loads:", load_jan_weekday)
-#print("Weekend loads:", load_jan_weekend)
+print("Weekday loads:", load_jan_weekday)
+print("Weekend loads:", load_jan_weekend)
 
 #_____________________________________________________________________________________________
 
@@ -102,8 +99,8 @@ for i, value in enumerate(jan_daytype):
 load_jul_weekday = np.array(load_jul_weekday).T
 load_jul_weekend = np.array(load_jul_weekend).T
 
-#print("Weekday loads:", load_jul_weekday)
-#print("Weekend loads:", load_jul_weekend)
+print("Weekday loads:", load_jul_weekday)
+print("Weekend loads:", load_jul_weekend)
 
 # Boxplot for the loads in January
 plt.figure()

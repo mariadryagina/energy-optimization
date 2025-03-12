@@ -16,10 +16,10 @@ response.raise_for_status()  # Check if the request was successful
 # Read the Excel file into a DataFrame
 df = pd.read_excel(BytesIO(response.content))
 
-#Reading excel file 
-path_to_file = "/Users/a517469/Python/solardata.xlsx"
- 
-df = pd.read_excel(path_to_file)
+if df.shape[0]==8760:
+      a=365
+else:
+      a=366
 
 #Creting a matrix with zeros
 I=zeros((24,a))

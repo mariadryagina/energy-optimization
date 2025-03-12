@@ -1,4 +1,4 @@
-import pandas as pdwh
+import pandas as pd
 from entsoe import EntsoePandasClient
 from datetime import datetime, timedelta
 import pytz

@@ -17,14 +17,9 @@ response.raise_for_status()  # Check if the request was successful
 df = pd.read_excel(BytesIO(response.content))
 
 #Reading excel file 
-#path_to_file = "/Users/a517469/Python/energy-optimization/solardata_2023.xlsx"
-#df = pd.read_excel(path_to_file)
-
-#Check the number of rows in the DataFrame
-if df.shape[0] == 8760:
-     a=365 #Non-leap year
-else:
-     a=366 #leap year
+path_to_file = "/Users/a517469/Python/solardata.xlsx"
+ 
+df = pd.read_excel(path_to_file)
 
 #Creting a matrix with zeros
 I=zeros((24,a))

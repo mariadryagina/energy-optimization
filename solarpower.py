@@ -34,12 +34,9 @@ for i in range(a):
 #A - amount of panels in m^2
 #eta - efficency of PV farm
 def solar(A, eta):
-    P_s = (I * A * eta) / (1000*1000)
-    P_s1 = zeros(a)  # Initialize P_s1 as an array
-    for i in range(a):
-        P_s1[i] = sum(P_s[:, i])
+    P_s = (I * A * eta) / 1000
     
-    return P_s1
+    return P_s
 #_______________________________________________________________________________#
 
 #Calling on function

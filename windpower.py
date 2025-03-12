@@ -32,8 +32,8 @@ for i in range(a):
 #If a value is greater than 12 it will be changed to 12	
 for i in range(24):
     for j in range(a):
-        if V[i, j] > 10.7:
-            V[i, j] = 10.7
+        if V[i, j] > 13:
+            V[i, j] = 0
 
 
 #_Function begins_______________________________________________________________#
@@ -43,7 +43,7 @@ for i in range(24):
 
 def wind(n):
      
-     P_wind=(4.8653*V**2.9637*n)/(1000*1000)
+     P_wind=(0.0116*V**2.4721*n)/1000
      P_wind1=zeros((a))
      #Storing the sum of each column in the array
      for i in range(a):

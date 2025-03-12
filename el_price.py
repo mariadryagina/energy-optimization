@@ -1,16 +1,25 @@
 import pandas as pd
 import numpy as np
+import requests
+from io import BytesIO
 
-path_to_file4 = "/Users/a518244/Python/energy-optimization/Spotpriser/price_2024.csv"
-path_to_file3 = "/Users/a518244/Python/energy-optimization/Spotpriser/price_2023.csv"
+# URL to the Excel file on GitHub
+url23 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Spotpriser/price_2023.csv"
+url24 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Spotpriser/price_2024.csv"
 
-# Read the CSV file
-df4 = pd.read_csv(path_to_file4)
-df3 = pd.read_csv(path_to_file3)
+# Fetch the file from GitHub
+response23 = requests.get(url23)
+response24 = requests.get(url24)
+response23.raise_for_status()  # Check if the request was successful
+response24.raise_for_status()  # Check if the request was successful
+
+# Read the Excel file into a DataFrame
+df23 = pd.read_excel(BytesIO(response23.content))
+df24 = pd.read_excel(BytesIO(response24.content))
 
 # Extract values from the second column (index 1)
-values_2023 = df3.iloc[0:8761, 1].values
-values_2024 = df4.iloc[0:8785, 1].values
+values_2023 = df23.iloc[0:8761, 1].values
+values_2024 = df24.iloc[0:8785, 1].values
 
 # Create a matrix (reshape if needed, here assuming a 1D array)
 spotprice_matrix_2023 = np.array(values_2023)

@@ -1,18 +1,28 @@
 # To run script both pandas and openpyxl must be installed. If not, install them by running the following commands:
 # pip install pandas
 # pip install openpyxl
+# pip install requests
+# pip install matplotlib
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-path_to_file = "/Users/a518244/Python/energy-optimization/krossholmen_load/Consumption_2023.xlsx"
+import requests
+from io import BytesIO
 
-df = pd.read_excel(path_to_file)
+# URL to the Excel file on GitHub
+url = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/krossholmen_load/Consumption_2023.xlsx"
+
+# Fetch the file from GitHub
+response = requests.get(url)
+response.raise_for_status()  # Check if the request was successful
+
+# Read the Excel file into a DataFrame
+df = pd.read_excel(BytesIO(response.content))
 
 # Extract values from the fourth column third row-2185th row (index 3)
 load_values = df.iloc[6:8767, 2].values
-
 
 # Create a matrix (reshape if needed, here assuming a 1D array)
 load_matrix = np.array(load_values, dtype=float)

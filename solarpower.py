@@ -3,7 +3,7 @@ import pandas as pd
 from math import *
  
 #Reading excel file 
-path_to_file = "/Users/a517469/Python/solardata.xlsx"
+path_to_file = "/Users/a517469/Python/solardata_2023.xlsx"
  
 df = pd.read_excel(path_to_file)
 

@@ -14,8 +14,8 @@ response23.raise_for_status()  # Check if the request was successful
 response24.raise_for_status()  # Check if the request was successful
 
 # Read the Excel file into a DataFrame
-df23 = pd.read_excel(BytesIO(response23.content))
-df24 = pd.read_excel(BytesIO(response24.content))
+df23 = pd.read_csv(BytesIO(response23.content))
+df24 = pd.read_csv(BytesIO(response24.content))
 
 # Extract values from the second column (index 1)
 values_2023 = df23.iloc[0:8761, 1].values

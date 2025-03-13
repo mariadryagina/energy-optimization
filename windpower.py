@@ -43,13 +43,10 @@ for i in range(24):
 
 def wind(n):
      
-     P_wind=(0.0116*V**2.4721*n)/1000
-     P_wind1=zeros((a))
-     #Storing the sum of each column in the array
-     for i in range(a):
-          P_wind1[i]=sum(P_wind[:,i])
+     P_wind=(0.0116*V**2.4721*n)
+     
 
-     return P_wind1
+     return P_wind
 #_______________________________________________________________________________#
 
 #Calling on function

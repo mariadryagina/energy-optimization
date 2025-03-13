@@ -25,9 +25,13 @@ load_df = pd.DataFrame(np.transpose(load_values))
 
 load=np.transpose(load_values)
 
+# Convert the NumPy array to a DataFrame
+load_df1 = pd.DataFrame(load)
+
 yearly_load = load.sum(axis=0)
 total = yearly_load.sum()/1000
 print("*The total load for full year is", round(total, 1), "MWh")
+
 
 # Correct slicing syntax
 load_jan = load[:, 0:31]

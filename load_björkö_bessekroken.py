@@ -28,12 +28,10 @@ load=np.transpose(load_values)
 # Convert the NumPy array to a DataFrame
 load_df1 = pd.DataFrame(load)
 
-# Save the frequency data to a CSV file for further analysis
-load_df1.to_csv('load_björkö_bessekroken', index=False)
-
 yearly_load = load.sum(axis=0)
 total = yearly_load.sum()/1000
 print("*The total load for full year is", round(total, 1), "MWh")
+
 
 # Correct slicing syntax
 load_jan = load[:, 0:31]

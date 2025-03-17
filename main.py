@@ -18,6 +18,8 @@ load_winter_krossholmen = load_krossholmen_2023.load_winter
 load_summer_krossholmen = load_krossholmen_2023.load_summer
 
 spot_price_2023=el_price.spotprice_2023
+spot_price_2023_winter=el_price.spotprice_2023_winter
+spot_price_2023_summer=el_price.spotprice_2023_summer
 
 #endregion
 #________Reference Case__________________________________________________________________________________________________
@@ -37,15 +39,19 @@ for i in range(365):
     yearly_load_björkö[i] = sum(load_björkö_hamn[:, i])
 
 #Calculating the sum of the array for the yearly spot price in SE3 1X365
-yearly_spot_price_2023=np.zeros((365))
-for i in range(365):
-    yearly_spot_price_2023[i] = sum(spot_price_2023[:, i])/len(spot_price_2023[:, i])
+spot_price_2023_winter_1=np.zeros(24)
+for i in range(24):
+    spot_price_2023_winter_1[i] = sum(spot_price_2023_winter[i])/len(spot_price_2023_winter[i])
+
+#Calculating the sum of the array for the yearly spot price in SE3 1X365
+spot_price_2023_summer_1=np.zeros(24)
+for i in range(24):
+    spot_price_2023_summer_1[i] = sum(spot_price_2023_summer[i])/len(spot_price_2023_summer[i])
 #endregion
 #_________Plotting Reference Case________________________________________________________________________________________
 #region Plotting the daily load in Bessekroken
 plt.figure(figsize=(10, 5))
 plt.plot(range(len(yearly_load_bessekroken)), yearly_load_bessekroken, label='Electricity Load')
-plt.plot(range(len(yearly_spot_price_2023)), yearly_spot_price_2023, label='Spot Price')
 plt.fill_between(range(len(yearly_load_bessekroken)), yearly_load_bessekroken, alpha=0.3)
 plt.xlabel('Days')
 plt.ylabel('Daily Load (kWh)')
@@ -72,29 +78,48 @@ plt.ylim(0, (max(yearly_load_krossholmen)+100))
 plt.show(block=False)
 plt.show()
 
-# Create subplots
-fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-fig.suptitle('Seasonal Daily Load in Krossholmen')
+# Create subplots for mean winter and summer daily load in Krossholmen with two y-axes
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+fig.suptitle('Seasonal Daily Load in Krossholmen and Spot Price in SE3')
+
 # Plot mean winter daily load in Krossholmen
-axs[0].plot(sum(load_winter_krossholmen)/len(load_winter_krossholmen))
-axs[0].set_title('Winter')
-axs[0].set_ylabel('kWh')
-axs[0].set_xlabel('Hour of the day')
-axs[0].set_xlim(0, 23)
-#axs[0].grid(True)
+ax1.plot(range(24), sum(load_winter_krossholmen)/len(load_winter_krossholmen), label='Mean Winter Load', color='tab:blue')
+ax1.set_title('Winter')
+ax1.set_ylabel('Load (kWh)', color='tab:blue')
+ax1.set_xlabel('Time')
+ax1.set_xlim(0, 23)
+ax1.tick_params(axis='y', labelcolor='tab:blue')
+
+# # Create a second y-axis for the spot price in winter
+# ax1_2 = ax1.twinx()
+# ax1_2.plot(range(24), spot_price_2023_winter_1, label='Mean Winter Spot Price', color='tab:orange')
+# ax1_2.set_ylabel('Spot Price (SEK/kWh)', color='tab:orange')
+# ax1_2.tick_params(axis='y', labelcolor='tab:orange')
+
 # Plot mean summer daily load in Krossholmen
-axs[1].plot(sum(load_summer_krossholmen)/len(load_summer_krossholmen))
-axs[1].set_title('Summer')
-axs[1].set_ylabel('kWh')
-axs[1].set_xlabel('Hour of the day')
-axs[1].set_xlim(0, 23)
-#axs[1].grid(True)
+ax2.plot(range(24), sum(load_summer_krossholmen)/len(load_summer_krossholmen), label='Mean Summer Load', color='tab:blue')
+ax2.set_title('Summer')
+ax2.set_ylabel('Load (kWh)', color='tab:blue')
+ax2.set_xlabel('Time')
+ax2.set_xlim(0, 23)
+ax2.tick_params(axis='y', labelcolor='tab:blue')
+
+# # Create a second y-axis for the spot price in summer
+# ax2_2 = ax2.twinx()
+# ax2_2.plot(range(24), spot_price_2023_summer_1, label='Mean Summer Spot Price', color='tab:orange')
+# ax2_2.set_ylabel('Spot Price (SEK/kWh)', color='tab:orange')
+# ax2_2.tick_params(axis='y', labelcolor='tab:orange')
+
+# Adjust layout
+fig.tight_layout(rect=[0, 0, 1, 0.96])  # Adjust layout to make room for the main title
+plt.show()
+
 
 #Plotting the daily load in Björkö marina
 plt.figure(figsize=(10, 5))
 plt.plot(range(len(yearly_load_björkö)), yearly_load_björkö, label='Electricity Load')
 plt.fill_between(range(len(yearly_load_björkö)), yearly_load_björkö, alpha=0.3)
-plt.xlabel('Days of the Year')
+plt.xlabel('Days')
 plt.ylabel('Daily Load (kWh)')
 plt.title('Electricity Load in 2023 in Björkö')
 #plt.legend()

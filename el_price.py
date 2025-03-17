@@ -46,9 +46,10 @@ for i, value in enumerate(spotprice_matrix_2024):
     col = i // rows
     spotprice_2024[row, col] = value
 
-# Printing the spotprice
+# # Printing the spotprice
 # spotprice_df_2023 = pd.DataFrame(spotprice_matrix_2023)
 # spotprice_df_2024 = pd.DataFrame(spotprice_matrix_2024)
-# print(spotprice_df_2023)
+# print(np.size(spotprice_2023))
 # print(spotprice_df_2024)
+
 

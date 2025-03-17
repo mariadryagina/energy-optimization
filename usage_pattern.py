@@ -49,8 +49,7 @@ plt.show()
 #0, båten står alltid i hamnen
 #Maj - september båten används en gång varannan vecka
 #Används varje dag i två veckor någon gång melan maj och september 
-#1, båten kan användas inom vissa tider
-#2, båten är borta helt
+#1, båten borta
 
 #FRÅGA! Ska jag simulera tillgänglig energi i batteriet också?
 #FRÅGA! Under helgerna på sommaren när båtarna är i hamnen tänkte 

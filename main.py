@@ -15,6 +15,10 @@ load_krossholmen = load_krossholmen_2023.load
 load_björkö_hamn=load_björkö.load
 load_bessekroken=load_björkö_bessekroken.load 
 load_winter_krossholmen = load_krossholmen_2023.load_winter
+load_summer_krossholmen = load_krossholmen_2023.load_summer
+
+spot_price_2023=el_price.spotprice_2023
+
 #endregion
 #________Reference Case__________________________________________________________________________________________________
 #region Calculating the sum of the array for the yearly load 1X365 in Besskroken
@@ -31,11 +35,17 @@ for i in range(365):
 yearly_load_björkö=np.zeros((365))
 for i in range(365):
     yearly_load_björkö[i] = sum(load_björkö_hamn[:, i])
+
+#Calculating the sum of the array for the yearly spot price in SE3 1X365
+yearly_spot_price_2023=np.zeros((365))
+for i in range(365):
+    yearly_spot_price_2023[i] = sum(spot_price_2023[:, i])/len(spot_price_2023[:, i])
 #endregion
 #_________Plotting Reference Case________________________________________________________________________________________
 #region Plotting the daily load in Bessekroken
 plt.figure(figsize=(10, 5))
 plt.plot(range(len(yearly_load_bessekroken)), yearly_load_bessekroken, label='Electricity Load')
+plt.plot(range(len(yearly_spot_price_2023)), yearly_spot_price_2023, label='Spot Price')
 plt.fill_between(range(len(yearly_load_bessekroken)), yearly_load_bessekroken, alpha=0.3)
 plt.xlabel('Days')
 plt.ylabel('Daily Load (kWh)')
@@ -64,21 +74,21 @@ plt.show()
 
 # Create subplots
 fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-fig.suptitle('Mean FCR-D up Prices During Different Seasons')
+fig.suptitle('Seasonal Daily Load in Krossholmen')
 # Plot mean winter daily load in Krossholmen
 axs[0].plot(sum(load_winter_krossholmen)/len(load_winter_krossholmen))
 axs[0].set_title('Winter')
-axs[0].set_ylabel('SEK/MWh')
+axs[0].set_ylabel('kWh')
 axs[0].set_xlabel('Hour of the day')
 axs[0].set_xlim(0, 23)
-axs[0].grid(True)
+#axs[0].grid(True)
 # Plot mean summer daily load in Krossholmen
-axs[1].plot(price_summer_mean_FCR_D_up)
+axs[1].plot(sum(load_summer_krossholmen)/len(load_summer_krossholmen))
 axs[1].set_title('Summer')
-axs[1].set_ylabel('SEK/MWh')
+axs[1].set_ylabel('kWh')
 axs[1].set_xlabel('Hour of the day')
 axs[1].set_xlim(0, 23)
-axs[1].grid(True)
+#axs[1].grid(True)
 
 #Plotting the daily load in Björkö marina
 plt.figure(figsize=(10, 5))

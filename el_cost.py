@@ -1,28 +1,36 @@
 import numpy as np
 import el_price
 
-def el_cost(P_self, P_grid, load, p_cost, tax_cost, VAT):
+def cost(P_sun, P_wind, P_load, power_tariff, tax_cost, VAT):
+    if P_sun is None:
+        P_sun = np.zeros((24, 365))
+    else:
+        P_sun = P_sun
+    if P_wind is None:
+        P_wind = np.zeros((24, 365))
+    else:
+        P_wind = P_wind
     #Calculating the electricity cost
     #Price of electricity in SEK/kWh
-    price = el_price.el_price()
-    #Calculating the electricity cost for the spot price
-    cost = np.zeros((24, 365))
-    for i in range(24):
-        for j in range(365):
-            if P_self[i, j] > load[j]:
-                cost[i, j] = 0 #Tidigare: (P_self[i, j] - load[j]) * price[i, j]
-            else:
-                cost[i, j] = (P_grid[i, j] - P_self[i, j]) * price[i, j]
-    #Caluclateing the power cost for the peak in each month
-    peak_cost = np.zeros((12))
-    peak_month = [max(load[:, 0:31]), max(load[:, 31:59]), max(load[:, 59:90]), max(load[:, 90:120]), max(load[:, 120:151]), max(load[:, 151:181]), max(load[:, 181:212]), max(load[:, 212:243]), max(load[:, 243:273]), max(load[:, 273:304]), max(load[:, 304:334]), max(load[:, 334:365])])]
-    for i in range(12):
-        peak_cost[i] = peak_month[i] * p_cost
-    #Calculating the total cost for the year
+    price = el_price.spotprice_2023
+    #Calculating the electricity cost for the spot price and the cost of electricity tax
+    cost_electricity = np.zeros((24, 365))
     cost_tax = np.zeros((24, 365))
     for i in range(24):
         for j in range(365):
-            cost_tax[i, j] = load[i, j] * tax_cost
+            if (P_sun[i, j] + P_wind[i, j]) > P_load[i, j]:
+                cost_electricity[i, j] = 0 #Tidigare: (P_self[i, j] - load[j]) * price[i, j]
+                cost_tax[i, j] = 0
+            else:
+                cost_electricity[i, j] = (P_load[i, j] - (P_sun[i, j] + P_wind[i, j])) * price[i, j]
+                cost_tax[i, j] = P_load[i, j] * tax_cost
+    #Caluclateing the power cost for the peak in each month
+    peak_cost = np.zeros(12)
+    print("Cost, zero-matrix", peak_cost)
+    peak_month = np.array([np.max(P_load[:, 0:31]), np.max(P_load[:, 31:59]), np.max(P_load[:, 59:90]), np.max(P_load[:, 90:120]), np.max(P_load[:, 120:151]), np.max(P_load[:, 151:181]), np.max(P_load[:, 181:212]), np.max(P_load[:, 212:243]), np.max(P_load[:, 243:273]), np.max(P_load[:, 273:304]), np.max(P_load[:, 304:334]), np.max(P_load[:, 334:365])])
+    print("Peak value each month:", peak_month)
+    for i in range(12):
+        peak_cost[i] = peak_month[i] * power_tariff
     #Calculating the total cost for the year
-    total_cost = (cost.sum() + peak_cost.sum() + cost_tax.sum())*VAT 
+    total_cost = (cost_electricity.sum() + peak_cost.sum() + cost_tax.sum())*VAT 
     return total_cost

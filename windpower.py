@@ -39,7 +39,7 @@ for i in range(24):
 #_Function begins_______________________________________________________________#
 #V - wind speed in m/s
 #n - amount of turbines
-#The formula for wind power is P_w=4,8653*V^2,9637 and it is in W
+#The formula for wind power is P_w=0,0116*V^2,4721 and it is in kW
 
 def wind(n):
      

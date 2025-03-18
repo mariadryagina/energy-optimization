@@ -46,6 +46,17 @@ for i, value in enumerate(spotprice_matrix_2024):
     col = i // rows
     spotprice_2024[row, col] = value
 
+spotprice_2023_winter = spotprice_2023[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
+spotprice_2023_spring = spotprice_2023[:, 59:151]
+spotprice_2023_summer = spotprice_2023[:, 151:243]
+sptorprice_2023_autumn = spotprice_2023[:, 243:334]
+
+spotprice_2024_winter = spotprice_2024[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
+spotprice_2024_spring = spotprice_2024[:, 59:151]
+spotprice_2024_summer = spotprice_2024[:, 151:243]
+sptorprice_2024_autumn = spotprice_2024[:, 243:334]
+
+
 # # Printing the spotprice
 # spotprice_df_2023 = pd.DataFrame(spotprice_matrix_2023)
 # spotprice_df_2024 = pd.DataFrame(spotprice_matrix_2024)

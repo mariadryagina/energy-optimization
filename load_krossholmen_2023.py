@@ -48,18 +48,18 @@ total = yearly_load.sum()
 print("*The total load for full year is", round(total/1000, 1), "MWh")
 
 # Correct slicing syntax
-# load_jan = load[:, 0:31]
-# load_feb = load[:, 31:59]
-# load_mar = load[:, 59:90]
-# load_apr = load[:, 90:120]
-# load_may = load[:, 120:151]
-# load_jun = load[:, 151:181]
-# load_jul = load[:, 181:212]
-# load_aug = load[:, 212:243]
-# load_sep = load[:, 243:273]
-# load_oct = load[:, 273:304]
-# load_nov = load[:, 304:334]
-# load_dec = load[:, 334:365]
+load_jan = load[:, 0:31]
+load_feb = load[:, 31:59]
+load_mar = load[:, 59:90]
+load_apr = load[:, 90:120]
+load_may = load[:, 120:151]
+load_jun = load[:, 151:181]
+load_jul = load[:, 181:212]
+load_aug = load[:, 212:243]
+load_sep = load[:, 243:273]
+load_oct = load[:, 273:304]
+load_nov = load[:, 304:334]
+load_dec = load[:, 334:365]
 
 #Arranges the corresponding loads for each day into the right season
 #Winter: December, January, February
@@ -132,204 +132,98 @@ for i, value in enumerate(autumn_daytype):
 load_autumn = load_autumn.T
 
 #_____________________________________________________________________________________________
-# #PLOT
-# #position for the time on the x-axis
-# tick_locations = [0, 6, 12, 18, 24]
+#PLOT
+#position for the time on the x-axis
+tick_locations = [0, 6, 12, 18, 24]
 
-# #Winter
-# plt.figure()
-# plt.suptitle('Krossholmen load profile')
-# plt.subplot(4, 3, 1)
-# plt.plot(sum((load_winter_weekday))/len(load_winter_weekday))
-# plt.ylim(0,200)
-# plt.title('Mean weekday load')
-# plt.ylabel('Winter: \n Load (kWh)')
-# plt.xticks(tick_locations)
-# plt.grid(True)
+#Winter
+plt.figure()
+plt.suptitle('Krossholmen load profile')
+plt.subplot(4, 3, 1)
+plt.plot(sum((load_winter_weekday))/len(load_winter_weekday))
+plt.ylim(0,200)
+plt.title('Mean weekday load')
+plt.ylabel('Winter: \n Load (kWh)')
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# plt.subplot(4, 3, 2)
-# plt.plot(sum((load_winter_weekend))/len(load_winter_weekend))
-# plt.ylim(0,200)
-# plt.title('Mean weekend load')
-# plt.xticks(tick_locations)
-# plt.grid(True)
+plt.subplot(4, 3, 2)
+plt.plot(sum((load_winter_weekend))/len(load_winter_weekend))
+plt.ylim(0,200)
+plt.title('Mean weekend load')
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# plt.subplot(4, 3, 3)
-# plt.plot((sum(load_winter))/len(load_winter))
-# plt.ylim(0,200)
-# plt.title('Mean load')
-# plt.xticks(tick_locations)
-# plt.grid(True)
+plt.subplot(4, 3, 3)
+plt.plot((sum(load_winter))/len(load_winter))
+plt.ylim(0,200)
+plt.title('Mean load')
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# #Spring
-# plt.subplot(4, 3, 4)
-# plt.plot(sum((load_spring_weekday))/len(load_spring_weekday))
-# plt.ylim(0,200)
-# plt.ylabel('Spring: \n Load (kWh)')
-# plt.xticks(tick_locations)
-# plt.grid(True)
+#Spring
+plt.subplot(4, 3, 4)
+plt.plot(sum((load_spring_weekday))/len(load_spring_weekday))
+plt.ylim(0,200)
+plt.ylabel('Spring: \n Load (kWh)')
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# plt.subplot(4, 3, 5)
-# plt.plot(sum((load_spring_weekend))/len(load_spring_weekend))
-# plt.ylim(0,200)
-# plt.xticks(tick_locations)
-# plt.grid(True)
+plt.subplot(4, 3, 5)
+plt.plot(sum((load_spring_weekend))/len(load_spring_weekend))
+plt.ylim(0,200)
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# plt.subplot(4, 3, 6)
-# plt.plot((sum(load_spring))/len(load_spring))
-# plt.ylim(0,200)
-# plt.xticks(tick_locations)
-# plt.grid(True)
+plt.subplot(4, 3, 6)
+plt.plot((sum(load_spring))/len(load_spring))
+plt.ylim(0,200)
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# #Summer
-# plt.subplot(4, 3, 7)
-# plt.plot(sum((load_summer_weekday))/len(load_summer_weekday))
-# plt.ylim(0,200)
-# plt.ylabel('Summer: \n Load (kWh)')
-# plt.xticks(tick_locations)
-# plt.grid(True)
+#Summer
+plt.subplot(4, 3, 7)
+plt.plot(sum((load_summer_weekday))/len(load_summer_weekday))
+plt.ylim(0,200)
+plt.ylabel('Summer: \n Load (kWh)')
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# plt.subplot(4, 3, 8)
-# plt.plot(sum((load_summer_weekend))/len(load_summer_weekend))
-# plt.ylim(0,200)
-# plt.xticks(tick_locations)
-# plt.grid(True)
+plt.subplot(4, 3, 8)
+plt.plot(sum((load_summer_weekend))/len(load_summer_weekend))
+plt.ylim(0,200)
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# plt.subplot(4, 3, 9)
-# plt.plot((sum(load_summer))/len(load_summer))
-# plt.ylim(0,200)
-# plt.xticks(tick_locations)
-# plt.grid(True)
+plt.subplot(4, 3, 9)
+plt.plot((sum(load_summer))/len(load_summer))
+plt.ylim(0,200)
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# #Autumn
-# plt.subplot(4, 3, 10)
-# plt.plot(sum((load_autumn_weekday))/len(load_autumn_weekday))
-# plt.ylim(0,200)
-# plt.xlabel('Time')
-# plt.ylabel('Autumn: \n Load (kWh)')
-# plt.xticks(tick_locations)
-# plt.grid(True)
+#Autumn
+plt.subplot(4, 3, 10)
+plt.plot(sum((load_autumn_weekday))/len(load_autumn_weekday))
+plt.ylim(0,200)
+plt.xlabel('Time')
+plt.ylabel('Autumn: \n Load (kWh)')
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# plt.subplot(4, 3, 11)
-# plt.plot(sum((load_autumn_weekend))/len(load_autumn_weekend))
-# plt.xlabel('Time')
-# plt.ylim(0,200)
-# plt.xticks(tick_locations)
-# plt.grid(True)
+plt.subplot(4, 3, 11)
+plt.plot(sum((load_autumn_weekend))/len(load_autumn_weekend))
+plt.xlabel('Time')
+plt.ylim(0,200)
+plt.xticks(tick_locations)
+plt.grid(True)
 
-# plt.subplot(4, 3, 12)
-# plt.plot((sum(load_autumn))/len(load_autumn))
-# plt.ylim(0,200)
-# plt.xlabel('Time')
-# plt.xticks(tick_locations)
-# plt.grid(True)
-# plt.show(block=False)
+plt.subplot(4, 3, 12)
+plt.plot((sum(load_autumn))/len(load_autumn))
+plt.ylim(0,200)
+plt.xlabel('Time')
+plt.xticks(tick_locations)
+plt.grid(True)
+plt.show(block=False)
 
-# plt.show()
+plt.show()
 
-# Calculate the sum of all values in each row of load_jan
-# load_jan_sums = load_jan.sum(axis=0) / 24
-#print("Total load in January:", load_jan_sums)
-
-# jan_daytype = np.array([1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0])
-# jul_daytype = np.array([1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0])
-
-# load_jan_weekday = []
-# load_jan_weekend = []
-
-# for i, value in enumerate(jan_daytype):
-#     if value == 0:
-#         load_jan_weekday.append(load_jan[:, i])
-#     if value == 1:
-#         load_jan_weekend.append(load_jan[:, i])
-
-# load_jan_weekday = np.array(load_jan_weekday).T
-# load_jan_weekend = np.array(load_jan_weekend).T
-
-# #print("Weekday loads:", load_jan_weekday)
-# #print("Weekend loads:", load_jan_weekend)
-
-# #_____________________________________________________________________________________________
-
-# #July
-# #Calculate the sum of all values of each row
-# load_jul_weekday = []
-# load_jul_weekend = []
-
-# for i, value in enumerate(jul_daytype):
-#     if value == 0:
-#         load_jul_weekday.append(load_jul[:, i])
-#     if value == 1:
-#         load_jul_weekend.append(load_jul[:, i])
-
-# load_jul_weekday = np.array(load_jul_weekday).T
-# load_jul_weekend = np.array(load_jul_weekend).T
-
-#print("Weekday loads:", load_jul_weekday)
-#print("Weekend loads:", load_jul_weekend)
-
-# # Boxplot for the loads in January
-# plt.figure()
-# plt.subplot(1, 3, 1)
-# plt.boxplot(np.transpose(load_jan))
-# plt.ylim(0,240)
-# plt.title('Total Load in January')
-# plt.xlabel('Hour in the Day')
-# plt.ylabel('Load (kWh)')
-# plt.grid(True)
-
-# plt.subplot(1, 3, 2)
-# plt.boxplot(np.transpose(load_jan_weekday))
-# plt.ylim(0,240)
-# plt.title('Weekday Load')
-# plt.xlabel('Hour in the Day')
-# plt.ylabel('Load (kWh)')
-# plt.grid(True)
-
-# plt.subplot(1, 3, 3)
-# plt.boxplot(np.transpose(load_jan_weekend))
-# plt.ylim(0,240)
-# plt.title('Weekend Load')
-# plt.xlabel('Hour in the Day')
-# plt.ylabel('Load (kWh)')
-# plt.grid(True)
-# plt.show(block=False)
-
-# # Boxplot for the loads in July
-# plt.figure()
-# plt.subplot(1, 3, 1)
-# plt.boxplot(np.transpose(load_jul))
-# plt.ylim(0,240)
-# plt.title('Total Load in July')
-# plt.xlabel('Hour in the Day')
-# plt.ylabel('Load (kWh)')
-# plt.grid(True)
-
-# plt.subplot(1, 3, 2)
-# plt.boxplot(np.transpose(load_jul_weekday))
-# plt.ylim(0,240)
-# plt.title('Weekday Load')
-# plt.xlabel('Hour in the Day')
-# plt.ylabel('Load (kWh)')
-# plt.grid(True)
-
-# plt.subplot(1, 3, 3)
-# plt.boxplot(np.transpose(load_jul_weekend))
-# plt.ylim(0,240)
-# plt.title('Weekend Load')
-# plt.xlabel('Hour in the Day')
-# plt.ylabel('Load (kWh)')
-# plt.grid(True)
-# plt.show(block=False)
-
-# plt.figure(figsize=(10, 5))
-# plt.plot(range(1, 366), yearly_load, label='Daily Electricity Load')
-# plt.xlabel('Day of the Year')
-# plt.ylabel('Daily Load (kWh)')
-# plt.title('Daily Electricity Load in 2023')
-# plt.legend()
-# plt.grid(True)
-# plt.show(block=False)
-
-# # Keep the plots open
-# plt.show()

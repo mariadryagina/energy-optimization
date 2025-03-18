@@ -4,7 +4,6 @@ from math import *
 import matplotlib.pyplot as plt 
 from matplotlib.colors import LinearSegmentedColormap
 
-#region
 #Different mondays when the boat is used for 14 days in a row
 #a=163 #måndag 12 juni
 #a=205 #måndag 24 juli
@@ -61,8 +60,8 @@ def usage_pattern(a, P_battery, SOC_upper, P_charger):
     return P_b, P_b_power
 
 
+#region Calling on function
 P_b, P_b_power=usage_pattern(163, 100, 0.9, 60)
-#endregion
 
 a=163
 # Flatten the P_b_power array to 1x8760
@@ -71,14 +70,15 @@ P_b_flat=P_b.flatten(order='F')
 P_b_power_day=P_b_power_flat[3024:3049]
 P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
 
+#endregion
 
-
+#region Plotting
 # Plotting the battery power usage pattern as a line plot
-plt.figure(figsize=(10, 5))
+plt.figure(figsize=(8, 5))
 plt.plot(P_b_power_day, label='Battery Power')
 plt.xlabel('Hours')
 plt.ylabel('Battery Power (kWh)')
-plt.title('Boat battery avilability')
+plt.title('Boat battery availability')
 plt.xticks(ticks=range(25), labels=range(25))
 plt.xlim(0, 24)
 plt.grid(True)
@@ -130,20 +130,22 @@ plt.ylabel('Hours of the Day')
 plt.title('Usage Pattern of Leisure Boat')
 plt.gca().invert_yaxis()
 plt.show()
-
-# Convert the NumPy array to a DataFrame
-P_b_power_df = pd.DataFrame(P_b_power)
-
-# Save the frequency data to a CSV file for further analysis
-P_b_power_df.to_csv('usage_pattern.csv', index=False)
-
-# Convert the NumPy array to a DataFrame
-P_b_df = pd.DataFrame(P_b)
-
-# Save the frequency data to a CSV file for further analysis
-P_b_df.to_csv('usage_pattern_01.csv', index=False)
-
 #endregion
+
+#_____________________________________________________________________________________________
+# # Convert the NumPy array to a DataFrame
+# P_b_power_df = pd.DataFrame(P_b_power)
+
+# # Save the frequency data to a CSV file for further analysis
+# P_b_power_df.to_csv('usage_pattern.csv', index=False)
+
+# # Convert the NumPy array to a DataFrame
+# P_b_df = pd.DataFrame(P_b)
+
+# # Save the frequency data to a CSV file for further analysis
+# P_b_df.to_csv('usage_pattern_01.csv', index=False)
+
+
 #________________Anteckningar_______________________________________________________________________________
 #Oktober - april båten står still 
 #0, båten står alltid i hamnen

@@ -35,6 +35,11 @@ for i in range(24):
         if V[i, j] > 13:
             V[i, j] = 0
 
+for i in range(24):
+    for j in range(a):
+        if V[i, j] < 2.8:
+            V[i, j] = 0
+
 
 #_Function begins_______________________________________________________________#
 #V - wind speed in m/s
@@ -43,7 +48,7 @@ for i in range(24):
 
 def wind(n):
      
-     P_wind=(0.0116*V**2.4721*n)
+     P_wind=(0.0146*V**2.3654*n)
      
 
      return P_wind

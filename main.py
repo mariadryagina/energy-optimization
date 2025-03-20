@@ -77,11 +77,11 @@ ax1.set_xlabel('Time')
 ax1.set_xlim(0, 23)
 ax1.tick_params(axis='y', labelcolor='tab:blue')
 
-# # Create a second y-axis for the spot price in winter
-# ax1_2 = ax1.twinx()
-# ax1_2.plot(range(24), spot_price_2023_winter_1, label='Mean Winter Spot Price', color='tab:orange')
-# ax1_2.set_ylabel('Spot Price (SEK/kWh)', color='tab:orange')
-# ax1_2.tick_params(axis='y', labelcolor='tab:orange')
+# Create a second y-axis for the spot price in winter
+ax1_2 = ax1.twinx()
+ax1_2.plot(range(24), spot_price_2023_winter_1, label='Mean Winter Spot Price', color='tab:orange')
+ax1_2.set_ylabel('Spot Price (SEK/kWh)', color='tab:orange')
+ax1_2.tick_params(axis='y', labelcolor='tab:orange')
 
 # Plot mean summer daily load in Krossholmen
 ax2.plot(range(24), sum(load_summer)/len(load_summer), label='Mean Summer Load', color='tab:blue')
@@ -91,11 +91,11 @@ ax2.set_xlabel('Time')
 ax2.set_xlim(0, 23)
 ax2.tick_params(axis='y', labelcolor='tab:blue')
 
-# # Create a second y-axis for the spot price in summer
-# ax2_2 = ax2.twinx()
-# ax2_2.plot(range(24), spot_price_2023_summer_1, label='Mean Summer Spot Price', color='tab:orange')
-# ax2_2.set_ylabel('Spot Price (SEK/kWh)', color='tab:orange')
-# ax2_2.tick_params(axis='y', labelcolor='tab:orange')
+# Create a second y-axis for the spot price in summer
+ax2_2 = ax2.twinx()
+ax2_2.plot(range(24), spot_price_2023_summer_1, label='Mean Summer Spot Price', color='tab:orange')
+ax2_2.set_ylabel('Spot Price (SEK/kWh)', color='tab:orange')
+ax2_2.tick_params(axis='y', labelcolor='tab:orange')
 
 # Adjust layout
 fig.tight_layout(rect=[0, 0, 1, 0.96])  # Adjust layout to make room for the main title

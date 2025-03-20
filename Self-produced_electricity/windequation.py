@@ -2,8 +2,8 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt 
 
-watt=np.array([40,122,290,560,980,1550,2300,3300,4500,6000,7800,7800,7800,7800])/1000
-m_s=np.array([2,3,4,5,6,7,8,9,10,11,12,13,14,15])
+watt=np.array([0.1,0.2,0.35,0.5,0.8,1.3,2,2.7,3.7,5,6,6])
+m_s=np.array([2,3,4,5,6,7,8,9,10,11,12,13])
 
 
 # Creating the plot

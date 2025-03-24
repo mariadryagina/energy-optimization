@@ -73,64 +73,64 @@ P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
 #endregion
 
 #region Plotting
-# Plotting the battery power usage pattern as a line plot
-plt.figure(figsize=(8, 5))
-plt.plot(P_b_power_day, label='Battery Power')
-plt.xlabel('Hours')
-plt.ylabel('Battery Power (kWh)')
-plt.title('Boat battery availability')
-plt.xticks(ticks=range(25), labels=range(25))
-plt.xlim(0, 24)
-plt.grid(True)
-plt.legend()
-plt.show()
+# # Plotting the battery power usage pattern as a line plot
+# plt.figure(figsize=(8, 5))
+# plt.plot(P_b_power_day, label='Battery Power')
+# plt.xlabel('Hours')
+# plt.ylabel('Battery Power (kWh)')
+# plt.title('Boat battery availability')
+# plt.xticks(ticks=range(25), labels=range(25))
+# plt.xlim(0, 24)
+# plt.grid(True)
+# plt.legend()
+# plt.show()
 
-# Plotting the battery power usage pattern as a line plot
-plt.figure(figsize=(10, 5))
-plt.plot(P_b_power_week, label='Battery Power')
-plt.xlabel('Hours')
-plt.ylabel('Battery Power (kWh)')
-plt.title('Boat battery avilability')
-plt.xlim(312, 336)
-plt.grid(True)
-plt.legend()
-plt.show()
+# # Plotting the battery power usage pattern as a line plot
+# plt.figure(figsize=(10, 5))
+# plt.plot(P_b_power_week, label='Battery Power')
+# plt.xlabel('Hours')
+# plt.ylabel('Battery Power (kWh)')
+# plt.title('Boat battery avilability')
+# plt.xlim(312, 336)
+# plt.grid(True)
+# plt.legend()
+# plt.show()
 
-# Plotting the battery power usage pattern as a line plot
-plt.figure(figsize=(10, 5))
-plt.plot(P_b_power_flat, label='Battery Power')
-plt.xlabel('Hours')
-plt.ylabel('Battery Power (kWh)')
-plt.title('Boat Usage Pattern')
-plt.xlim(0, 8760)
-plt.grid(True)
-plt.legend()
-plt.show()
+# # Plotting the battery power usage pattern as a line plot
+# plt.figure(figsize=(10, 5))
+# plt.plot(P_b_power_flat, label='Battery Power')
+# plt.xlabel('Hours')
+# plt.ylabel('Battery Power (kWh)')
+# plt.title('Boat Usage Pattern')
+# plt.xlim(0, 8760)
+# plt.grid(True)
+# plt.legend()
+# plt.show()
 
-# Plotting the battery power usage pattern as a line plot
-plt.figure(figsize=(10, 5))
-plt.plot(P_b_flat, label='')
-plt.fill_between(range(8760), P_b_flat, alpha=0.3)
-plt.xlabel('Hours')
-plt.ylabel('')
-plt.title('Boat Usage Pattern')
-plt.xlim(0, 8760)
-plt.legend()
-plt.show()
+# # Plotting the battery power usage pattern as a line plot
+# plt.figure(figsize=(10, 5))
+# plt.plot(P_b_flat, label='')
+# plt.fill_between(range(8760), P_b_flat, alpha=0.3)
+# plt.xlabel('Hours')
+# plt.ylabel('')
+# plt.title('Boat Usage Pattern')
+# plt.xlim(0, 8760)
+# plt.legend()
+# plt.show()
 
-#Create a continuous colormap
-cmap = LinearSegmentedColormap.from_list('custom_cmap', ['white', 'blue', 'lightblue'])
+# #Create a continuous colormap
+# cmap = LinearSegmentedColormap.from_list('custom_cmap', ['white', 'blue', 'lightblue'])
 
-# Plotting the usage pattern for verification
-plt.figure(figsize=(10, 5))
-plt.imshow(P_b, aspect='auto', cmap=cmap, interpolation='none')
-plt.colorbar(label='Usage Pattern')
-plt.xlabel('Days of the Year')
-plt.ylabel('Hours of the Day')
-plt.title('Usage Pattern of Leisure Boat')
-plt.gca().invert_yaxis()
-plt.show()
-#endregion
+# # Plotting the usage pattern for verification
+# plt.figure(figsize=(10, 5))
+# plt.imshow(P_b, aspect='auto', cmap=cmap, interpolation='none')
+# plt.colorbar(label='Usage Pattern')
+# plt.xlabel('Days of the Year')
+# plt.ylabel('Hours of the Day')
+# plt.title('Usage Pattern of Leisure Boat')
+# plt.gca().invert_yaxis()
+# plt.show()
+# #endregion
 
 #_____________________________________________________________________________________________
 # # Convert the NumPy array to a DataFrame

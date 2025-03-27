@@ -237,7 +237,7 @@ for i in range(24):
 # axs[1, 1].grid(True)
 
 # Adjust layout
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
 #endregion

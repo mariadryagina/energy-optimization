@@ -63,6 +63,7 @@ def usage_pattern(a, P_battery, SOC_upper, P_charger):
 #region Calling on function
 P_b, P_b_power=usage_pattern(163, 100, 0.9, 60)
 
+
 a=163
 # Flatten the P_b_power array to 1x8760
 P_b_power_flat = P_b_power.flatten(order='F')

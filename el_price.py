@@ -8,8 +8,8 @@ url23 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/mai
 url24 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Spotpriser/price_2024.csv"
 
 # Fetch the file from GitHub
-response23 = requests.get(url23)
-response24 = requests.get(url24)
+response23 = requests.get(url23, verify=False)
+response24 = requests.get(url24, verify=False)
 response23.raise_for_status()  # Check if the request was successful
 response24.raise_for_status()  # Check if the request was successful
 

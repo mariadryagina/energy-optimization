@@ -19,14 +19,14 @@ def usage_pattern(a, P_battery, SOC_upper, P_charger):
     P_b_power=zeros((24,365)) #kWh
     for day in range(365):
         for hour in range(24):
-            P_b[hour,day]=0
+            P_b[hour,day]=1
             P_b_power[hour,day]=P_battery*SOC_upper
     #126:e dagen är 6:e maj vilket är 1 helgen då båten används
     
     for day in range(126, 274, 14):  # Start at day 126, end at day 273, step by 14 days
-        P_b[range(0,9), day] = 0 #kommer varierar mellan 0 och 1
+        P_b[range(0,9), day] = 1 #kommer varierar mellan 0 och 1
         P_b_power[range(0,10), day] = P_battery*SOC_upper
-        P_b[range(10,13), day] = 1
+        P_b[range(10,13), day] = 0
         P_b_power[11, day]=61.04
         P_b_power[12, day]=48.7
         P_b_power[13, day]=22.57
@@ -39,12 +39,12 @@ def usage_pattern(a, P_battery, SOC_upper, P_charger):
                 P_b_power[hour, day] = P_battery * SOC_upper
                 
 
-        P_b[range(14,24), day] = 0
+        P_b[range(14,24), day] = 1
         
 
     for day in range(a, a+14):  # Start at day 163, end at day 163+14
-        P_b[:, day] = 1
-        P_b_power[:, day] = 0
+        P_b[:, day] = 0
+        P_b_power[:, day] = 1
 
         if day == a+13:
             P_b_power[13, a+13]=22.57
@@ -54,7 +54,7 @@ def usage_pattern(a, P_battery, SOC_upper, P_charger):
                     P_b_power[hour, day] = P_b_power[hour - 1, day] + P_charger
                 else:
                     P_b_power[hour, day] = P_battery * SOC_upper
-                    P_b[hour, day]=0
+                    P_b[hour, day]=1
                     
     
     return P_b, P_b_power

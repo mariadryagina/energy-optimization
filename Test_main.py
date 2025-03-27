@@ -9,8 +9,7 @@ import load_björkö
 import load_björkö_bessekroken
 import el_price
 import el_cost
-#from Test_optimization import load_data
-import Test_optimization
+import Optimization
 import usage_pattern
 #endregion
 #______Variable and parameters___________________________________________________________________________________________
@@ -194,11 +193,8 @@ spot_price_data = el_price.spotprice_2023    # 24x365
 boat_availability, boat_power = usage_pattern.usage_pattern(205, 100, 90, 60)  # 24x365
 number_boats = 2
 
-# result = Test_optimization.optimize_microgrid(solar_data, wind_data, load_data, grid_cost_data, spot_price_data, boat_availability)
-# print(result)
 
-
-model = Test_optimization.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, number_boats, boat_availability)
+model = Optimization.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, number_boats, boat_availability)
 
 old_grid_usage = np.zeros((24, 365))  # Initial load data
 new_grid_usage = np.zeros((24, 365))  # Optimized grid usage data

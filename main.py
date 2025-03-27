@@ -24,11 +24,11 @@ spot_price_2023_summer=el_price.spotprice_2023_summer
 #endregion
 #________Paramters_______________________________________________________________________________________________________
 #region
-load = load_krossholmen
+load = load_bessekroken
 load_winter=load_winter_krossholmen
 load_summer=load_summer_krossholmen
 
-A=167
+A=100
 eta=0.2
 n=1
 #endregion
@@ -122,17 +122,27 @@ for i in range(365):
 
 #Calculating the self consumed electricity with matrix 24x365
 P_self = np.zeros((24, 365))
+P_SS=[]
+P_Not_SS=[]
 #If the value is negative it will be changed to 0
 for i in range(24):
     for j in range(365):    
         if load[i, j] - P_s2[i, j] - P_wind2[i,j] < 0:
             P_self[i, j] = 0
+            P_Not_SS.append(P_s2[i, j] + P_wind2[i,j])
         else:
             P_self[i, j] = load[i, j] - P_s2[i, j] - P_wind2[i,j]
+            P_SS.append(P_s2[i, j] + P_wind2[i,j])
 #Calculating the sum of the array 1X365
 P_self1=np.zeros((365))
 for i in range(365):
     P_self1[i] = sum(P_self[:, i])
+
+
+print(f"Self consumed electricity {sum(P_SS)}")
+print(f"Not used slef-produced electricity {sum(P_Not_SS)}")
+
+
 
 #Calculating the total 
 total_sum_sun=round(sum(P_s3)*10,1)/10

@@ -17,12 +17,12 @@ url5 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main
 url6 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/björkö_load/Skarviksvägen 8.xlsx"
 
 # Fetch the file from GitHub
-response1 = requests.get(url1)
-response2 = requests.get(url2)
-response3 = requests.get(url3)
-response4 = requests.get(url4)
-response5 = requests.get(url5)
-response6 = requests.get(url6)
+response1 = requests.get(url1, verify=False)
+response2 = requests.get(url2, verify=False)
+response3 = requests.get(url3, verify=False)
+response4 = requests.get(url4, verify=False)
+response5 = requests.get(url5, verify=False)
+response6 = requests.get(url6, verify=False)
 response1.raise_for_status()  # Check if the request was successful
 response2.raise_for_status()  
 response3.raise_for_status()  

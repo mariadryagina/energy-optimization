@@ -12,7 +12,7 @@ from io import BytesIO
 url = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/björkö_load/Skarviksvägen 89.xlsx"
 
 # Fetch the file from GitHub
-response = requests.get(url)
+response = requests.get(url, verify=False)
 response.raise_for_status()  # Check if the request was successful
 
 # Read the Excel file into a DataFrame

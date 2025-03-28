@@ -15,7 +15,6 @@ F=zeros((20,8760))
 valid_intervals = list(range(1, 60, 3))  # 1, 4, 7, ..., 58
 valid_intervals1=valid_intervals*8760
 
-
 frequency_data=[]
 excluded_values =[]
 

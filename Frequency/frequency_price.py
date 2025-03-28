@@ -22,48 +22,46 @@ df_1 = pd.read_excel(BytesIO(response_1.content))
 #region 11,03 SEK to 1 EUR
 #Storing FCR-N prices in a matrix SEK/MWh
 FCR_N=np.zeros((24,365))
-FCR_N_1=np.zeros((1,8760))
-FCR_N_upp=np.zeros((1,8760)) 
-FCR_N_ned=np.zeros((1,8760))
+FCR_N_1=np.zeros((8760,1))
+FCR_N_upp=np.zeros((8760,1)) 
+FCR_N_ned=np.zeros((8760,1))
 
 for i in range(365):
     for j in range(24):
          FCR_N[j,i]=(df.iloc[i*24+j,5])*11.03
 
 for i in range(8760):
-    FCR_N_1[0,i]=(df.iloc[i,5])*11.03
+    FCR_N_1[i]=(df.iloc[i,5])*11.03
 
 for i in range(8760):
-    FCR_N_upp[0,i]=(df_1.iloc[i,2])*11.03
+    FCR_N_upp[i]=(df_1.iloc[i,2])*11.03
 
 for i in range(8760):
-    FCR_N_ned[0,i]=(df_1.iloc[i,4])*11.03
+    FCR_N_ned[i]=(df_1.iloc[i,4])*11.03
 
-print(FCR_N_1)
-print(FCR_N_upp)
 
 #Storing FCR-D up prices in a matrix SEK/MWh
 FCR_D_up=np.zeros((24,365))
-FCR_D_up_1=np.zeros((1,8760))
+FCR_D_up_1=np.zeros((8760,1))
 
 for i in range(365):
     for j in range(24):
          FCR_D_up[j,i]=(df.iloc[i*24+j,12])*11.03
 
 for i in range(8760):
-    FCR_D_up_1[0,i]=(df.iloc[i,12])*11.03
+    FCR_D_up_1[i]=(df.iloc[i,12])*11.03
 
 
 #Storing FCR-D down prices in a matrix SEK/MWh
 FCR_D_down=np.zeros((24,365))
-FCR_D_down_1=np.zeros((1,8760))
+FCR_D_down_1=np.zeros((8760,1))
 
 for i in range(365):
     for j in range(24):
          FCR_D_down[j,i]=(df.iloc[i*24+j,19])*11.03
 
 for i in range(8760):
-    FCR_D_down_1[0,i]=(df.iloc[i,19])*11.03
+    FCR_D_down_1[i]=(df.iloc[i,19])*11.03
 
 #endregion
 #_______FCR-N_______________________________________________________________________________
@@ -264,7 +262,7 @@ for i in range(24):
 # axs[1, 1].grid(True)
 
 # Adjust layout
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
 #endregion

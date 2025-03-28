@@ -92,10 +92,12 @@ for i in range(len(frequency_data) // 20):
         elif value == 50.0:
             frequency_data1[i,4] += 1 
 
-frequency_data1=frequency_data1
+frequency_data1=frequency_data1/20
 
 print(f"the fraction")
 print(frequency_data1)
+
+
 #endregion
 #__Calculating mean value__________________________________________________________________________________________________
 #region
@@ -160,13 +162,51 @@ for i in range(8760):
         # Calculate activation rate only if the value is within the interval
         if lower_bound <= mean_value <= upper_bound:
             if mean_value < target:  # Below the target
-                activation_rate[i, j] = (target - mean_value) / (target - lower_bound) * 100
+                activation_rate[i, j] = (target - mean_value) / (target - lower_bound)
             elif mean_value > target:  # Above the target
-                activation_rate[i, j] = (mean_value - target) / (upper_bound - target) * 100
+                activation_rate[i, j] = (mean_value - target) / (upper_bound - target)
         else:
             activation_rate[i, j] = 0  # No activation if outside the interval
 
 # Print the activation_rate matrix
 print(f"The activation rate")
 print(activation_rate)
+#endregion
+
+#___Calculating the potential revenue________________________________________________________________________________
+#region
+#First, decied a bid size. 0,1MW because that is the minimum bid size
+
+P_bid=full((8760,5), 0.1) #[MW]
+P_bid_scaled=zeros((8760,5))
+
+#How much of the bid size is used?
+for i in range(8760):
+    for j in range(5):
+        P_bid_scaled[i,j]=P_bid[i,j]*activation_rate[i,j]
+
+
+# Initialize revenue matrices
+FCR_revenue = zeros((8760, 5))
+
+
+# Calculate FCR-N revenue
+for i in range(8760):
+    FCR_revenue[i, 0] = P_bid_scaled[i, 0] * FCR_D_up_price[i]
+    FCR_revenue[i, 1] = P_bid_scaled[i, 1] * FCR_D_down_price[i]
+    FCR_revenue[i, 2] = P_bid_scaled[i, 2] * FCR_N_price[i]  # Explicitly extract scalar
+    FCR_revenue[i, 3] = P_bid_scaled[i, 3] * FCR_N_price[i]  # Explicitly extract scalar
+    FCR_revenue[i, 4] = P_bid_scaled[i, 4]
+
+# Print the FCR-N revenue matrix
+print("FCR Revenue:")
+print(FCR_revenue)
+
+# Convert the NumPy array to a DataFrame
+FCR_revenue_pd = pd.DataFrame(FCR_revenue)
+
+# Save the frequency data to a CSV file for further analysis
+FCR_revenue_pd.to_csv('FCR_revenue.csv', index=False)
+
+
 #endregion

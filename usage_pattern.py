@@ -64,17 +64,27 @@ def usage_pattern(a, P_battery, SOC_upper, P_charger):
     
     return P_b, P_b_power
 
+def charging_required(availability):
+    charge_required = {}
+    for d in range(365):
+        for h in range(1, 24):  # Start from h=1 to compare h-1
+            if availability[h-1, d] == 1 and availability[h, d] == 0:
+                charge_required[h, d] = 1
+            else:
+                charge_required[h, d] = 0
+        charge_required[0, d] = 0  # Can't compare h-1 for h=0
+    return charge_required
 
-#region Calling on function
-P_b, P_b_power=usage_pattern(226, 100, 0.9, 60)
+# #region Calling on function
+# P_b, P_b_power=usage_pattern(163, 100, 0.9, 60)
 
 
-a=163
-# Flatten the P_b_power array to 1x8760
-P_b_power_flat = P_b_power.flatten(order='F')
-P_b_flat=P_b.flatten(order='F')
-P_b_power_day=P_b_power_flat[3024:3049]
-P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
+# a=163
+# # Flatten the P_b_power array to 1x8760
+# P_b_power_flat = P_b_power.flatten(order='F')
+# P_b_flat=P_b.flatten(order='F')
+# P_b_power_day=P_b_power_flat[3024:3049]
+# P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
 
 #endregion
 
@@ -140,16 +150,16 @@ P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
 
 #_____________________________________________________________________________________________
 # Convert the NumPy array to a DataFrame
-P_b_power_df = pd.DataFrame(P_b_power)
+# P_b_power_df = pd.DataFrame(P_b_power)
 
-# Save the frequency data to a CSV file for further analysis
-P_b_power_df.to_csv('usage_pattern.csv', index=False)
+# # Save the frequency data to a CSV file for further analysis
+# P_b_power_df.to_csv('usage_pattern.csv', index=False)
 
-# Convert the NumPy array to a DataFrame
-P_b_df = pd.DataFrame(P_b)
+# # Convert the NumPy array to a DataFrame
+# P_b_df = pd.DataFrame(P_b)
 
-# Save the frequency data to a CSV file for further analysis
-P_b_df.to_csv('usage_pattern_01.csv', index=False)
+# # Save the frequency data to a CSV file for further analysis
+# P_b_df.to_csv('usage_pattern_01.csv', index=False)
 
 
 #________________Anteckningar_______________________________________________________________________________

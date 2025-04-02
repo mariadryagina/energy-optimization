@@ -91,21 +91,19 @@ def boat_load(availability, SOC_used):
     for d in range(365):
         for h in range(24):
             if h == 0 and d == 0:
-                boat_load == 0
+                boat_load[h, d] = 0  # Use assignment operator
             elif h == 0:
-                if availability[h, d] == 1 and availability [23, d-1] == 0:
-                    boat_load == SOC_used
+                if availability[h, d] == 1 and availability[23, d - 1] == 0:
+                    boat_load[h, d] = SOC_used  # Use assignment operator
                 else:
-                    boat_load == 0            
-            elif availability[h, d] == 1 and availability[h-1, d] == 0:
-                boat_load == SOC_used # Percentage of used SOC
-            else:
-                boat_load == 0
+                    boat_load[h, d] = 0  # Use assignment operator
+            elif availability[h, d] == 1 and availability[h - 1, d] == 0:
+                boat_load[h, d] = SOC_used  # Use assignment operator
     return boat_load
             
 
 # #region Calling on function
-# P_b, P_b_power=usage_pattern(163, 100, 0.9, 60)
+P_b, P_b_power=usage_pattern(163, 100, 0.9, 60)
 
 
 # a=163
@@ -179,16 +177,21 @@ def boat_load(availability, SOC_used):
 
 #_____________________________________________________________________________________________
 # Convert the NumPy array to a DataFrame
-# P_b_power_df = pd.DataFrame(P_b_power)
+P_b_power_df = pd.DataFrame(P_b_power)
 
-# # Save the frequency data to a CSV file for further analysis
-# P_b_power_df.to_csv('usage_pattern.csv', index=False)
+# Save the frequency data to a CSV file for further analysis
+P_b_power_df.to_csv('usage_pattern.csv', index=False)
 
-# # Convert the NumPy array to a DataFrame
-# P_b_df = pd.DataFrame(P_b)
+Boat_load = boat_load(P_b, 0.8)
 
-# # Save the frequency data to a CSV file for further analysis
-# P_b_df.to_csv('usage_pattern_01.csv', index=False)
+Boat_load_df = pd.DataFrame(Boat_load)
+Boat_load_df.to_csv('boat_load.csv', index=False)
+
+# Convert the NumPy array to a DataFrame
+P_b_df = pd.DataFrame(P_b)
+
+# Save the frequency data to a CSV file for further analysis
+P_b_df.to_csv('usage_pattern_01.csv', index=False)
 
 
 #________________Anteckningar_______________________________________________________________________________

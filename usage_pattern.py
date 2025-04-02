@@ -76,15 +76,15 @@ def charging_required(availability):
     return charge_required
 
 # #region Calling on function
-# P_b, P_b_power=usage_pattern(163, 100, 0.9, 60)
+P_b, P_b_power=usage_pattern(205, 100, 0.9, 60)
 
 
-# a=163
-# # Flatten the P_b_power array to 1x8760
-# P_b_power_flat = P_b_power.flatten(order='F')
-# P_b_flat=P_b.flatten(order='F')
-# P_b_power_day=P_b_power_flat[3024:3049]
-# P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
+a=163
+# Flatten the P_b_power array to 1x8760
+P_b_power_flat = P_b_power.flatten(order='F')
+P_b_flat=P_b.flatten(order='F')
+P_b_power_day=P_b_power_flat[3024:3049]
+P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
 
 #endregion
 
@@ -149,7 +149,7 @@ def charging_required(availability):
 #endregion
 
 #_____________________________________________________________________________________________
-# Convert the NumPy array to a DataFrame
+# # Convert the NumPy array to a DataFrame
 # P_b_power_df = pd.DataFrame(P_b_power)
 
 # # Save the frequency data to a CSV file for further analysis

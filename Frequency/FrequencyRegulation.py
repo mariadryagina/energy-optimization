@@ -136,6 +136,12 @@ for i in range(8760):
 # Print the frequency_data1 matrix
 print(f"The mean")
 print(frequency_data2)
+
+# # Convert the NumPy array to a DataFrame
+# FCR_mean_pd = pd.DataFrame(frequency_data2, columns=["FCR-D Up", "FCR-D Down", "FCR-N Low", "FCR-N High", "FCR Correct"])
+
+# # Save the frequency data to a CSV file for further analysis
+# FCR_mean_pd.to_csv('FCR_mean.csv', index=False)
 #endregion
 #__Caluclating the activation rate___________________________________________________________________________________________
 #region
@@ -187,26 +193,43 @@ for i in range(8760):
 
 
 # Initialize revenue matrices
-FCR_revenue = zeros((8760, 5))
+FCR_revenue_capacity = zeros((8760, 5))
+FCR_revenue_energy=zeros((8760,2))
 
 
-# Calculate FCR-N revenue
+
+# Calculate FCR revenue Capacity
 for i in range(8760):
-    FCR_revenue[i, 0] = P_bid_scaled[i, 0] * FCR_D_up_price[i]
-    FCR_revenue[i, 1] = P_bid_scaled[i, 1] * FCR_D_down_price[i]
-    FCR_revenue[i, 2] = P_bid_scaled[i, 2] * FCR_N_price[i]  # Explicitly extract scalar
-    FCR_revenue[i, 3] = P_bid_scaled[i, 3] * FCR_N_price[i]  # Explicitly extract scalar
-    FCR_revenue[i, 4] = P_bid_scaled[i, 4]
+    FCR_revenue_capacity[i, 0] = P_bid[i, 0].item() * FCR_D_up_price[i].item()
+    FCR_revenue_capacity[i, 1] = P_bid[i, 1].item() * FCR_D_down_price[i].item()
+    FCR_revenue_capacity[i, 2] = P_bid[i, 2].item() * FCR_N_price[i].item() 
+    FCR_revenue_capacity[i, 3] = P_bid[i, 3].item() * FCR_N_price[i].item()  
+    FCR_revenue_capacity[i, 4] = P_bid[i, 4].item()
+
+# Calculate FCR-N revenue Capacity
+for i in range(8760):
+    FCR_revenue_energy[i, 0] = P_bid_scaled[i, 2].item() * FCR_N_up_price[i].item() 
+    FCR_revenue_energy[i, 1] = P_bid_scaled[i, 3].item() * FCR_N_down_price[i].item()  
 
 # Print the FCR-N revenue matrix
-print("FCR Revenue:")
-print(FCR_revenue)
+print("FCR Capacity Revenue:")
+print(FCR_revenue_capacity)
+
+# Print the FCR-N revenue matrix
+print("FCR Energy Revenue:")
+print(FCR_revenue_energy)
 
 # Convert the NumPy array to a DataFrame
-FCR_revenue_pd = pd.DataFrame(FCR_revenue)
+FCR_revenue_capacity_pd = pd.DataFrame(FCR_revenue_capacity, columns=["FCR-D Up", "FCR-D Down", "FCR-N Low", "FCR-N High", "FCR Correct"])
 
 # Save the frequency data to a CSV file for further analysis
-FCR_revenue_pd.to_csv('FCR_revenue.csv', index=False)
+FCR_revenue_capacity_pd.to_csv('FCR_revenue_capacity.csv', index=False)
+
+# # Convert the NumPy array to a DataFrame
+# FCR_revenue_energy_pd = pd.DataFrame(FCR_revenue_energy, columns=["FCR-N Low", "FCR-N High"])
+
+# # Save the frequency data to a CSV file for further analysis
+# FCR_revenue_energy_pd.to_csv('FCR_revenue_energy.csv', index=False)
 
 
 #endregion

@@ -103,7 +103,7 @@ def boat_load(availability, SOC_used):
             
 
 # #region Calling on function
-P_b, P_b_power=usage_pattern(163, 100, 0.9, 60)
+P_b, P_b_power=usage_pattern(205, 100, 0.9, 60)
 
 
 # a=163

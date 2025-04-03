@@ -15,65 +15,92 @@ from matplotlib.colors import LinearSegmentedColormap
 #Plug in the capacity of the charger in kW [P_charger]
 
 def usage_pattern(a, P_battery, SOC_upper, P_charger):
-    P_b=zeros((24,365))
-    P_b_power=zeros((24,365)) #kWh
+    P_b = zeros((24, 365))
+    P_b_power = zeros((24, 365))  # kWh
     for day in range(365):
         for hour in range(24):
-            P_b[hour,day]=1
-            P_b_power[hour,day]=P_battery*SOC_upper
-    #126:e dagen är 6:e maj vilket är 1 helgen då båten används
-    
-    for day in range(126, 274, 14):  # Start at day 126, end at day 273, step by 14 days
-        P_b[range(0,9), day] = 1 #kommer varierar mellan 0 och 1
-        P_b_power[range(0,10), day] = P_battery*SOC_upper
-        P_b[range(10,13), day] = 0
-        P_b_power[11, day]=61.04
-        P_b_power[12, day]=48.7
-        P_b_power[13, day]=22.57
+            P_b[hour, day] = 1
+            P_b_power[hour, day] = P_battery * SOC_upper
 
-        #Charging the battery
+    for day in range(126, 274, 14):  # Start at day 126, end at day 273, step by 14 days
+        P_b[0:9, day] = 1  # Set the first 9 hours to 1
+        P_b_power[0:10, day] = P_battery * SOC_upper
+        P_b[10:13, day] = 0
+        P_b_power[11, day] = 61.04
+        P_b_power[12, day] = 48.7
+        P_b_power[13, day] = 22.57
+
+        # Charging the battery
         for hour in range(14, 24):
             if P_b_power[hour - 1, day] + P_charger < P_battery:
                 P_b_power[hour, day] = P_b_power[hour - 1, day] + P_charger
             else:
                 P_b_power[hour, day] = P_battery * SOC_upper
-                
 
-        P_b[range(14,24), day] = 1
-
-        
+        P_b[14:24, day] = 1
 
     for day in range(a, a + 14):  # Start at day `a`, end at day `a+14`
-        if day == a:  # For the first day (day `a`)
-            P_b[range(0, 10), day] = 1  # Set the first 10 hours to 1
-            P_b[range(10, 24), day] = 0  # Set the rest of the hours to 0
-        else:  # For the remaining days (day `a+1` to `a+13`)
-            P_b[:, day] = 0  # Set all hours to 0
-        P_b_power[:, day] = 0  # Reset the power for all hours
+        if day < 365:  # Ensure day does not exceed bounds
+            if day == a:  # For the first day (day `a`)
+                P_b[0:10, day] = 1  # Set the first 10 hours to 1
+                P_b[10:24, day] = 0  # Set the rest of the hours to 0
+            else:  # For the remaining days (day `a+1` to `a+13`)
+                P_b[:, day] = 0  # Set all hours to 0
+            P_b_power[:, day] = 0  # Reset the power for all hours
 
-        if day == a+13:
-            P_b_power[13, a+13]=22.57
-            #Charging the battery
-            for hour in range(14, 24):
-                if P_b_power[hour - 1, day] + P_charger < P_battery:
-                    P_b_power[hour, day] = P_b_power[hour - 1, day] + P_charger
-                else:
-                    P_b_power[hour, day] = P_battery * SOC_upper
-                    P_b[hour, day]=1
-                    
-    
+            if day == a + 13:
+                P_b_power[13, day] = 22.57
+                # Charging the battery
+                for hour in range(14, 24):
+                    if P_b_power[hour - 1, day] + P_charger < P_battery:
+                        P_b_power[hour, day] = P_b_power[hour - 1, day] + P_charger
+                    else:
+                        P_b_power[hour, day] = P_battery * SOC_upper
+                        P_b[hour, day] = 1
+
     return P_b, P_b_power
 
-def charging_required(availability):
-    charge_required = {}
+def soc_target(availability, full=1.0, arrival=0.2, empty=None):
+    soc_required = zeros((24, 365))
     for d in range(365):
-        for h in range(1, 24):  # Start from h=1 to compare h-1
-            if availability[h-1, d] == 1 and availability[h, d] == 0:
-                charge_required[h, d] = 1
+        for h in range(24):
+            if h == 0 and d == 0:  # Fix logical error
+                soc_required[h, d] == empty
+            elif h == 0:
+                prev = availability[23, d - 1]
+                now = availability[h, d]
+                if prev == 1 and now == 0:
+                    soc_required[h, d] = full
+                elif prev == 0 and now == 1:
+                    soc_required[h, d] = arrival
+                else:
+                    soc_required[h, d] == empty
             else:
-                charge_required[h, d] = 0
-        charge_required[0, d] = 0  # Can't compare h-1 for h=0
-    return charge_required
+                prev = availability[h - 1, d]
+                now = availability[h, d]
+                if prev == 1 and now == 0:
+                    soc_required[h, d] = full
+                elif prev == 0 and now == 1:
+                    soc_required[h, d] = arrival
+                else:
+                    soc_required[h, d] == empty
+    return soc_required
+
+def boat_load(availability, SOC_used):
+    boat_load = zeros((24, 365))
+    for d in range(365):
+        for h in range(24):
+            if h == 0 and d == 0:
+                boat_load[h, d] = 0  # Use assignment operator
+            elif h == 0:
+                if availability[h, d] == 1 and availability[23, d - 1] == 0:
+                    boat_load[h, d] = SOC_used  # Use assignment operator
+                else:
+                    boat_load[h, d] = 0  # Use assignment operator
+            elif availability[h, d] == 1 and availability[h - 1, d] == 0:
+                boat_load[h, d] = SOC_used  # Use assignment operator
+    return boat_load
+            
 
 # #region Calling on function
 P_b, P_b_power=usage_pattern(205, 100, 0.9, 60)
@@ -147,19 +174,23 @@ P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
 # plt.gca().invert_yaxis()
 # plt.show()
 #endregion
-
 #_____________________________________________________________________________________________
-# # Convert the NumPy array to a DataFrame
+# Convert the NumPy array to a DataFrame
 # P_b_power_df = pd.DataFrame(P_b_power)
 
 # # Save the frequency data to a CSV file for further analysis
 # P_b_power_df.to_csv('usage_pattern.csv', index=False)
 
-# # Convert the NumPy array to a DataFrame
-# P_b_df = pd.DataFrame(P_b)
+Boat_load = boat_load(P_b, 0.8)
 
-# # Save the frequency data to a CSV file for further analysis
-# P_b_df.to_csv('usage_pattern_01.csv', index=False)
+Boat_load_df = pd.DataFrame(Boat_load)
+Boat_load_df.to_csv('boat_load.csv', index=False)
+
+# Convert the NumPy array to a DataFrame
+P_b_df = pd.DataFrame(P_b)
+
+# Save the frequency data to a CSV file for further analysis
+P_b_df.to_csv('usage_pattern_01.csv', index=False)
 
 
 #________________Anteckningar_______________________________________________________________________________

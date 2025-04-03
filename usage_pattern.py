@@ -70,20 +70,20 @@ def soc_target(availability, full=1.0, arrival=0.2, empty=None):
                 prev = availability[23, d - 1]
                 now = availability[h, d]
                 if prev == 1 and now == 0:
-                    soc_required[h, d] = full
+                    soc_required[23, d-1] = full
                 elif prev == 0 and now == 1:
-                    soc_required[h, d] = arrival
+                    soc_required[23, d-1] = arrival
                 else:
-                    soc_required[h, d] == empty
+                    soc_required[23, d-1] == empty
             else:
                 prev = availability[h - 1, d]
                 now = availability[h, d]
                 if prev == 1 and now == 0:
-                    soc_required[h, d] = full
+                    soc_required[h-1, d] = full
                 elif prev == 0 and now == 1:
-                    soc_required[h, d] = arrival
+                    soc_required[h-1, d] = arrival
                 else:
-                    soc_required[h, d] == empty
+                    soc_required[h-1, d] == empty
     return soc_required
 
 def boat_load(availability, SOC_used):

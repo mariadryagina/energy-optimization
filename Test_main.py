@@ -1,12 +1,13 @@
 #______Importing libraries_______________________________________________________________________________________________
 #region
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import load_krossholmen_2023
 import solarpower
 import windpower
-import load_björkö
-import load_björkö_bessekroken
+# import load_björkö
+# import load_björkö_bessekroken
 import el_price
 import el_cost
 import Optimization
@@ -15,19 +16,19 @@ import usage_pattern
 #______Variable and parameters___________________________________________________________________________________________
 #region
 load_krossholmen = load_krossholmen_2023.load
-load_björkö_hamn=load_björkö.load
-load_bessekroken=load_björkö_bessekroken.load 
-load_winter_krossholmen = load_krossholmen_2023.load_winter
-load_summer_krossholmen = load_krossholmen_2023.load_summer
+# load_björkö_hamn=load_björkö.load
+# load_bessekroken=load_björkö_bessekroken.load 
+# load_winter_krossholmen = load_krossholmen_2023.load_winter
+# load_summer_krossholmen = load_krossholmen_2023.load_summer
 
 spot_price_2023=el_price.spotprice_2023
 
 #endregion
 #________Reference Case__________________________________________________________________________________________________
 #region Calculating the sum of the array for the yearly load 1X365 in Besskroken
-yearly_load_bessekroken=np.zeros((365))
-for i in range(365):
-    yearly_load_bessekroken[i] = sum(load_bessekroken[:, i])
+# yearly_load_bessekroken=np.zeros((365))
+# for i in range(365):
+#     yearly_load_bessekroken[i] = sum(load_bessekroken[:, i])
 
 #Calculating the sum of the array for the yearly load 1X365 in Krossholmen
 yearly_load_krossholmen=np.zeros((365))
@@ -35,9 +36,9 @@ for i in range(365):
     yearly_load_krossholmen[i] = sum(load_krossholmen[:, i])
 
 #Calculating the sum of the array for the yearly load 1X365 in Krossholmen
-yearly_load_björkö=np.zeros((365))
-for i in range(365):
-    yearly_load_björkö[i] = sum(load_björkö_hamn[:, i])
+# yearly_load_björkö=np.zeros((365))
+# for i in range(365):
+#     yearly_load_björkö[i] = sum(load_björkö_hamn[:, i])
 
 #Calculating the sum of the array for the yearly spot price in SE3 1X365
 yearly_spot_price_2023=np.zeros((365))
@@ -125,18 +126,18 @@ for i in range(365):
     P_wind3[i]=sum(P_wind2[:,i])
 
 #Calculating the self consumed electricity with matrix 24x365
-P_self = np.zeros((24, 365))
-#If the value is negative it will be changed to 0
-for i in range(24):
-    for j in range(365):    
-        if load_bessekroken[i, j] - P_s2[i, j] - P_wind2[i,j] < 0:
-            P_self[i, j] = 0
-        else:
-            P_self[i, j] = load_bessekroken[i, j] - P_s2[i, j] - P_wind2[i,j]
-#Calculating the sum of the array 1X365
-P_self1=np.zeros((365))
-for i in range(365):
-    P_self1[i] = sum(P_self[:, i])
+# P_self = np.zeros((24, 365))
+# #If the value is negative it will be changed to 0
+# for i in range(24):
+#     for j in range(365):    
+#         if load_bessekroken[i, j] - P_s2[i, j] - P_wind2[i,j] < 0:
+#             P_self[i, j] = 0
+#         else:
+#             P_self[i, j] = load_bessekroken[i, j] - P_s2[i, j] - P_wind2[i,j]
+# #Calculating the sum of the array 1X365
+# P_self1=np.zeros((365))
+# for i in range(365):
+#     P_self1[i] = sum(P_self[:, i])
 
 #Calculating the total 
 total_sum_sun=round(sum(P_s3)*10,1)/10
@@ -182,19 +183,44 @@ print(f"The yearly production of wind power is {total_sum_wind/1000}MWh")
 # plt.show()
 #endregion
 
+a = 163
+b = 205
+c = 226
+
+
 solar_data = solarpower.solar(100,0.20)                         # 24x365
 wind_data = windpower.wind(1)                                   # 24x365
 load_data = load_krossholmen                                    # 24x365
 spot_price_data = el_price.spotprice_2023  
 grid_limit = 1680 #Limitations of grid, abbonerad effekt [kW]                     # 24x365
-boat_availability1, boat_power1 = usage_pattern.usage_pattern(163, 100, 90, 60)  # 24x365
-boat_availability2, boat_power2 = usage_pattern.usage_pattern(205, 100, 90, 60)  # 24x365
-boat_availability3, boat_power3 = usage_pattern.usage_pattern(226, 100, 90, 60)  # 24x365
+boat_availability1, boat_power1 = usage_pattern.usage_pattern(a, 100, 90, 60)  # 24x365
+boat_availability2, boat_power2 = usage_pattern.usage_pattern(b, 100, 90, 60)  # 24x365
+boat_availability3, boat_power3 = usage_pattern.usage_pattern(c, 100, 90, 60)  # 24x365
+# boat_load1 = usage_pattern.boat_load(boat_availability1, 0.8)
+# boat_load2 = usage_pattern.boat_load(boat_availability2, 0.8)
+# boat_load3 = usage_pattern.boat_load(boat_availability3, 0.8)
+charge_required1 = usage_pattern.soc_target(boat_availability1)
+charge_required2 = usage_pattern.soc_target(boat_availability2)
+charge_required3 = usage_pattern.soc_target(boat_availability3)
+
 number_boats = 3
+bess_capacity = 500 #kWh
+bess_charge_rate = 350 #kW
+bess_discharge_rate = 350 #kW
+bess_battery_cost = 500000 #SEK
+bess_cycling = 10000 #numbers of cycles
+boat_capacity = 100 
+boat_charge_rate = 60 #kW
+boat_discharge_rate = 60
+boat_battery_cost = 100000 #SEK
+boat_cycling = 5000 #numbers of cycles
 user = 1 #User: Maja = 1, Maria = 2
 energy_tax = 0.439 #SEK/kWh
 transmission_fee = 0.113 #SEK/kWh 
 peak_cost = 61.55 #SEK/kWh
+
+bess_cycling_cost = bess_battery_cost/(bess_cycling*bess_capacity)
+boat_cycling_cost = boat_battery_cost/(boat_cycling*boat_capacity)
 
 number_boats1 = 0
 number_boats2 = 0
@@ -208,7 +234,7 @@ for b in range(number_boats):
     else:
         number_boats3 += 1
 
-model = Optimization.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, number_boats, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, user, energy_tax, transmission_fee, peak_cost)
+model = Optimization.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, bess_cycling_cost, boat_capacity, boat_charge_rate, boat_discharge_rate, boat_cycling_cost, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, charge_required1, charge_required2, charge_required3, user, energy_tax, transmission_fee, peak_cost)
 
 old_grid_usage = np.zeros((24, 365))  # Initial load data
 new_grid_usage = np.zeros((24, 365))  # Optimized grid usage data
@@ -294,6 +320,10 @@ boat_charge1_values, boat_soc1_values = hourly_values(boat_soc1, boat_soc1_value
 boat_charge2_values, boat_soc2_values = hourly_values(boat_soc2, boat_soc2_values, boat_charge2, boat_charge2_values, boat_discharge2, number_boats2)
 boat_charge3_values, boat_soc3_values = hourly_values(boat_soc3, boat_soc3_values, boat_charge3, boat_charge3_values, boat_discharge3, number_boats3)
 
+boat_soc3_pd = pd.DataFrame(boat_soc3)
+boat_soc3_pd.to_csv('Boat_SOC_24x365.csv', index=False)
+boat_soc3_values_pd = pd.DataFrame(boat_soc3_values)
+boat_soc3_values_pd.to_csv('Boat_SOC_8760.csv', index=False)
 
 for d in range(365):
     for h in range(24):
@@ -344,41 +374,59 @@ plt.show()
 
 #Plot new grid usage
 plt.figure
-plt.subplot(2, 3, 1)
+plt.subplot(3, 3, 1)
 plt.plot((boat_soc1_values))
 plt.legend(['SOC'])
 plt.title('Boattype 1')
 plt.xlabel('Hours')
 plt.ylabel('kWh')
 
-plt.subplot(2, 3, 2)
+plt.subplot(3, 3, 2)
 plt.plot((boat_soc2_values))
 plt.legend(['SOC'])
 plt.title('Boattype 2')
 plt.xlabel('Hours')
 plt.ylabel('kWh')
 
-plt.subplot(2, 3, 3)
+plt.subplot(3, 3, 3)
 plt.plot((boat_soc3_values))
 plt.legend(['SOC'])
 plt.title('Boattype 3')
 plt.xlabel('Hours')
 plt.ylabel('kWh')
 
-plt.subplot(2, 3, 4)
+plt.subplot(3, 3, 4)
 plt.plot((boat_charge1_values))
 plt.legend(['Charge/Discharge'])
 plt.xlabel('Hours')
 plt.ylabel('kWh')
 
-plt.subplot(2, 3, 5)
+plt.subplot(3, 3, 5)
 plt.plot((boat_charge2_values))
 plt.legend(['Charge/Discharge'])
 plt.xlabel('Hours')
 plt.ylabel('kWh')
 
-plt.subplot(2, 3, 6)
+plt.subplot(3, 3, 6)
 plt.plot((boat_charge3_values))
+plt.legend(['Charge/Discharge'])
+plt.xlabel('Hours')
+plt.ylabel('kWh')
+
+plt.subplot(3, 3, 7)
+plt.plot((boat_soc1_values[a*24:a*24+23]))
+plt.legend(['Charge/Discharge'])
+plt.xlabel('Hours')
+plt.ylabel('kWh')
+
+plt.subplot(3, 3, 8)
+plt.plot((boat_soc2_values[b*24:b*24+23]))
+plt.legend(['Charge/Discharge'])
+plt.xlabel('Hours')
+plt.ylabel('kWh')
+
+plt.subplot(3, 3, 9)
+plt.plot((boat_soc3_values[c*24:c*24+23]))
 plt.legend(['Charge/Discharge'])
 plt.xlabel('Hours')
 plt.ylabel('kWh')

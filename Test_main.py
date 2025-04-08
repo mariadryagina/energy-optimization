@@ -12,6 +12,7 @@ import el_price
 import el_cost
 import Optimization
 import usage_pattern
+from Frequency import frequency_price
 #endregion
 #______Variable and parameters___________________________________________________________________________________________
 #region
@@ -470,3 +471,38 @@ plt.ylabel('kWh')
 
 plt.tight_layout()
 plt.show()
+
+#______Case 2__Frekvens FCR-D_________________________________________________________________________________________________________
+#region
+
+total_soc=bess_soc_values + boat_soc1_values + boat_soc2_values + boat_soc3_values
+total_boat=boat_soc1_values + boat_soc2_values + boat_soc3_values
+TOTAL_CAPACITY = bess_capacity + boat_capacity * number_boats
+P_bud = 0.5 * TOTAL_CAPACITY - 0.1 * TOTAL_CAPACITY # 50% of the total capacity
+P_bud_summer = 0.5 * bess_capacity - 0.1 * bess_capacity #
+
+total_soc1 = np.zeros(8760) # Battery state of charge data (total charge)
+total_fcr_revenue=np.zeros(8760) 
+hours=np.zeros(8760)
+
+
+for i in range(len(total_soc1)):
+    if  2880 <= i <= 6551:
+        total_soc1[i] = bess_soc_values[i]
+    else:
+        total_soc1[i] = bess_soc_values[i] + boat_soc1_values[i] + boat_soc2_values[i] + boat_soc3_values[i]
+    
+FCR_D_up_price_data=(frequency_price.FCR_D_up_1)/1000
+
+# Iterate over the indices and values of total_soc
+for i in range(len(total_soc)):
+    if total_soc[i] >= 0.5 * TOTAL_CAPACITY and total_soc[i + 1] >= 0.5 * TOTAL_CAPACITY:
+        hours[i] = i  # Store the index in hours
+        total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud
+    elif 2880 <= i <= 6551 and total_soc[i] >= 0.5 * bess_capacity and total_soc[i + 1] >= 0.5 * bess_capacity:
+        hours[i] = i
+        total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud_summer
+
+print(f"FCR-D up revenue: {total_fcr_revenue.sum()} SEK")
+
+#endregion

@@ -119,10 +119,7 @@ def boat_market_availability():
     return boat_market_availability
 # #region Calling on function
 
-boat_market_availability = boat_market_availability()
-print(boat_market_availability)
 P_b, P_b_power=usage_pattern(205, 100, 0.9, 60)
-
 
 a=163
 # Flatten the P_b_power array to 1x8760

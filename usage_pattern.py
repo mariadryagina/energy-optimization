@@ -86,23 +86,41 @@ def soc_target(availability, full=1.0, arrival=0.2, empty=None):
                     soc_required[h-1, d] == empty
     return soc_required
 
-def boat_load(availability, SOC_used):
+def boat_load(availability, SOC_leaving, SOC_arriving):
     boat_load = zeros((24, 365))
     for d in range(365):
         for h in range(24):
             if h == 0 and d == 0:
                 boat_load[h, d] = 0  # Use assignment operator
             elif h == 0:
-                if availability[h, d] == 1 and availability[23, d - 1] == 0:
-                    boat_load[h, d] = SOC_used  # Use assignment operator
+                if availability[23, d-1] == 1 and availability[h, d] == 0:
+                    boat_load[h, d] = SOC_leaving  # Use assignment operator
+                elif availability[23, d-1] == 0 and availability[h, d] == 1:
+                    boat_load[h, d] = -SOC_arriving
                 else:
-                    boat_load[h, d] = 0  # Use assignment operator
-            elif availability[h, d] == 1 and availability[h - 1, d] == 0:
-                boat_load[h, d] = SOC_used  # Use assignment operator
+                    boat_load[h, d] = 0
+            else:
+                if availability[h-1, d] == 1 and availability[h, d] == 0:
+                    boat_load[h, d] = SOC_leaving  # Use assignment operator
+                elif availability[h-1, d] == 0 and availability[h, d] == 1:
+                    boat_load[h, d] = -SOC_arriving
+                else:
+                    boat_load[h, d] = 0
     return boat_load
             
 
+def boat_market_availability():
+    boat_market_availability = zeros((24, 365))
+    for d in range(365):
+        for h in range(24):
+            boat_market_availability[h, 120:273] = 0  # Summer season
+            boat_market_availability[h, 0:120] = 1  # Winter season
+            boat_market_availability[h, 273:365] = 1  # Autumn season
+    return boat_market_availability
 # #region Calling on function
+
+boat_market_availability = boat_market_availability()
+print(boat_market_availability)
 P_b, P_b_power=usage_pattern(205, 100, 0.9, 60)
 
 
@@ -112,6 +130,8 @@ P_b_power_flat = P_b_power.flatten(order='F')
 P_b_flat=P_b.flatten(order='F')
 P_b_power_day=P_b_power_flat[3024:3049]
 P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
+
+charge_required1 = soc_target(P_b)
 
 #endregion
 
@@ -175,22 +195,25 @@ P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
 # plt.show()
 #endregion
 #_____________________________________________________________________________________________
-# Convert the NumPy array to a DataFrame
+# # Convert the NumPy array to a DataFrame
 # P_b_power_df = pd.DataFrame(P_b_power)
 
 # # Save the frequency data to a CSV file for further analysis
 # P_b_power_df.to_csv('usage_pattern.csv', index=False)
 
-Boat_load = boat_load(P_b, 0.8)
+# Boat_load = boat_load(P_b, 0.8)
 
-Boat_load_df = pd.DataFrame(Boat_load)
-Boat_load_df.to_csv('boat_load.csv', index=False)
+# Boat_load_df = pd.DataFrame(Boat_load)
+# Boat_load_df.to_csv('boat_load.csv', index=False)
 
-# Convert the NumPy array to a DataFrame
-P_b_df = pd.DataFrame(P_b)
+# Charge_req_df = pd.DataFrame(charge_required1)
+# Charge_req_df.to_csv('charge_requirements.csv', index=False)
 
-# Save the frequency data to a CSV file for further analysis
-P_b_df.to_csv('usage_pattern_01.csv', index=False)
+# # Convert the NumPy array to a DataFrame
+# P_b_df = pd.DataFrame(P_b)
+
+# # Save the frequency data to a CSV file for further analysis
+# P_b_df.to_csv('usage_pattern_01.csv', index=False)
 
 
 #________________Anteckningar_______________________________________________________________________________

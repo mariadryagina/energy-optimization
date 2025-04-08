@@ -193,16 +193,14 @@ wind_data = windpower.wind(1)                                   # 24x365
 load_data = load_krossholmen                                    # 24x365
 spot_price_data = el_price.spotprice_2023  
 grid_limit = 1680 #Limitations of grid, abbonerad effekt [kW]                     # 24x365
+
 boat_availability1, boat_power1 = usage_pattern.usage_pattern(a, 100, 90, 60)  # 24x365
 boat_availability2, boat_power2 = usage_pattern.usage_pattern(b, 100, 90, 60)  # 24x365
 boat_availability3, boat_power3 = usage_pattern.usage_pattern(c, 100, 90, 60)  # 24x365
-#boat_market_availability1 = usage_pattern.boat_market_availability() # 24x365
+
 boat_load1 = usage_pattern.boat_load(boat_availability1, 1, 0.2)
 boat_load2 = usage_pattern.boat_load(boat_availability2, 1, 0.2)
 boat_load3 = usage_pattern.boat_load(boat_availability3, 1, 0.2)
-charge_required1 = usage_pattern.soc_target(boat_availability1)
-charge_required2 = usage_pattern.soc_target(boat_availability2)
-charge_required3 = usage_pattern.soc_target(boat_availability3)
 
 number_boats = 3 #Number of boats in the marina
 bess_capacity = 500 #kWh

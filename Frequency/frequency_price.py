@@ -28,10 +28,10 @@ FCR_N_ned=np.zeros((8760,1))
 
 for i in range(365):
     for j in range(24):
-         FCR_N[j,i]=(df.iloc[i*24+j,5])*11.03
+         FCR_N[j,i]=(df.iloc[i*24+j,1])*11.03
 
 for i in range(8760):
-    FCR_N_1[i]=(df.iloc[i,5])*11.03
+    FCR_N_1[i]=(df.iloc[i,1])*11.03
 
 for i in range(8760):
     FCR_N_upp[i]=(df_1.iloc[i,2])*11.03
@@ -46,10 +46,10 @@ FCR_D_up_1=np.zeros((8760,1))
 
 for i in range(365):
     for j in range(24):
-         FCR_D_up[j,i]=(df.iloc[i*24+j,12])*11.03
+         FCR_D_up[j,i]=(df.iloc[i*24+j,8])*11.03
 
 for i in range(8760):
-    FCR_D_up_1[i]=(df.iloc[i,12])*11.03
+    FCR_D_up_1[i]=(df.iloc[i,8])*11.03
 
 
 #Storing FCR-D down prices in a matrix SEK/MWh
@@ -58,10 +58,10 @@ FCR_D_down_1=np.zeros((8760,1))
 
 for i in range(365):
     for j in range(24):
-         FCR_D_down[j,i]=(df.iloc[i*24+j,19])*11.03
+         FCR_D_down[j,i]=(df.iloc[i*24+j,15])*11.03
 
 for i in range(8760):
-    FCR_D_down_1[i]=(df.iloc[i,19])*11.03
+    FCR_D_down_1[i]=(df.iloc[i,15])*11.03
 
 #endregion
 #_______FCR-N_______________________________________________________________________________

@@ -12,6 +12,7 @@ import el_price
 import el_cost
 import Optimization_Maria
 import usage_pattern
+from Effekthandel_väst import effekthandel_väst
 from Frequency import frequency_price
 #endregion
 #______Variable and parameters___________________________________________________________________________________________
@@ -198,12 +199,17 @@ grid_limit = 1680 #Limitations of grid, abbonerad effekt [kW]                   
 boat_availability1, boat_power1 = usage_pattern.usage_pattern(a, 100, 90, 60)  # 24x365
 boat_availability2, boat_power2 = usage_pattern.usage_pattern(b, 100, 90, 60)  # 24x365
 boat_availability3, boat_power3 = usage_pattern.usage_pattern(c, 100, 90, 60)  # 24x365
-# boat_load1 = usage_pattern.boat_load(boat_availability1, 0.8)
-# boat_load2 = usage_pattern.boat_load(boat_availability2, 0.8)
-# boat_load3 = usage_pattern.boat_load(boat_availability3, 0.8)
-charge_required1 = usage_pattern.soc_target(boat_availability1)
-charge_required2 = usage_pattern.soc_target(boat_availability2)
-charge_required3 = usage_pattern.soc_target(boat_availability3)
+
+boat_load1 = usage_pattern.boat_load(boat_availability1, 1, 0.2)
+boat_load2 = usage_pattern.boat_load(boat_availability2, 1, 0.2)
+boat_load3 = usage_pattern.boat_load(boat_availability3, 1, 0.2)
+
+bids_effekthandelväst_data = effekthandel_väst.I_bid
+activated_bids_effekthandelväst_data = effekthandel_väst.I_activated
+
+# charge_required1 = usage_pattern.soc_target(boat_availability1)
+# charge_required2 = usage_pattern.soc_target(boat_availability2)
+# charge_required3 = usage_pattern.soc_target(boat_availability3)
 
 number_boats = 3
 bess_capacity = 500 #kWh
@@ -236,7 +242,7 @@ for b in range(number_boats):
     else:
         number_boats3 += 1
 
-model = Optimization_Maria.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, bess_cycling_cost, boat_capacity, boat_charge_rate, boat_discharge_rate, boat_cycling_cost, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, charge_required1, charge_required2, charge_required3, user, energy_tax, transmission_fee, peak_cost)
+model = Optimization_Maria.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data)
 
 old_grid_usage = np.zeros((24, 365))  # Initial load data
 new_grid_usage = np.zeros((24, 365))  # Optimized grid usage data
@@ -255,7 +261,7 @@ boat_soc1 = np.zeros((24, 365)) # Boat state of charge data (total charge)
 boat_soc2 = np.zeros((24, 365)) # Boat state of charge data (total charge)
 boat_soc3 = np.zeros((24, 365)) # Boat state of charge data (total charge)
 spot_price = np.zeros((24, 365))  # Spot price data
-P_bud = np.zeros((24, 365))  # Bid data
+
 
 
 # Now you can access the model and its results
@@ -430,19 +436,19 @@ plt.xlabel('Hours')
 plt.ylabel('kWh')
 
 plt.subplot(3, 3, 7)
-plt.plot((boat_soc1_values[a*24:a*24+23]))
+plt.plot((boat_soc1_values[3912:4248]))
 plt.legend(['Charge/Discharge'])
 plt.xlabel('Hours')
 plt.ylabel('kWh')
 
 plt.subplot(3, 3, 8)
-plt.plot((boat_soc2_values[b*24:b*24+23]))
+plt.plot((boat_soc2_values[4920:5256]))
 plt.legend(['Charge/Discharge'])
 plt.xlabel('Hours')
 plt.ylabel('kWh')
 
 plt.subplot(3, 3, 9)
-plt.plot((boat_soc3_values[c*24:c*24+23]))
+plt.plot((boat_soc3_values[5424:5760]))
 plt.legend(['Charge/Discharge'])
 plt.xlabel('Hours')
 plt.ylabel('kWh')
@@ -452,16 +458,18 @@ plt.show()
 #endregion
 #______Case 2__Frekvens FCR-D_________________________________________________________________________________________________________
 #region
-
-total_soc=bess_soc_values + boat_soc1_values + boat_soc2_values + boat_soc3_values
+#FCR-D up revenue
+#total_soc=bess_soc_values + boat_soc1_values + boat_soc2_values + boat_soc3_values
 total_boat=boat_soc1_values + boat_soc2_values + boat_soc3_values
 TOTAL_CAPACITY = bess_capacity + boat_capacity * number_boats
 P_bud = 0.5 * TOTAL_CAPACITY - 0.1 * TOTAL_CAPACITY # 50% of the total capacity
 P_bud_summer = 0.5 * bess_capacity - 0.1 * bess_capacity #
 
 total_soc1 = np.zeros(8760) # Battery state of charge data (total charge)
+bid_soc = np.zeros(8760) # Battery state of charge data (total charge)
 total_fcr_revenue=np.zeros(8760) 
 hours=np.zeros(8760)
+count=0
 
 
 for i in range(len(total_soc1)):
@@ -473,33 +481,65 @@ for i in range(len(total_soc1)):
 FCR_D_up_price_data=(frequency_price.FCR_D_up_1)/1000
 
 # Iterate over the indices and values of total_soc
-for i in range(len(total_soc)):
-    if total_soc[i] >= 0.5 * TOTAL_CAPACITY and total_soc[i + 1] >= 0.5 * TOTAL_CAPACITY:
+for i in range(len(total_soc1)):
+    if total_soc1[i] >= 0.5 * TOTAL_CAPACITY and total_soc1[i + 1] >= 0.5 * TOTAL_CAPACITY:
         hours[i] = i  # Store the index in hours
+        count += 1
         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud
-    elif 2880 <= i <= 6551 and total_soc[i] >= 0.5 * bess_capacity and total_soc[i + 1] >= 0.5 * bess_capacity:
+        bid_soc[i] = total_soc1[i]
+    elif 2880 <= i <= 6551 and total_soc1[i] >= 0.5 * bess_capacity and total_soc1[i + 1] >= 0.5 * bess_capacity:
         hours[i] = i
+        count += 1
         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud_summer
+        bid_soc[i] = total_soc1[i]
 
 print(f"FCR-D up revenue: {total_fcr_revenue.sum()} SEK")
+print(f"FCR-D up participant: {count} h")
 
-#Creating csv files
-hours_pd = pd.DataFrame(hours)
-hours_pd.to_csv('Hours_soc.csv', index=False)
+# # FCR-D down revenue
+# #Iterate over the indices and values of total_soc
+# for i in range(len(total_soc1)):
+#     if total_soc1[i] <= 0.5 * TOTAL_CAPACITY and total_soc1[i + 1] >= 0.5 * TOTAL_CAPACITY:
+#         hours[i] = i  # Store the index in hours
+#         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud
+#         bid_soc[i] = total_soc1[i]
+#     elif 2880 <= i <= 6551 and total_soc1[i] <= 0.5 * bess_capacity and total_soc1[i + 1] >= 0.5 * bess_capacity:
+#         hours[i] = i
+#         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud_summer
+#         bid_soc[i] = total_soc1[i]
 
-total_soc_pd = pd.DataFrame(total_soc)
-total_soc_pd.to_csv('total_soc.csv', index=False)
+# print(f"FCR-D up revenue: {total_fcr_revenue.sum()} SEK")
+# print(f"FCR-D up participant: {hours.sum()} h")
 
-total_soc1_pd = pd.DataFrame(total_soc1)
-total_soc1_pd.to_csv('total_soc1.csv', index=False)
+# Creating csv files
+# hours_pd = pd.DataFrame(hours)
+# hours_pd.to_csv('Hours_soc.csv', index=False)
 
-total_boat_pd = pd.DataFrame(total_boat)
-total_boat_pd.to_csv('total_boat_soc.csv', index=False)
+bess_soc_pd = pd.DataFrame(bess_soc)
+bess_soc_pd.to_csv('bess_soc.csv', index=False)
 
-FCR_D_up_price_data_pd = pd.DataFrame(FCR_D_up_price_data)
-FCR_D_up_price_data_pd.to_csv('FCR_D_up_price_data.csv', index=False)
+boat_soc1_pd = pd.DataFrame(boat_soc1)
+boat_soc1_pd.to_csv('boat_soc1.csv', index=False)
 
-total_fcr_revenue_pd = pd.DataFrame(total_fcr_revenue)
-total_fcr_revenue_pd.to_csv('total_fcr_revenue.csv', index=False)
+boat_soc2_pd = pd.DataFrame(boat_soc2)
+boat_soc2_pd.to_csv('boat_soc2.csv', index=False)
+
+boat_soc3_pd = pd.DataFrame(boat_soc3)
+boat_soc3_pd.to_csv('boat_soc3.csv', index=False)
+
+# total_soc1_pd = pd.DataFrame(total_soc1)
+# total_soc1_pd.to_csv('total_soc1.csv', index=False)
+
+# bid_soc_pd = pd.DataFrame(bid_soc)
+# bid_soc_pd.to_csv('bid_soc.csv', index=False)
+
+# total_boat_pd = pd.DataFrame(total_boat)
+# total_boat_pd.to_csv('total_boat_soc.csv', index=False)
+
+# FCR_D_up_price_data_pd = pd.DataFrame(FCR_D_up_price_data)
+# FCR_D_up_price_data_pd.to_csv('FCR_D_up_price_data.csv', index=False)
+
+# total_fcr_revenue_pd = pd.DataFrame(total_fcr_revenue)
+# total_fcr_revenue_pd.to_csv('total_fcr_revenue.csv', index=False)
 
 #endregion

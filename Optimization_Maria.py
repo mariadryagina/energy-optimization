@@ -6,7 +6,7 @@ from pyomo.opt import SolverStatus, TerminationCondition
 import matplotlib as plt
 
 # Define the optimization model
-def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost):
+def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data):
     model = ConcreteModel()
 
     # ---Define sets---
@@ -31,6 +31,9 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     model.boat_load1 = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: (boat_load1[h, d] * boat_capacity * number_boats1))
     model.boat_load2 = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: (boat_load2[h, d] * boat_capacity * number_boats2))
     model.boat_load3 = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: (boat_load3[h, d] * boat_capacity * number_boats3))
+
+    model.bids_effekthandelväst = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: bids_effekthandelväst_data[h, d])
+    model.activated_bids_effekthandelväst = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: activated_bids_effekthandelväst_data[h, d])
 
     # ---Constants---
     bess_initial_soc = bess_capacity/2
@@ -188,12 +191,12 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
             if h == 0 and d == 0:
                 return Constraint.Skip
             elif h == 0:
-                if USE[h, d] == 1 and USE[23, d-1] == 0:
+                if USE[h, d] == 0 and USE[23, d-1] == 1:
                     return SOC[23, d-1] >= CAP
                 else:
                     return Constraint.Skip
             else:
-                if USE[h, d] == 1 and USE[h-1, d] == 0:
+                if USE[h, d] == 0 and USE[h-1, d] == 1:
                     return SOC[h-1, d] >= CAP
                 else:
                     return Constraint.Skip
@@ -211,6 +214,31 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
         
 
     # Sell electricity on Effekthandel Väst
+     
+    def SOC_before_effekthandelväst(USE, SOC, CAP):
+        def rule(model, h, d):
+            if h == 23 and d == 364:
+                return Constraint.Skip
+            elif h == 23:
+                if USE[h, d] == 1:
+                    return  SOC[h, d] >= 0.5 * CAP 
+                elif USE[h,d] == 0 and USE[0,d+1] == 1:
+                    return SOC[h,d] >= 0.5 * CAP
+                else:
+                    return Constraint.Skip
+            else:
+                if USE[h, d] == 1:
+                    return  SOC[h, d] >= 0.5 * CAP 
+                elif USE[h,d] == 0 and USE[h+1,d] == 1:
+                    return SOC[h,d] >= 0.5 * CAP
+                else:
+                    return Constraint.Skip
+        return rule
+    model.BESS_SOC_before_effetkhandelväst_constraint = Constraint(model.HOURS, model.DAYS, rule=SOC_before_effekthandelväst(model.bids_effekthandelväst, model.bess_soc, bess_capacity))
+    model.boat1_SOC_before_effetkhandelväst_constraint = Constraint(model.HOURS, model.DAYS, rule=SOC_before_effekthandelväst(model.bids_effekthandelväst, model.boat_soc1, boat_capacity*number_boats1))
+    model.boat2_before_effetkhandelväst_constraint = Constraint(model.HOURS, model.DAYS, rule=SOC_before_effekthandelväst(model.bids_effekthandelväst, model.boat_soc2, boat_capacity*number_boats2))
+    model.boat3_before_effetkhandelväst_constraint = Constraint(model.HOURS, model.DAYS, rule=SOC_before_effekthandelväst(model.bids_effekthandelväst, model.boat_soc3, boat_capacity*number_boats3))
+
 
     # Solve
     if user == 1:

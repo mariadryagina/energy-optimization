@@ -128,9 +128,9 @@ print(f"Total revenue generated: {total_revenue}")
 #____CSV files____________________________________________________________________________________
 #region
 
-# # Optionally, save the activation matrix to a CSV file
-# I_activated_df = pd.DataFrame(I_activated)
-# I_activated_df.to_csv('I_activated.csv', index=False)
+# Optionally, save the activation matrix to a CSV file
+I_activated_df = pd.DataFrame(I_activated)
+I_activated_df.to_csv('I_activated.csv', index=False)
 
 
 # Convert the NumPy array to a DataFrame

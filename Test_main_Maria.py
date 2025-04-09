@@ -200,10 +200,6 @@ boat_availability1, boat_power1 = usage_pattern.usage_pattern(a, 100, 90, 60)  #
 boat_availability2, boat_power2 = usage_pattern.usage_pattern(b, 100, 90, 60)  # 24x365
 boat_availability3, boat_power3 = usage_pattern.usage_pattern(c, 100, 90, 60)  # 24x365
 
-boat_load1 = usage_pattern.boat_load(boat_availability1, 1, 0.2)
-boat_load2 = usage_pattern.boat_load(boat_availability2, 1, 0.2)
-boat_load3 = usage_pattern.boat_load(boat_availability3, 1, 0.2)
-
 bids_effekthandelväst_data = effekthandel_väst.I_bid
 activated_bids_effekthandelväst_data = effekthandel_väst.I_activated
 
@@ -241,6 +237,10 @@ for b in range(number_boats):
         number_boats2 += 1
     else:
         number_boats3 += 1
+
+boat_load1 = usage_pattern.boat_load(boat_availability1, boat_capacity*number_boats1, 0.2*boat_capacity*number_boats1)
+boat_load2 = usage_pattern.boat_load(boat_availability2, boat_capacity*number_boats2, 0.2*boat_capacity*number_boats2)
+boat_load3 = usage_pattern.boat_load(boat_availability3, boat_capacity*number_boats3, 0.2*boat_capacity*number_boats3)
 
 model = Optimization_Maria.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data)
 
@@ -520,6 +520,12 @@ bess_soc_pd.to_csv('bess_soc.csv', index=False)
 
 boat_soc1_pd = pd.DataFrame(boat_soc1)
 boat_soc1_pd.to_csv('boat_soc1.csv', index=False)
+
+boat_discharge1_pd = pd.DataFrame(boat_discharge1)
+boat_discharge1_pd.to_csv('boat_discharge1.csv', index=False)
+
+boat_charge1_pd = pd.DataFrame(boat_charge1)
+boat_charge1_pd.to_csv('boat_charge1.csv', index=False)
 
 boat_soc2_pd = pd.DataFrame(boat_soc2)
 boat_soc2_pd.to_csv('boat_soc2.csv', index=False)

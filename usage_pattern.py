@@ -94,18 +94,18 @@ def boat_load(availability, SOC_leaving, SOC_arriving):
                 boat_load[h, d] = 0  # Use assignment operator
             elif h == 0:
                 if availability[23, d-1] == 1 and availability[h, d] == 0:
-                    boat_load[h, d] = SOC_leaving  # Use assignment operator
+                    boat_load[23, d-1] = SOC_leaving  # Use assignment operator
                 elif availability[23, d-1] == 0 and availability[h, d] == 1:
-                    boat_load[h, d] = -SOC_arriving
+                    boat_load[23, d-1] = -SOC_arriving
                 else:
-                    boat_load[h, d] = 0
+                    boat_load[23, d-1] = 0
             else:
                 if availability[h-1, d] == 1 and availability[h, d] == 0:
-                    boat_load[h, d] = SOC_leaving  # Use assignment operator
+                    boat_load[h-1, d] = SOC_leaving  # Use assignment operator
                 elif availability[h-1, d] == 0 and availability[h, d] == 1:
-                    boat_load[h, d] = -SOC_arriving
+                    boat_load[h-1, d] = -SOC_arriving
                 else:
-                    boat_load[h, d] = 0
+                    boat_load[h-1, d] = 0
     return boat_load
             
 
@@ -119,10 +119,7 @@ def boat_market_availability():
     return boat_market_availability
 # #region Calling on function
 
-boat_market_availability = boat_market_availability()
-print(boat_market_availability)
 P_b, P_b_power=usage_pattern(205, 100, 0.9, 60)
-
 
 a=163
 # Flatten the P_b_power array to 1x8760
@@ -209,11 +206,11 @@ charge_required1 = soc_target(P_b)
 # Charge_req_df = pd.DataFrame(charge_required1)
 # Charge_req_df.to_csv('charge_requirements.csv', index=False)
 
-# # Convert the NumPy array to a DataFrame
-# P_b_df = pd.DataFrame(P_b)
+# Convert the NumPy array to a DataFrame
+P_b_df = pd.DataFrame(P_b)
 
-# # Save the frequency data to a CSV file for further analysis
-# P_b_df.to_csv('usage_pattern_01.csv', index=False)
+# Save the frequency data to a CSV file for further analysis
+P_b_df.to_csv('usage_pattern_01.csv', index=False)
 
 
 #________________Anteckningar_______________________________________________________________________________

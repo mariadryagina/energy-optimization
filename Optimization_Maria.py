@@ -6,7 +6,7 @@ from pyomo.opt import SolverStatus, TerminationCondition
 import matplotlib as plt
 
 # Define the optimization model
-def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data):
+def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, market_availability, bid_bess_data, bid_boat1_data, bid_boat2_data, bid_boat3_data):
     model = ConcreteModel()
 
     # ---Define sets---
@@ -34,6 +34,12 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
 
     model.bids_effekthandelväst = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: bids_effekthandelväst_data[h, d])
     model.activated_bids_effekthandelväst = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: activated_bids_effekthandelväst_data[h, d])
+    model.market_availability = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: market_availability[h, d])
+    
+    model.bid_bess = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: bid_bess_data[h, d])  # 20% of the battery capacity
+    model.bid_boat1 = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: bid_boat1_data[h, d])  # 20% of the battery capacity
+    model.bid_boat2 = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: bid_boat2_data[h, d])  # 20% of the battery capacity
+    model.bid_boat3 = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: bid_boat3_data[h, d])  # 20% of the battery capacity
 
     # ---Constants---
     bess_initial_soc = bess_capacity/2
@@ -154,9 +160,9 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
                 elif USE[h, d] == 1 and USE[h-1, d] == 0:
                     return SOC[h, d] == SOC[h-1, d] - BLOAD[h-1, d]
                 elif ACT[h, d] == 1 and ACT[h-1, d] == 1:
-                    return SOC[h, d] == SOC[h-1, d] - ACT[h-1, d]*BUD
-                # elif ACT[h, d] == 0 and ACT[h-1, d] == 1:
-                #     return SOC[h, d] == SOC[h-1, d] - BUD
+                    return SOC[h, d] == SOC[h-1, d] - BUD[h-1, d]
+                elif ACT[h, d] == 0 and ACT[h-1, d] == 1:
+                    return SOC[h, d] == SOC[h-1, d] - BUD[h-1, d]
                 else:
                     return SOC[h, d] == SOC[h-1, d] + CHR[h-1, d] - DIS[h-1, d]
 
@@ -196,10 +202,10 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
             #     else:
             #         return SOC[h, d] == SOC[h-1, d] + CHR[h-1, d] - DIS[h-1, d]
         return rule  
-    model.bess_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(bess_availability, model.bess_soc, model.bess_charge, model.bess_discharge, bess_initial_soc, zeros, model.activated_bids_effekthandelväst, 0.2*bess_capacity))
-    model.boat1_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability1, model.boat_soc1, model.boat_charge1, model.boat_discharge1, boat_initial_soc * number_boats1, boat_load1, model.activated_bids_effekthandelväst, 0.2*boat_capacity*number_boats1))
-    model.boat2_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability2, model.boat_soc2, model.boat_charge2, model.boat_discharge2, boat_initial_soc * number_boats2, boat_load2, model.activated_bids_effekthandelväst, 0.2*boat_capacity*number_boats2))
-    model.boat3_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability3, model.boat_soc3, model.boat_charge3, model.boat_discharge3, boat_initial_soc * number_boats3, boat_load3, model.activated_bids_effekthandelväst, 0.2*boat_capacity*number_boats3))
+    model.bess_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(bess_availability, model.bess_soc, model.bess_charge, model.bess_discharge, bess_initial_soc, zeros, model.activated_bids_effekthandelväst, model.bid_bess))
+    model.boat1_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability1, model.boat_soc1, model.boat_charge1, model.boat_discharge1, boat_initial_soc * number_boats1, boat_load1, model.activated_bids_effekthandelväst, model.bid_boat1))
+    model.boat2_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability2, model.boat_soc2, model.boat_charge2, model.boat_discharge2, boat_initial_soc * number_boats2, boat_load2, model.activated_bids_effekthandelväst, model.bid_boat2))
+    model.boat3_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability3, model.boat_soc3, model.boat_charge3, model.boat_discharge3, boat_initial_soc * number_boats3, boat_load3, model.activated_bids_effekthandelväst, model.bid_boat3))
 
     # Boat available to charge
     def boat_charge_availability(CHR, RATE, USE):
@@ -208,7 +214,7 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
                 return CHR[h, d] <= RATE * USE[h, d]
             elif h == 0:
                 if USE[h, d] == 1 and USE[23, d-1] == 0:
-                    return CHR[23, d] <= RATE
+                    return CHR[23, d-1] <= RATE
                 else:
                     return CHR[h, d] <= RATE * USE[h, d]
             else:
@@ -220,6 +226,28 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     model.boat1_charge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=boat_charge_availability(model.boat_charge1, boat_charge_rate*number_boats1, model.boat_usage1))
     model.boat2_charge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=boat_charge_availability(model.boat_charge2, boat_charge_rate*number_boats2, model.boat_usage2))
     model.boat3_charge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=boat_charge_availability(model.boat_charge3, boat_charge_rate*number_boats3, model.boat_usage3))
+
+    # Battery available to charge 
+    def battery_charge_availability(CHR, RATE, AVAIL):
+        def rule(model, h, d):
+            if h == 23 and d == 364:
+                return CHR[h, d] <= RATE * AVAIL[h, d]
+            elif h == 23:
+                if AVAIL[h, d] == 1 and AVAIL[0, d+1] == 0:
+                    return CHR[h, d] <= RATE * AVAIL[0, d+1]
+                else:
+                    return CHR[h, d] <= RATE * AVAIL[h, d]
+            else:
+                if AVAIL[h, d] == 1 and AVAIL[h+1, d] == 0:
+                    return CHR[h, d] <= RATE * AVAIL[h+1, d]
+                else:
+                    return CHR[h, d] <= RATE * AVAIL[h, d]
+        return rule
+    model.bess_charge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=battery_charge_availability(model.bess_charge, bess_charge_rate, model.market_availability))
+    model.boat1_charge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=battery_charge_availability(model.boat_charge1, boat_charge_rate*number_boats1, model.market_availability))
+    model.boat2_charge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=battery_charge_availability(model.boat_charge2, boat_charge_rate*number_boats2, model.market_availability))
+    model.boat3_charge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=battery_charge_availability(model.boat_charge3, boat_charge_rate*number_boats3, model.market_availability))
+
 
     # Boat available to discharge
     def boat_discharge_availability(DIS, RATE, USE, SOC):
@@ -240,6 +268,28 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     model.boat1_discharge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=boat_discharge_availability(model.boat_discharge1, boat_discharge_rate*number_boats1, model.boat_usage1, model.boat_soc1))
     model.boat2_discharge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=boat_discharge_availability(model.boat_discharge2, boat_discharge_rate*number_boats2, model.boat_usage2, model.boat_soc2))
     model.boat3_discharge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=boat_discharge_availability(model.boat_discharge3, boat_discharge_rate*number_boats3, model.boat_usage3, model.boat_soc3))
+
+    # Battery available to discharge 
+    def battery_discharge_availability(DIS, RATE, AVAIL):
+        def rule(model, h, d):
+            if h == 23 and d == 364:
+                return DIS[h, d] <= RATE * AVAIL[h, d]
+            elif h == 23:
+                if AVAIL[h, d] == 1 and AVAIL[0, d+1] == 0:
+                    return DIS[h, d] <= RATE * AVAIL[0, d+1]
+                else:
+                    return DIS[h, d] <= RATE * AVAIL[h, d]
+            else:
+                if AVAIL[h, d] == 1 and AVAIL[h+1, d] == 0:
+                    return DIS[h, d] <= RATE * AVAIL[h+1, d]
+                else:
+                    return DIS[h, d] <= RATE * AVAIL[h, d]
+        return rule
+    model.bess_discharge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=battery_discharge_availability(model.bess_discharge, bess_charge_rate, model.market_availability))
+    model.boat1_discharge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=battery_discharge_availability(model.boat_discharge1, boat_charge_rate*number_boats1, model.market_availability))
+    model.boat2_discharge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=battery_discharge_availability(model.boat_discharge2, boat_charge_rate*number_boats2, model.market_availability))
+    model.boat3_discharge_availability_constraint = Constraint(model.HOURS, model.DAYS, rule=battery_discharge_availability(model.boat_discharge3, boat_charge_rate*number_boats3, model.market_availability))
+
 
     # Boat need to be charged before usage
     def boat_SOC_before_usage(USE, SOC, CAP):

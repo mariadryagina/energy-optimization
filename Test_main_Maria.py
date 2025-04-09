@@ -203,6 +203,16 @@ boat_availability3, boat_power3 = usage_pattern.usage_pattern(c, 100, 90, 60)  #
 bids_effekthandelväst_data = effekthandel_väst.I_bid
 activated_bids_effekthandelväst_data = effekthandel_väst.I_activated
 
+market_availability = np.ones((24, 365))
+
+for i in range(24):
+    for j in range(365):
+        if bids_effekthandelväst_data[i, j] == 1:
+            market_availability[i, j] = 0
+        else:
+            market_availability[i, j] = 1
+
+
 # charge_required1 = usage_pattern.soc_target(boat_availability1)
 # charge_required2 = usage_pattern.soc_target(boat_availability2)
 # charge_required3 = usage_pattern.soc_target(boat_availability3)
@@ -218,7 +228,7 @@ boat_charge_rate = 60 #kW
 boat_discharge_rate = 60
 boat_battery_cost = 100000 #SEK
 boat_cycling = 5000 #numbers of cycles
-user = 2 #User: Maja = 1, Maria = 2
+user = 1 #User: Maja = 1, Maria = 2
 energy_tax = 0.439 #SEK/kWh
 transmission_fee = 0.113 #SEK/kWh 
 peak_cost = 61.55 #SEK/kWh
@@ -242,7 +252,16 @@ boat_load1 = usage_pattern.boat_load(boat_availability1, boat_capacity*number_bo
 boat_load2 = usage_pattern.boat_load(boat_availability2, boat_capacity*number_boats2, 0.2*boat_capacity*number_boats2)
 boat_load3 = usage_pattern.boat_load(boat_availability3, boat_capacity*number_boats3, 0.2*boat_capacity*number_boats3)
 
-model = Optimization_Maria.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data)
+bid_size = 0.02 # % of the capacity
+
+bid_bess = activated_bids_effekthandelväst_data * bess_capacity * bid_size
+bid_boat1 = activated_bids_effekthandelväst_data * boat_capacity * number_boats1 * bid_size
+bid_boat2 = activated_bids_effekthandelväst_data * boat_capacity * number_boats2 * bid_size
+bid_boat3 = activated_bids_effekthandelväst_data * boat_capacity * number_boats3 * bid_size
+# bid_bess_pd = pd.DataFrame(bid_bess)
+# bid_bess_pd.to_csv('bid_bess.csv', index=False)
+
+model = Optimization_Maria.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, market_availability, bid_bess, bid_boat1, bid_boat2, bid_boat3)
 
 old_grid_usage = np.zeros((24, 365))  # Initial load data
 new_grid_usage = np.zeros((24, 365))  # Optimized grid usage data

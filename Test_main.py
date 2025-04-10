@@ -11,6 +11,7 @@ import windpower
 import el_price
 import el_cost
 import Optimization
+import Opt_test
 import usage_pattern
 from Frequency import frequency_price
 #endregion
@@ -237,7 +238,7 @@ boat_load3 = usage_pattern.boat_load(boat_availability3, boat_capacity*number_bo
 boat_load1_pd = pd.DataFrame(boat_load1)
 boat_load1_pd.to_csv('BOAT_LOAD.csv', index=False)
 
-model = Optimization.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost)
+model = Opt_test.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost)
 
 old_grid_usage = np.zeros((24, 365))  # Initial load data
 new_grid_usage = np.zeros((24, 365))  # Optimized grid usage data

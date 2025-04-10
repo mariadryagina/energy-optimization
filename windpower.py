@@ -6,7 +6,7 @@ import requests
 from io import BytesIO
 
 # URL to the Excel file on GitHub
-url = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/winddata1_2023.xlsx"
+url = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Self-produced_electricity/winddata1_2023.xlsx"
 
 # Fetch the file from GitHub
 response = requests.get(url, verify=False)

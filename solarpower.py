@@ -24,7 +24,7 @@ import requests
 from io import BytesIO
 #endregion
 # region URL to the Excel file on GitHub
-url = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/solardata_2023.xlsx"
+url = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Self-produced_electricity/solardata_2023.xlsx"
 
 # Fetch the file from GitHub
 response = requests.get(url, verify=False)

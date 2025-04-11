@@ -228,7 +228,7 @@ boat_charge_rate = 60 #kW
 boat_discharge_rate = 60
 boat_battery_cost = 100000 #SEK
 boat_cycling = 5000 #numbers of cycles
-user = 1 #User: Maja = 1, Maria = 2
+user = 2 #User: Maja = 1, Maria = 2
 energy_tax = 0.439 #SEK/kWh
 transmission_fee = 0.113 #SEK/kWh 
 peak_cost = 61.55 #SEK/kWh
@@ -252,7 +252,7 @@ boat_load1 = usage_pattern.boat_load(boat_availability1, boat_capacity*number_bo
 boat_load2 = usage_pattern.boat_load(boat_availability2, boat_capacity*number_boats2, 0.2*boat_capacity*number_boats2)
 boat_load3 = usage_pattern.boat_load(boat_availability3, boat_capacity*number_boats3, 0.2*boat_capacity*number_boats3)
 
-bid_size = 0.02 # % of the capacity
+bid_size = 0.01 # % of the capacity
 
 bid_bess = activated_bids_effekthandelväst_data * bess_capacity * bid_size
 bid_boat1 = activated_bids_effekthandelväst_data * boat_capacity * number_boats1 * bid_size
@@ -490,27 +490,38 @@ total_fcr_revenue=np.zeros(8760)
 hours=np.zeros(8760)
 count=0
 
+# Initialize a 24x365 matrix with zeros
+bid_matrix = np.zeros((24, 365))
+# Set 1s for hours 0-7 and 19-23
+bid_matrix[0:6, :] = 1  # Hours 0-7
+bid_matrix[19:24, :] = 1  # Hours 19-23
+
+# Reshape the matrix to 8760x1 in column-major order
+bid_matrix_reshaped = bid_matrix.reshape(-1, order='F')
 
 for i in range(len(total_soc1)):
     if  2880 <= i <= 6551:
         total_soc1[i] = bess_soc_values[i]
     else:
         total_soc1[i] = bess_soc_values[i] + boat_soc1_values[i] + boat_soc2_values[i] + boat_soc3_values[i]
-    
+
+total_soc2=bid_matrix_reshaped * total_soc1
+
+#FCR-D revenue   
 FCR_D_up_price_data=(frequency_price.FCR_D_up_1)/1000
 
 # Iterate over the indices and values of total_soc
-for i in range(len(total_soc1)):
-    if total_soc1[i] >= 0.5 * TOTAL_CAPACITY and total_soc1[i + 1] >= 0.5 * TOTAL_CAPACITY:
+for i in range(len(total_soc2)-1):
+    if total_soc2[i] >= 0.5 * TOTAL_CAPACITY and total_soc2[i + 1] >= 0.5 * TOTAL_CAPACITY:
         hours[i] = i  # Store the index in hours
         count += 1
         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud
         bid_soc[i] = total_soc1[i]
-    elif 2880 <= i <= 6551 and total_soc1[i] >= 0.5 * bess_capacity and total_soc1[i + 1] >= 0.5 * bess_capacity:
+    elif 2880 <= i <= 6551 and total_soc2[i] >= 0.5 * bess_capacity and total_soc2[i + 1] >= 0.5 * bess_capacity:
         hours[i] = i
         count += 1
         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud_summer
-        bid_soc[i] = total_soc1[i]
+        bid_soc[i] = total_soc2[i]
 
 print(f"FCR-D up revenue: {total_fcr_revenue.sum()} SEK")
 print(f"FCR-D up participant: {count} h")
@@ -534,29 +545,29 @@ print(f"FCR-D up participant: {count} h")
 # hours_pd = pd.DataFrame(hours)
 # hours_pd.to_csv('Hours_soc.csv', index=False)
 
-bess_soc_pd = pd.DataFrame(bess_soc)
-bess_soc_pd.to_csv('bess_soc.csv', index=False)
+# bess_soc_pd = pd.DataFrame(bess_soc)
+# bess_soc_pd.to_csv('bess_soc.csv', index=False)
 
-boat_soc1_pd = pd.DataFrame(boat_soc1)
-boat_soc1_pd.to_csv('boat_soc1.csv', index=False)
+# boat_soc1_pd = pd.DataFrame(boat_soc1)
+# boat_soc1_pd.to_csv('boat_soc1.csv', index=False)
 
-boat_discharge1_pd = pd.DataFrame(boat_discharge1)
-boat_discharge1_pd.to_csv('boat_discharge1.csv', index=False)
+# boat_discharge1_pd = pd.DataFrame(boat_discharge1)
+# boat_discharge1_pd.to_csv('boat_discharge1.csv', index=False)
 
-boat_charge1_pd = pd.DataFrame(boat_charge1)
-boat_charge1_pd.to_csv('boat_charge1.csv', index=False)
+# boat_charge1_pd = pd.DataFrame(boat_charge1)
+# boat_charge1_pd.to_csv('boat_charge1.csv', index=False)
 
-boat_soc2_pd = pd.DataFrame(boat_soc2)
-boat_soc2_pd.to_csv('boat_soc2.csv', index=False)
+# boat_soc2_pd = pd.DataFrame(boat_soc2)
+# boat_soc2_pd.to_csv('boat_soc2.csv', index=False)
 
-boat_soc3_pd = pd.DataFrame(boat_soc3)
-boat_soc3_pd.to_csv('boat_soc3.csv', index=False)
+# boat_soc3_pd = pd.DataFrame(boat_soc3)
+# boat_soc3_pd.to_csv('boat_soc3.csv', index=False)
 
-# total_soc1_pd = pd.DataFrame(total_soc1)
-# total_soc1_pd.to_csv('total_soc1.csv', index=False)
+# total_soc2_pd = pd.DataFrame(total_soc2)
+# total_soc2_pd.to_csv('total_soc2.csv', index=False)
 
-# bid_soc_pd = pd.DataFrame(bid_soc)
-# bid_soc_pd.to_csv('bid_soc.csv', index=False)
+bid_soc_pd = pd.DataFrame(bid_soc)
+bid_soc_pd.to_csv('bid_soc.csv', index=False)
 
 # total_boat_pd = pd.DataFrame(total_boat)
 # total_boat_pd.to_csv('total_boat_soc.csv', index=False)

@@ -42,7 +42,7 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     model.bid_boat3 = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: bid_boat3_data[h, d])  # 20% of the battery capacity
 
     # ---Constants---
-    bess_initial_soc = bess_capacity/2
+    bess_initial_soc = bess_capacity*0.8
     boat_initial_soc = boat_capacity/2
     bess_availability = np.ones((24, 365))  # Assuming the battery is always available
     zeros = np.zeros((24, 365)) 
@@ -203,9 +203,9 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
             #         return SOC[h, d] == SOC[h-1, d] + CHR[h-1, d] - DIS[h-1, d]
         return rule  
     model.bess_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(bess_availability, model.bess_soc, model.bess_charge, model.bess_discharge, bess_initial_soc, zeros, model.activated_bids_effekthandelväst, model.bid_bess))
-    model.boat1_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability1, model.boat_soc1, model.boat_charge1, model.boat_discharge1, boat_initial_soc * number_boats1, boat_load1, model.activated_bids_effekthandelväst, model.bid_boat1))
-    model.boat2_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability2, model.boat_soc2, model.boat_charge2, model.boat_discharge2, boat_initial_soc * number_boats2, boat_load2, model.activated_bids_effekthandelväst, model.bid_boat2))
-    model.boat3_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability3, model.boat_soc3, model.boat_charge3, model.boat_discharge3, boat_initial_soc * number_boats3, boat_load3, model.activated_bids_effekthandelväst, model.bid_boat3))
+    model.boat1_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability1, model.boat_soc1, model.boat_charge1, model.boat_discharge1, boat_initial_soc * number_boats1, boat_load1,  model.activated_bids_effekthandelväst, model.bid_boat1))
+    model.boat2_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability2, model.boat_soc2, model.boat_charge2, model.boat_discharge2, boat_initial_soc * number_boats2, boat_load2,  model.activated_bids_effekthandelväst, model.bid_boat2))
+    model.boat3_soc_dynamics = Constraint(model.HOURS, model.DAYS, rule=soc_update(boat_availability3, model.boat_soc3, model.boat_charge3, model.boat_discharge3, boat_initial_soc * number_boats3, boat_load3,  model.activated_bids_effekthandelväst, model.bid_boat3))
 
     # Boat available to charge
     def boat_charge_availability(CHR, RATE, USE):

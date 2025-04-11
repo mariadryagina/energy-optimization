@@ -228,7 +228,7 @@ boat_charge_rate = 60 #kW
 boat_discharge_rate = 60
 boat_battery_cost = 100000 #SEK
 boat_cycling = 5000 #numbers of cycles
-user = 1 #User: Maja = 1, Maria = 2
+user = 2 #User: Maja = 1, Maria = 2
 energy_tax = 0.439 #SEK/kWh
 transmission_fee = 0.113 #SEK/kWh 
 peak_cost = 61.55 #SEK/kWh
@@ -252,7 +252,7 @@ boat_load1 = usage_pattern.boat_load(boat_availability1, boat_capacity*number_bo
 boat_load2 = usage_pattern.boat_load(boat_availability2, boat_capacity*number_boats2, 0.2*boat_capacity*number_boats2)
 boat_load3 = usage_pattern.boat_load(boat_availability3, boat_capacity*number_boats3, 0.2*boat_capacity*number_boats3)
 
-bid_size = 0.02 # % of the capacity
+bid_size = 0.2 # % of the capacity
 
 bid_bess = activated_bids_effekthandelväst_data * bess_capacity * bid_size
 bid_boat1 = activated_bids_effekthandelväst_data * boat_capacity * number_boats1 * bid_size

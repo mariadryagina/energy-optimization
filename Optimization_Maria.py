@@ -42,7 +42,7 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     model.bid_boat3 = Param(model.HOURS, model.DAYS, initialize=lambda m, h, d: bid_boat3_data[h, d])  # 20% of the battery capacity
 
     # ---Constants---
-    bess_initial_soc = bess_capacity*0.8
+    bess_initial_soc = bess_capacity/2
     boat_initial_soc = boat_capacity/2
     bess_availability = np.ones((24, 365))  # Assuming the battery is always available
     zeros = np.zeros((24, 365)) 

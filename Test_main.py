@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import load_krossholmen_2023
 import solarpower
 import windpower
-# import load_björkö
-# import load_björkö_bessekroken
+import load_björkö
+import load_björkö_bessekroken
 import el_price
 import el_cost
 import Optimization
@@ -19,11 +19,29 @@ from Frequency import frequency_price
 #endregion
 #______Variable and parameters___________________________________________________________________________________________
 #region
-load_krossholmen = load_krossholmen_2023.load
-# load_björkö_hamn=load_björkö.load
+#load_krossholmen = load_krossholmen_2023.load
+#load_björkö_hamn=load_björkö.load
 # load_bessekroken=load_björkö_bessekroken.load 
 # load_winter_krossholmen = load_krossholmen_2023.load_winter
 # load_summer_krossholmen = load_krossholmen_2023.load_summer
+
+marinas = ['Björkö', 'Krossholmen', 'Bessekroken']
+
+for i in list(marinas):
+    if i == 'Björkö':
+        load_data = load_björkö.load
+        solar_panel_area = 100 # m^2
+        wind_turbines = 0 # Number of wind turbines
+    elif i == 'Krossholmen':
+        load_data = load_krossholmen_2023.load
+        solar_panel_area = 167 # m^2
+        wind_turbines = 1 # Number of wind turbines
+    elif i == 'Bessekroken':
+        load_data = load_björkö_bessekroken.load
+        solar_panel_area = 100 # m^2
+        wind_turbines = 1
+    else:
+        raise ValueError("Invalid marina name. Choose from 'Björkö', 'Krossholmen', or 'Bessekroken'.")
 
 spot_price_2023=el_price.spotprice_2023
 
@@ -35,14 +53,19 @@ spot_price_2023=el_price.spotprice_2023
 #     yearly_load_bessekroken[i] = sum(load_bessekroken[:, i])
 
 #Calculating the sum of the array for the yearly load 1X365 in Krossholmen
-yearly_load_krossholmen=np.zeros((365))
-for i in range(365):
-    yearly_load_krossholmen[i] = sum(load_krossholmen[:, i])
+# yearly_load_krossholmen=np.zeros((365))
+# for i in range(365):
+#     yearly_load_krossholmen[i] = sum(load_krossholmen[:, i])
 
 #Calculating the sum of the array for the yearly load 1X365 in Krossholmen
 # yearly_load_björkö=np.zeros((365))
 # for i in range(365):
 #     yearly_load_björkö[i] = sum(load_björkö_hamn[:, i])
+
+#Calculating the sum of the array for the yearly load 1X365
+yearly_load=np.zeros((365))
+for i in range(365):
+    yearly_load[i] = sum(load_data[:, i])
 
 #Calculating the sum of the array for the yearly spot price in SE3 1X365
 yearly_spot_price_2023=np.zeros((365))
@@ -116,13 +139,13 @@ for i in range(365):
 #region Calculating selfproduced electricity
 #Calling on function, change the values to get the desired result
 
-P_s2=solarpower.solar(167,0.20) #167m^2, 20% efficiency, which is the values of Krossholmen
-P_wind2=windpower.wind(1) #1 turbine rated 5,5kW
+solar_power=solarpower.solar(solar_panel_area,0.20) #167m^2, 20% efficiency, which is the values of Krossholmen
+P_wind2=windpower.wind(wind_turbines) #1 turbine rated 5,5kW
 
 #Calculating the sum of the array for the solar power 1X365
 P_s3=np.zeros((365))  
 for i in range(365):
-    P_s3[i] = sum(P_s2[:, i])
+    P_s3[i] = sum(solar_power[:, i])
 
 #Calculating the sum of the array for the wind power 1X365
 P_wind3=np.zeros((365))
@@ -134,10 +157,10 @@ for i in range(365):
 # #If the value is negative it will be changed to 0
 # for i in range(24):
 #     for j in range(365):    
-#         if load_bessekroken[i, j] - P_s2[i, j] - P_wind2[i,j] < 0:
+#         if load_bessekroken[i, j] - solar_power[i, j] - P_wind2[i,j] < 0:
 #             P_self[i, j] = 0
 #         else:
-#             P_self[i, j] = load_bessekroken[i, j] - P_s2[i, j] - P_wind2[i,j]
+#             P_self[i, j] = load_bessekroken[i, j] - solar_power[i, j] - P_wind2[i,j]
 # #Calculating the sum of the array 1X365
 # P_self1=np.zeros((365))
 # for i in range(365):
@@ -145,10 +168,10 @@ for i in range(365):
 
 #Calculating the total 
 total_sum_sun=round(sum(P_s3)*10,1)/10
-print(f"The yearly production of solar power is {total_sum_sun/1000}MWh")
+print(f"The yearly production of solar power is {round(total_sum_sun/1000)} MWh")
 
 total_sum_wind=round(sum(P_wind3)*10)/10
-print(f"The yearly production of wind power is {total_sum_wind/1000}MWh")
+print(f"The yearly production of wind power is {round(total_sum_wind/1000)} MWh")
 #endregion
 
 
@@ -192,9 +215,8 @@ b = 205
 c = 226
 
 
-solar_data = solarpower.solar(100,0.20)                         # 24x365
 wind_data = windpower.wind(1)                                   # 24x365
-load_data = load_krossholmen                                    # 24x365
+load_data = load_björkö_hamn                                    # 24x365
 spot_price_data = el_price.spotprice_2023  
 grid_limit = 1680 #Limitations of grid, abbonerad effekt [kW]                     # 24x365
 
@@ -204,8 +226,6 @@ boat_availability3, boat_power3 = usage_pattern.usage_pattern(c, 100, 90, 60)  #
 
 bids_effekthandelväst_data = effekthandel_väst.I_bid
 activated_bids_effekthandelväst_data = effekthandel_väst.I_activated
-
-market_availability = np.ones((24, 365))
 
 number_boats = 3 #Number of boats in the marina
 bess_capacity = 500 #kWh
@@ -244,7 +264,7 @@ boat_load1 = usage_pattern.boat_load(boat_availability1, 0.8*boat_capacity*numbe
 boat_load2 = usage_pattern.boat_load(boat_availability2, 0.8*boat_capacity*number_boats2, 0.1*boat_capacity*number_boats2)
 boat_load3 = usage_pattern.boat_load(boat_availability3, 0.8*boat_capacity*number_boats3, 0.1*boat_capacity*number_boats3)
 
-bid_size = 0.3 # % of the capacity
+bid_size = 0.2 # % of the capacity
 
 bid_bess = activated_bids_effekthandelväst_data * bess_capacity * bid_size
 bid_boat1 = activated_bids_effekthandelväst_data * boat_capacity * number_boats1 * bid_size
@@ -254,7 +274,7 @@ bid_boat3 = activated_bids_effekthandelväst_data * boat_capacity * number_boats
 boat_load1_pd = pd.DataFrame(boat_load1)
 boat_load1_pd.to_csv('BOAT_LOAD.csv', index=False)
 
-model = Optimization.optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, battery_lower_limit, battery_upper_limit, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, market_availability, bid_bess, bid_boat1, bid_boat2, bid_boat3, bid_size)
+model = Optimization.optimize_microgrid(solar_power, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, battery_lower_limit, battery_upper_limit, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, bid_bess, bid_boat1, bid_boat2, bid_boat3, bid_size)
 
 old_grid_usage = np.zeros((24, 365))  # Initial load data
 new_grid_usage = np.zeros((24, 365))  # Optimized grid usage data
@@ -305,7 +325,7 @@ for h in model.HOURS:
         spot_price [h, d] = spot_price_data[h][d]
 
 old_cost = el_cost.cost(None, None, old_grid_usage, 61.55, 0.439, 0.113, 1.25)
-opt_cost = el_cost.cost(None, None, (grid_used_battery+grid_used_load), 61.55, 0.439, 0.113, 1.25)
+opt_cost = el_cost.cost(None, None, grid_used_load + grid_used_battery, 61.55, 0.439, 0.113, 1.25)
 
 bess_soc_values = np.zeros(8760) # Battery state of charge data (total charge)
 bess_charge_values = np.zeros( 8760) # Battery charge data
@@ -396,7 +416,7 @@ self_sufficiency_hourly = hourly_values2(self_sufficiency_hourly, self_sufficien
 sold_electricity_hourly = hourly_values2(sold_electricity_hourly, sold_electricity)
 
 print(f"Old cost: {round(old_cost.sum())}, Old grid usage: {round(old_grid_usage.sum())}")
-print(f"Optimized cost: {round(opt_cost.sum())}, Optimized grid usage: {round((grid_used_battery+grid_used_load).sum())}")
+print(f"Optimized cost: {round(opt_cost.sum())}, Optimized grid usage: {round((grid_used_load + grid_used_battery).sum())}")
 print(f'Grid to load: {round(grid_used_load.sum())}, Grid to battery: {round(grid_used_battery.sum())}')
 print(f"Electricity market revenue: {round((sold_electricity*spot_price).sum())}")
 print(f"Power bid revenue: {round((0.2*bid_size*(bess_capacity+boat_capacity*(number_boats1+number_boats2+number_boats3))*bids_effekthandelväst_data).sum())}")
@@ -517,35 +537,53 @@ plt.show()
 
 #______Case 2__Frekvens FCR-D_________________________________________________________________________________________________________
 #region
-
-total_soc=bess_soc_values + boat_soc1_values + boat_soc2_values + boat_soc3_values
+#FCR-D up revenue
+#total_soc=bess_soc_values + boat_soc1_values + boat_soc2_values + boat_soc3_values
 total_boat=boat_soc1_values + boat_soc2_values + boat_soc3_values
 TOTAL_CAPACITY = bess_capacity + boat_capacity * number_boats
 P_bud = 0.5 * TOTAL_CAPACITY - 0.1 * TOTAL_CAPACITY # 50% of the total capacity
 P_bud_summer = 0.5 * bess_capacity - 0.1 * bess_capacity #
 
 total_soc1 = np.zeros(8760) # Battery state of charge data (total charge)
+bid_soc = np.zeros(8760) # Battery state of charge data (total charge)
 total_fcr_revenue=np.zeros(8760) 
 hours=np.zeros(8760)
+count=0
 
+# Initialize a 24x365 matrix with zeros
+bid_matrix = np.zeros((24, 365))
+# Set 1s for hours 0-7 and 19-23
+bid_matrix[0:6, :] = 1  # Hours 0-7
+bid_matrix[19:24, :] = 1  # Hours 19-23
+
+# Reshape the matrix to 8760x1 in column-major order
+bid_matrix_reshaped = bid_matrix.reshape(-1, order='F')
 
 for i in range(len(total_soc1)):
     if  2880 <= i <= 6551:
         total_soc1[i] = bess_soc_values[i]
     else:
         total_soc1[i] = bess_soc_values[i] + boat_soc1_values[i] + boat_soc2_values[i] + boat_soc3_values[i]
-    
+
+total_soc2=bid_matrix_reshaped * total_soc1
+
+#FCR-D revenue   
 FCR_D_up_price_data=(frequency_price.FCR_D_up_1)/1000
 
 # Iterate over the indices and values of total_soc
-for i in range(len(total_soc)):
-    if total_soc[i] >= 0.5 * TOTAL_CAPACITY and total_soc[i + 1] >= 0.5 * TOTAL_CAPACITY:
+for i in range(len(total_soc2)-1):
+    if total_soc2[i] >= 0.5 * TOTAL_CAPACITY and total_soc2[i + 1] >= 0.5 * TOTAL_CAPACITY:
         hours[i] = i  # Store the index in hours
+        count += 1
         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud
-    elif 2880 <= i <= 6551 and total_soc[i] >= 0.5 * bess_capacity and total_soc[i + 1] >= 0.5 * bess_capacity:
+        bid_soc[i] = total_soc1[i]
+    elif 2880 <= i <= 6551 and total_soc2[i] >= 0.5 * bess_capacity and total_soc2[i + 1] >= 0.5 * bess_capacity:
         hours[i] = i
+        count += 1
         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud_summer
+        bid_soc[i] = total_soc2[i]
 
 print(f"FCR-D up revenue: {total_fcr_revenue.sum()} SEK")
+print(f"FCR-D up participant: {count} h")
 
 #endregion

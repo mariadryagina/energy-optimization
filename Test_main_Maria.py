@@ -494,6 +494,7 @@ count=0
 bid_matrix = np.zeros((24, 365))
 # Set 1s for hours 0-7 and 19-23
 bid_matrix[0:6, :] = 1  # Hours 0-7
+bid_matrix[6:19, :] = None
 bid_matrix[19:24, :] = 1  # Hours 19-23
 
 # Reshape the matrix to 8760x1 in column-major order
@@ -516,7 +517,7 @@ for i in range(len(total_soc2)-1):
         hours[i] = i  # Store the index in hours
         count += 1
         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud
-        bid_soc[i] = total_soc1[i]
+        bid_soc[i] = total_soc2[i]
     elif 2880 <= i <= 6551 and total_soc2[i] >= 0.5 * bess_capacity and total_soc2[i + 1] >= 0.5 * bess_capacity:
         hours[i] = i
         count += 1
@@ -526,24 +527,33 @@ for i in range(len(total_soc2)-1):
 print(f"FCR-D up revenue: {total_fcr_revenue.sum()} SEK")
 print(f"FCR-D up participant: {count} h")
 
-# # FCR-D down revenue
-# #Iterate over the indices and values of total_soc
-# for i in range(len(total_soc1)):
-#     if total_soc1[i] <= 0.5 * TOTAL_CAPACITY and total_soc1[i + 1] >= 0.5 * TOTAL_CAPACITY:
-#         hours[i] = i  # Store the index in hours
-#         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud
-#         bid_soc[i] = total_soc1[i]
-#     elif 2880 <= i <= 6551 and total_soc1[i] <= 0.5 * bess_capacity and total_soc1[i + 1] >= 0.5 * bess_capacity:
-#         hours[i] = i
-#         total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud_summer
-#         bid_soc[i] = total_soc1[i]
+#FCR-D down revenue
+FCR_D_down_price_data=(frequency_price.FCR_D_down_1)/1000
+total_fcr_down_revenue=np.zeros(8760) 
+count_1=0
+bid_soc_down = np.zeros(8760)
+hours_1=np.zeros(8760)
 
-# print(f"FCR-D up revenue: {total_fcr_revenue.sum()} SEK")
-# print(f"FCR-D up participant: {hours.sum()} h")
+# Iterate over the indices and values of total_soc
+for i in range(len(total_soc2)-1):
+    if  total_soc2[i] < 0.5 * TOTAL_CAPACITY and total_soc2[i + 1] < 0.5 * TOTAL_CAPACITY:
+        hours_1[i] = i  # Store the index in hours
+        count_1 += 1
+        total_fcr_down_revenue[i]= FCR_D_down_price_data[i].item() * P_bud
+        bid_soc_down[i] = total_soc2[i]
+    elif 2880 <= i <= 6551 and total_soc2[i] < 0.5 * bess_capacity and total_soc2[i + 1] < 0.5 * bess_capacity:
+        hours_1[i] = i
+        count_1 += 1
+        total_fcr_down_revenue[i]= FCR_D_down_price_data[i].item() * P_bud_summer
+        bid_soc_down[i] = total_soc2[i]
+
+print(f"FCR-D down revenue: {total_fcr_down_revenue.sum()} SEK")
+print(f"FCR-D down participant: {count_1} h")
+
 
 # Creating csv files
-# hours_pd = pd.DataFrame(hours)
-# hours_pd.to_csv('Hours_soc.csv', index=False)
+hours_pd = pd.DataFrame(hours_1)
+hours_pd.to_csv('Hours_soc.csv', index=False)
 
 # bess_soc_pd = pd.DataFrame(bess_soc)
 # bess_soc_pd.to_csv('bess_soc.csv', index=False)
@@ -563,11 +573,14 @@ print(f"FCR-D up participant: {count} h")
 # boat_soc3_pd = pd.DataFrame(boat_soc3)
 # boat_soc3_pd.to_csv('boat_soc3.csv', index=False)
 
-# total_soc2_pd = pd.DataFrame(total_soc2)
-# total_soc2_pd.to_csv('total_soc2.csv', index=False)
+total_soc2_pd = pd.DataFrame(total_soc2)
+total_soc2_pd.to_csv('total_soc2.csv', index=False)
 
 bid_soc_pd = pd.DataFrame(bid_soc)
 bid_soc_pd.to_csv('bid_soc.csv', index=False)
+
+bid_soc_down_pd = pd.DataFrame(bid_soc_down)
+bid_soc_down_pd.to_csv('bid_soc_down.csv', index=False)
 
 # total_boat_pd = pd.DataFrame(total_boat)
 # total_boat_pd.to_csv('total_boat_soc.csv', index=False)

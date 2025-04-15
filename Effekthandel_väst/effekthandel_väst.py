@@ -50,7 +50,7 @@ for day in range(365):
     # Check if the current month is in the bidding months
     if current_date.month in bidding_months:
         # Check if the current day is a Monday and belongs to every second week
-        if current_date.weekday() == 0 and (day // 7) % 2 == 0:  # Monday and every second week
+        if current_date.weekday() == 0 and (day // 7) == 0:  # Monday and every second week
             # Place bids for the entire week (7 days)
             for offset in range(7):  # Loop through the next 7 days
                 if day + offset < 365:  # Ensure we don't go out of bounds

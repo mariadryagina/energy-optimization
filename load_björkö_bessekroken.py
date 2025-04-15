@@ -4,11 +4,16 @@
 
 import pandas as pd
 import numpy as np
+import requests
+from io import BytesIO
 import matplotlib.pyplot as plt
 
-path_to_file = "/Users/a518244/Python/energy-optimization/björkö_load/Skarviksvägen 89.xlsx"
+url = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/björkö_load/Skarviksvägen 89.xlsx"
 
-df = pd.read_excel(path_to_file)
+response = requests.get(url, verify=False)
+response.raise_for_status()  
+
+df = pd.read_excel(BytesIO(response.content))
 
 # Extract values from the fourth column third row-2185th row (index 3)
 load_values = df.iloc[7:373, 4:28].values

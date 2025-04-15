@@ -50,7 +50,7 @@ for day in range(365):
     # Check if the current month is in the bidding months
     if current_date.month in bidding_months:
         # Check if the current day is a Monday and belongs to every second week
-        if current_date.weekday() == 0 and (day // 7) == 0:  # Monday and every second week
+        if current_date.weekday() == 0 and (day // 7) % 1 == 0:  # Monday and every second week
             # Place bids for the entire week (7 days)
             for offset in range(7):  # Loop through the next 7 days
                 if day + offset < 365:  # Ensure we don't go out of bounds
@@ -81,44 +81,44 @@ for day in range(365):
 
 
 
-# Define specific positions to activate (indices of blocks_with_bids)
-specific_positions = [10,40, 50,60, 90, 100,120]  # Replace with the specific indices you want to activate
-# print(f"Total number of blocks with bids: {len(blocks_with_bids)}")
+# # Define specific positions to activate (indices of blocks_with_bids)
+# specific_positions = [10,40, 50,60, 90, 100,120]  # Replace with the specific indices you want to activate
+# # print(f"Total number of blocks with bids: {len(blocks_with_bids)}")
 
-# Ensure the number of positions matches 5% of the total blocks
-num_blocks_to_activate = int(len(blocks_with_bids) * 0.05)
-if len(specific_positions) != num_blocks_to_activate:
-    raise ValueError("The number of specific positions must match 5 the total blocks.")
-
-
-
-# Activate the selected blocks
-for block_index in specific_positions:
-    day, block = blocks_with_bids[block_index]  # Get the day and block
-    for hour in block:
-        I_activated[hour, day] = 1  # Activate the entire block
-
-# Print the activation matrix to verify
-#print(I_activated)
+# # Ensure the number of positions matches 5% of the total blocks
+# num_blocks_to_activate = int(len(blocks_with_bids) * 0.05)
+# if len(specific_positions) != num_blocks_to_activate:
+#     raise ValueError("The number of specific positions must match 5 the total blocks.")
 
 
-
-# Randomly select 13% of these blocks for activation
-#region
-# num_blocks_to_activate = int(len(blocks_with_bids) * 0.13)  # 13% of the blocks
-# activated_blocks = random.choice(len(blocks_with_bids), size=num_blocks_to_activate, replace=False)
 
 # # Activate the selected blocks
-# for block_index in activated_blocks:
+# for block_index in specific_positions:
 #     day, block = blocks_with_bids[block_index]  # Get the day and block
 #     for hour in block:
 #         I_activated[hour, day] = 1  # Activate the entire block
 
 # # Print the activation matrix to verify
-# print(I_activated)
+# #print(I_activated)
 
-# print(f"Total activated bids: {I_activated.sum()}")  # Each block has 3 hours
-# print(f"Activated blocks: {len(activated_blocks)}")
+
+
+# Randomly select 13% of these blocks for activation
+#region
+num_blocks_to_activate = int(len(blocks_with_bids) * 0.13)  # 13% of the blocks
+activated_blocks = random.choice(len(blocks_with_bids), size=num_blocks_to_activate, replace=False)
+
+# Activate the selected blocks
+for block_index in activated_blocks:
+    day, block = blocks_with_bids[block_index]  # Get the day and block
+    for hour in block:
+        I_activated[hour, day] = 1  # Activate the entire block
+
+# Print the activation matrix to verify
+print(I_activated)
+
+print(f"Total activated bids: {I_activated.sum()}")  # Each block has 3 hours
+print(f"Activated blocks: {len(activated_blocks)}")
 #endregion
 #endregion
 
@@ -158,15 +158,15 @@ total_revenue=R_LFM.sum()
 #____CSV files____________________________________________________________________________________
 #region
 
-# # Optionally, save the activation matrix to a CSV file
-# I_activated_df = pd.DataFrame(I_activated)
-# I_activated_df.to_csv('I_activated.csv', index=False)
+# Optionally, save the activation matrix to a CSV file
+I_activated_df = pd.DataFrame(I_activated)
+I_activated_df.to_csv('I_activated.csv', index=False)
 
 
-# # Convert the NumPy array to a DataFrame
-# I_bid_df = pd.DataFrame(I_bid)
-# # Save the bid matrix to a CSV file for further analysis
-# I_bid_df.to_csv('I_bid.csv', index=False)
+# Convert the NumPy array to a DataFrame
+I_bid_df = pd.DataFrame(I_bid)
+# Save the bid matrix to a CSV file for further analysis
+I_bid_df.to_csv('I_bid.csv', index=False)
 
 # # Optionally, save the activation matrix to a CSV file
 # R_LFM_df = pd.DataFrame(R_LFM)

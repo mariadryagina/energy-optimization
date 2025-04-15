@@ -101,59 +101,59 @@ for i in range(24):
     spot_price_2023_summer_1[i] = sum(spot_price_2024_summer[i])/len(spot_price_2024_summer[i])
 #endregion
 #_______________Plotting________________________________________________________________________________
-# region Create subplots for mean winter and summer daily load in Krossholmen with two y-axes
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
-#fig.suptitle('Mean Solar and Wind Power Production in Krossholmen and Prices in Different Markets')
+# # region Create subplots for mean winter and summer daily load in Krossholmen with two y-axes
+# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+# #fig.suptitle('Mean Solar and Wind Power Production in Krossholmen and Prices in Different Markets')
 
-# Plot mean winter daily load in Krossholmen
-ax1.plot(range(24), solarpower_2023_winter_1, label='Solar Power', color='tab:blue')
-ax1.plot(range(24), windpower_2023_winter_1, label='Wind Power', color='tab:green')
-ax1.set_title('Winter')
-ax1.set_ylabel('kWh', color='tab:blue')
-ax1.set_xlabel('Time (h)')
-ax1.set_xlim(0, 23)
-ax1.set_ylim(0, (max(solarpower_2023_summer_1))+2)
-ax1.tick_params(axis='y', labelcolor='tab:blue')
+# # Plot mean winter daily load in Krossholmen
+# ax1.plot(range(24), solarpower_2023_winter_1, label='Solar Power', color='tab:blue')
+# ax1.plot(range(24), windpower_2023_winter_1, label='Wind Power', color='tab:green')
+# ax1.set_title('Winter')
+# ax1.set_ylabel('kWh', color='tab:blue')
+# ax1.set_xlabel('Time (h)')
+# ax1.set_xlim(0, 23)
+# ax1.set_ylim(0, (max(solarpower_2023_summer_1))+2)
+# ax1.tick_params(axis='y', labelcolor='tab:blue')
 
-# Create a second y-axis for the spot price in winter
-ax1_2 = ax1.twinx()
-ax1_2.plot(range(24), spot_price_2023_winter_1, label='Spot Price', color='tab:orange')
-#ax1_2.plot(range(24), price_winter_FCR_N/1000, label='FCR-N', color='tab:purple')
-#ax1_2.plot(range(24), price_winter_FCR_D_up/1000, label='FCR-D up', color='tab:brown')
-#ax1_2.plot(range(24), price_winter_FCR_D_down/1000, label='FCR-D down', color='tab:red')
-ax1_2.set_ylabel('Spot Price (SEK/kWh)', color='tab:orange')
-#ax1_2.set_ylim(0, (max(spot_price_2023_winter_1)+0.05))
-ax1_2.tick_params(axis='y', labelcolor='tab:orange')
+# # Create a second y-axis for the spot price in winter
+# ax1_2 = ax1.twinx()
+# ax1_2.plot(range(24), spot_price_2023_winter_1, label='Spot Price', color='tab:orange')
+# #ax1_2.plot(range(24), price_winter_FCR_N/1000, label='FCR-N', color='tab:purple')
+# #ax1_2.plot(range(24), price_winter_FCR_D_up/1000, label='FCR-D up', color='tab:brown')
+# #ax1_2.plot(range(24), price_winter_FCR_D_down/1000, label='FCR-D down', color='tab:red')
+# ax1_2.set_ylabel('Spot Price (SEK/kWh)', color='tab:orange')
+# #ax1_2.set_ylim(0, (max(spot_price_2023_winter_1)+0.05))
+# ax1_2.tick_params(axis='y', labelcolor='tab:orange')
 
 
-# Plot mean summer daily load in Krossholmen
-ax2.plot(range(24), solarpower_2023_summer_1, label='Solar Power', color='tab:blue')
-ax2.plot(range(24), windpower_2023_summer_1, label='Wind Power', color='tab:green')
-ax2.set_title('Summer')
-ax2.set_ylabel('kWh', color='tab:blue')
-ax2.set_xlabel('Time (h)')
-ax2.set_xlim(0, 23)
-ax2.set_ylim(0, (max(solarpower_2023_summer_1)+2))
-ax2.tick_params(axis='y', labelcolor='tab:blue')
+# # Plot mean summer daily load in Krossholmen
+# ax2.plot(range(24), solarpower_2023_summer_1, label='Solar Power', color='tab:blue')
+# ax2.plot(range(24), windpower_2023_summer_1, label='Wind Power', color='tab:green')
+# ax2.set_title('Summer')
+# ax2.set_ylabel('kWh', color='tab:blue')
+# ax2.set_xlabel('Time (h)')
+# ax2.set_xlim(0, 23)
+# ax2.set_ylim(0, (max(solarpower_2023_summer_1)+2))
+# ax2.tick_params(axis='y', labelcolor='tab:blue')
 
-# Combine legends from both y-axes
-lines1, labels1 = ax1.get_legend_handles_labels()
-lines2, labels2 = ax1_2.get_legend_handles_labels()
-ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
+# # Combine legends from both y-axes
+# lines1, labels1 = ax1.get_legend_handles_labels()
+# lines2, labels2 = ax1_2.get_legend_handles_labels()
+# ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
 
-# Create a second y-axis for the spot price in summer
-ax2_2 = ax2.twinx()
-ax2_2.plot(range(24), spot_price_2023_summer_1, label='Spot Price', color='tab:orange')
-#ax2_2.plot(range(24), pric_summer_FCR_N/1000, label='FCR-N', color='tab:purple')
-#ax2_2.plot(range(24), price_summer_FCR_D_up/1000, label='FCR-D up', color='tab:brown')
-#ax2_2.plot(range(24), price_summer_FCR_D_down/1000, label='FCR-D down', color='tab:red')
-ax2_2.set_ylabel('Spot Price (SEK/kWh)', color='tab:orange')
-ax2_2.set_ylim(0, 1.0)
-ax2_2.tick_params(axis='y', labelcolor='tab:orange')
+# # Create a second y-axis for the spot price in summer
+# ax2_2 = ax2.twinx()
+# ax2_2.plot(range(24), spot_price_2023_summer_1, label='Spot Price', color='tab:orange')
+# #ax2_2.plot(range(24), pric_summer_FCR_N/1000, label='FCR-N', color='tab:purple')
+# #ax2_2.plot(range(24), price_summer_FCR_D_up/1000, label='FCR-D up', color='tab:brown')
+# #ax2_2.plot(range(24), price_summer_FCR_D_down/1000, label='FCR-D down', color='tab:red')
+# ax2_2.set_ylabel('Spot Price (SEK/kWh)', color='tab:orange')
+# ax2_2.set_ylim(0, 1.0)
+# ax2_2.tick_params(axis='y', labelcolor='tab:orange')
 
-# Adjust layout
-fig.tight_layout(rect=[0, 0, 1, 0.96])  # Adjust layout to make room for the main title
-plt.show()
+# # Adjust layout
+# fig.tight_layout(rect=[0, 0, 1, 0.96])  # Adjust layout to make room for the main title
+# plt.show()
 
 #endregion
 #______________________________________________________________________________#

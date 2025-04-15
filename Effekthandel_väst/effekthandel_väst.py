@@ -150,23 +150,23 @@ print(P_bid)
 
 total_revenue=R_LFM.sum()
 
-# Print the result
-print(f"Total revenue generated: {total_revenue}")
+# # Print the result
+# print(f"Total revenue generated: {total_revenue}")
 
 #endregion
 
 #____CSV files____________________________________________________________________________________
 #region
 
-# Optionally, save the activation matrix to a CSV file
-I_activated_df = pd.DataFrame(I_activated)
-I_activated_df.to_csv('I_activated.csv', index=False)
+# # Optionally, save the activation matrix to a CSV file
+# I_activated_df = pd.DataFrame(I_activated)
+# I_activated_df.to_csv('I_activated.csv', index=False)
 
 
-# Convert the NumPy array to a DataFrame
-I_bid_df = pd.DataFrame(I_bid)
-# Save the bid matrix to a CSV file for further analysis
-I_bid_df.to_csv('I_bid.csv', index=False)
+# # Convert the NumPy array to a DataFrame
+# I_bid_df = pd.DataFrame(I_bid)
+# # Save the bid matrix to a CSV file for further analysis
+# I_bid_df.to_csv('I_bid.csv', index=False)
 
 # # Optionally, save the activation matrix to a CSV file
 # R_LFM_df = pd.DataFrame(R_LFM)

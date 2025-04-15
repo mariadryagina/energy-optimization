@@ -59,13 +59,13 @@ for day in range(365):
                     # Set bids for hours 17-19
                     I_bid[17:19, day + offset] = 1
 
-# Print the bid matrix to verify
-print(I_bid)
-# Count the total number of 1s in the I_bid matrix
-total_bids = I_bid.sum()
+# # Print the bid matrix to verify
+# print(I_bid)
+# # Count the total number of 1s in the I_bid matrix
+# total_bids = I_bid.sum()
 
-# Print the result
-print(f"Total number of bids (1s) in I_bid: {total_bids}")
+# # Print the result
+# print(f"Total number of bids (1s) in I_bid: {total_bids}")
 
 #Creating a matrix for when the bids are activated
 # Initialize the activation matrix (same shape as I_bid)
@@ -83,7 +83,7 @@ for day in range(365):
 
 # Define specific positions to activate (indices of blocks_with_bids)
 specific_positions = [10,40, 50,60, 90, 100,120]  # Replace with the specific indices you want to activate
-print(f"Total number of blocks with bids: {len(blocks_with_bids)}")
+# print(f"Total number of blocks with bids: {len(blocks_with_bids)}")
 
 # Ensure the number of positions matches 5% of the total blocks
 num_blocks_to_activate = int(len(blocks_with_bids) * 0.05)
@@ -99,7 +99,7 @@ for block_index in specific_positions:
         I_activated[hour, day] = 1  # Activate the entire block
 
 # Print the activation matrix to verify
-print(I_activated)
+#print(I_activated)
 
 
 

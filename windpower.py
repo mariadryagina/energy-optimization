@@ -54,12 +54,13 @@ def wind(n):
      return P_wind
 #_______________________________________________________________________________#
 
-#Calling on function
-#P_wind1=wind(1)
+# #Calling on function
+# P_wind1=wind(1)
 
-#Calculating the sum of the array
-# total_sum=ceil(sum(P_wind2)*10)/10
-# print(f"The yearly production of wind power is {total_sum}MWh")
+# print(P_wind1)
+# # Calculating the sum of the array
+# total_sum=ceil(sum(P_wind1))
+# print(f"The yearly production of wind power is {total_sum}kWh")
 
 #_______________________________________________________________________________#
 # # Creating a plot

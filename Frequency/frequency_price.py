@@ -68,14 +68,21 @@ for i in range(365):
     for j in range(24):
          FCR_D_up_2022[j,i]=(df_2022.iloc[i*24+j,8])*11.03
 
+FCR_D_up_2022_8760 = FCR_D_up_2022.reshape(-1, order='F')
+
 for i in range(365):
     for j in range(24):
          FCR_D_up_2021[j,i]=(df_2021.iloc[i*24+j,8])*11.03
+
+FCR_D_up_2021_8760 = FCR_D_up_2021.reshape(-1, order='F')
 
 
 for i in range(366):
     for j in range(24):
          FCR_D_up_2024[j,i]=(df_2024.iloc[i*24+j,8])*11.03
+
+
+FCR_D_up_2024_8760 = FCR_D_up_2024.reshape(-1, order='F')
 
 for i in range(8760):
     FCR_D_up_1[i]=(df.iloc[i,8])*11.03
@@ -96,14 +103,21 @@ for i in range(365):
     for j in range(24):
          FCR_D_down_2022[j,i]=(df_2022.iloc[i*24+j,15])*11.03
 
+FCR_D_down_2022_8760 = FCR_D_down_2022.reshape(-1, order='F')
+
 for i in range(365):
     for j in range(24):
          FCR_D_down_2021[j,i]=(df_2021.iloc[i*24+j,15])*11.03
 
 
+FCR_D_down_2021_8760 = FCR_D_down_2021.reshape(-1, order='F')
+
 for i in range(366):
     for j in range(24):
          FCR_D_down_2024[j,i]=(df_2024.iloc[i*24+j,15])*11.03
+
+
+FCR_D_down_2024_8760 = FCR_D_down_2024.reshape(-1, order='F')
 
 for i in range(8760):
     FCR_D_down_1[i]=(df.iloc[i,15])*11.03

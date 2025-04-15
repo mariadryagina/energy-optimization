@@ -12,10 +12,12 @@ import el_price
 import el_cost
 import Optimization
 import usage_pattern
+from scipy.interpolate import interp1d
 from Effekthandel_väst import effekthandel_väst
 from Frequency import frequency_price
+import windequation
 
-user = 1 #User: Maja = 1, Maria = 2
+user = 2 #User: Maja = 1, Maria = 2
 #endregion
 #______Variable and parameters___________________________________________________________________________________________
 #region
@@ -140,7 +142,8 @@ for i in range(365):
 #Calling on function, change the values to get the desired result
 
 solar_power=solarpower.solar(solar_panel_area,0.20) #20% efficiency
-wind_power=windpower.wind(turbines) # Function set for a turbine rated at 5,5kW
+#wind_power=windpower.wind(turbines) # Function set for a turbine rated at 5,5kW
+wind_power=windequation.wind(turbines) # Function set for a turbine rated at 5,5kW
 
 #Calculating the sum of the array for the solar power 1X365
 P_solar=np.zeros((365))  

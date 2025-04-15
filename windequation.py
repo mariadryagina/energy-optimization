@@ -47,18 +47,18 @@ for i in range(24):
 
 watt=np.array([0,0,0.1,0.2,0.35,0.5,0.8,1.3,2,2.7,3.7,5,6,6])
 m_s=np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13])
-f = interp1d(m_s, watt)
+#f = interp1d(m_s, watt)
 
 def wind(n):
-    watt_new=f(V)*n
+    watt_new=np.interp(V, m_s, watt)*n
     return watt_new
 
 watt_new=wind(1)
 
 print(watt_new)
 
-# total_sum=ceil(np.sum(watt_new))
-# print(f"The yearly production of wind power is {total_sum}kWh")
+total_sum=ceil(np.sum(watt_new))
+print(f"The yearly production of wind power is {total_sum}kWh")
 
 # # Creating the plot
 # plt.figure(figsize=(10, 5))

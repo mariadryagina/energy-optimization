@@ -1,6 +1,5 @@
 # Requires pip install pyomo
 import numpy as np
-import pandas as pd
 from pyomo.environ import *
 from pyomo.opt import SolverStatus, TerminationCondition
 import matplotlib as plt
@@ -57,7 +56,7 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     model.self_sufficiency = Var(model.HOURS, model.DAYS, within=NonNegativeReals)
     model.grid_used_load = Var(model.HOURS, model.DAYS, bounds=(0, grid_limit))
     model.grid_used_battery = Var(model.HOURS, model.DAYS, bounds=(0, 0.1*(bess_capacity + boat_capacity * (number_boats1 + number_boats2 + number_boats3))))
-    model.grid_sold = Var(model.HOURS, model.DAYS, within=NonNegativeReals)
+    model.grid_sold = Var(model.HOURS, model.DAYS, bounds=(0, grid_limit/2))
     model.peak_month = Var(model.MONTHS, bounds=(0, grid_limit))
 
     model.bess_soc = Var(model.HOURS, model.DAYS, bounds=(bess_capacity*battery_lower_limit, bess_capacity*battery_upper_limit))
@@ -128,7 +127,7 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
 
     # Sold electricity cannot exceed half of the grid limit
     def grid_sold_limit(model, h, d):
-        return model.grid_sold[h, d] <= grid_limit/2
+        return model.grid_sold[h, d] >= 0
     model.grid_sold_constraint = Constraint(model.HOURS, model.DAYS, rule=grid_sold_limit)
 
     # Sold electricity only from batteries

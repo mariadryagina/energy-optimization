@@ -11,7 +11,7 @@ from io import BytesIO
 url = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Effekthandel_väst/Effekthandelväst_aktivering.xlsx"
 
 # Fetch the file from GitHub
-response = requests.get(url)
+response = requests.get(url, verify=False)
 response.raise_for_status()  # Check if the request was successful
 
 # Read the Excel file into a DataFrame
@@ -114,13 +114,13 @@ for block_index in activated_blocks:
     for hour in block:
         I_activated[hour, day] = 1  # Activate the entire block
 
-# Print the activation matrix to verify
-print(I_activated)
+# # Print the activation matrix to verify
+# print(I_activated)
 
-print(f"Total activated bids: {I_activated.sum()}")  # Each block has 3 hours
-print(f"Activated blocks: {len(activated_blocks)}")
-#endregion
-#endregion
+# print(f"Total activated bids: {I_activated.sum()}")  # Each block has 3 hours
+# print(f"Activated blocks: {len(activated_blocks)}")
+# #endregion
+# #endregion
 
 
 
@@ -158,15 +158,15 @@ total_revenue=R_LFM.sum()
 #____CSV files____________________________________________________________________________________
 #region
 
-# Optionally, save the activation matrix to a CSV file
-I_activated_df = pd.DataFrame(I_activated)
-I_activated_df.to_csv('I_activated.csv', index=False)
+# # Optionally, save the activation matrix to a CSV file
+# I_activated_df = pd.DataFrame(I_activated)
+# I_activated_df.to_csv('I_activated.csv', index=False)
 
 
-# Convert the NumPy array to a DataFrame
-I_bid_df = pd.DataFrame(I_bid)
-# Save the bid matrix to a CSV file for further analysis
-I_bid_df.to_csv('I_bid.csv', index=False)
+# # Convert the NumPy array to a DataFrame
+# I_bid_df = pd.DataFrame(I_bid)
+# # Save the bid matrix to a CSV file for further analysis
+# I_bid_df.to_csv('I_bid.csv', index=False)
 
 # # Optionally, save the activation matrix to a CSV file
 # R_LFM_df = pd.DataFrame(R_LFM)

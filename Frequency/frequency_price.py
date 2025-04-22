@@ -13,15 +13,15 @@ url_2024 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/
 
 
 # Fetch the file from GitHub
-response = requests.get(url)
+response = requests.get(url, verify=False)
 response.raise_for_status()  # Check if the request was successful
-response_1 = requests.get(url_1)
+response_1 = requests.get(url_1, verify=False)
 response_1.raise_for_status()  # Check if the request was successful
-response_2022 = requests.get(url_2022)
+response_2022 = requests.get(url_2022, verify=False)
 response_2022.raise_for_status()  # Check if the request was successful
-response_2021 = requests.get(url_2021)
+response_2021 = requests.get(url_2021, verify=False)
 response_2021.raise_for_status()  # Check if the request was successful
-response_2024 = requests.get(url_2024)
+response_2024 = requests.get(url_2024, verify=False)
 response_2024.raise_for_status()  # Check if the request was successful
 
 # Read the Excel file into a DataFrame
@@ -85,7 +85,7 @@ for i in range(366):
 FCR_D_up_2024_8760 = FCR_D_up_2024.reshape(-1, order='F')
 
 for i in range(8760):
-    FCR_D_up_1[i]=(df.iloc[i,8])*11.03
+    FCR_D_up_1[i]=(df.iloc[i,8])
 
 
 #Storing FCR-D down prices in a matrix SEK/MWh
@@ -119,6 +119,7 @@ for i in range(366):
 
 FCR_D_down_2024_8760 = FCR_D_down_2024.reshape(-1, order='F')
 
+#2023
 for i in range(8760):
     FCR_D_down_1[i]=(df.iloc[i,15])*11.03
 

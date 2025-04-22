@@ -542,16 +542,18 @@ hours_1=np.zeros(8760)
 
 # Iterate over the indices and values of total_soc
 for i in range(len(total_soc2)-1):
-    if  total_soc2[i] < 0.5 * TOTAL_CAPACITY and total_soc2[i + 1] < 0.5 * TOTAL_CAPACITY:
+    if total_soc2[i] < 0.5 * TOTAL_CAPACITY and total_soc2[i + 1] < 0.5 * TOTAL_CAPACITY:
         hours_1[i] = i  # Store the index in hours
         count_1 += 1
         total_fcr_down_revenue[i]= FCR_D_down_price_data[i].item() * P_bud
         bid_soc_down[i] = total_soc2[i]
-    elif 2880 <= i <= 6551 and total_soc2[i] < 0.5 * bess_capacity and total_soc2[i + 1] < 0.5 * bess_capacity:
-        hours_1[i] = i
-        count_1 += 1
-        total_fcr_down_revenue[i]= FCR_D_down_price_data[i].item() * P_bud_summer
-        bid_soc_down[i] = total_soc2[i]
+        if 2880 <= i <= 6551 and total_soc2[i] < 0.5 * bess_capacity and total_soc2[i + 1] < 0.5 * bess_capacity:
+            hours_1[i] = i
+            count_1 += 1
+            total_fcr_down_revenue[i]= FCR_D_down_price_data[i].item() * P_bud_summer
+            bid_soc_down[i] = total_soc2[i]
+
+
 
 print(f"FCR-D down revenue: {total_fcr_down_revenue.sum()} SEK")
 print(f"FCR-D down participant: {count_1} h")
@@ -630,10 +632,13 @@ sold_electricity_pd.to_csv('sold_electricity.csv', index=False)
 # total_boat_pd = pd.DataFrame(total_boat)
 # total_boat_pd.to_csv('total_boat_soc.csv', index=False)
 
-# FCR_D_up_price_data_pd = pd.DataFrame(FCR_D_up_price_data)
-# FCR_D_up_price_data_pd.to_csv('FCR_D_up_price_data.csv', index=False)
+FCR_D_down_price_data_pd = pd.DataFrame(FCR_D_down_price_data)
+FCR_D_down_price_data_pd.to_csv('FCR_D_down_price_data.csv', index=False)
 
 # total_fcr_revenue_pd = pd.DataFrame(total_fcr_revenue)
 # total_fcr_revenue_pd.to_csv('total_fcr_revenue.csv', index=False)
+
+total_fcr_down_revenue_pd = pd.DataFrame(total_fcr_down_revenue)
+total_fcr_down_revenue_pd.to_csv('total_fcr_down_revenue.csv', index=False)
 #endregion
 #endregion

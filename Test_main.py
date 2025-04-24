@@ -485,78 +485,124 @@ plt.show()
 #region
 #FCR-D up revenue
 #total_soc=bess_soc_values + boat_soc1_values + boat_soc2_values + boat_soc3_values
-total_boat=boat_soc1_values + boat_soc2_values + boat_soc3_values
+total_boat=boat_soc1 + boat_soc2 + boat_soc3
 TOTAL_CAPACITY = bess_capacity + boat_capacity * number_boats
 P_bud = 0.5 * TOTAL_CAPACITY - 0.1 * TOTAL_CAPACITY # 50% of the total capacity
 P_bud_summer = 0.5 * bess_capacity - 0.1 * bess_capacity #
 
-total_soc1 = np.zeros(8760) # Battery state of charge data (total charge)
-bid_soc = np.zeros(8760) # Battery state of charge data (total charge)
-total_fcr_revenue=np.zeros(8760) 
-hours=np.zeros(8760)
-count=0
 
 # Initialize a 24x365 matrix with zeros
+total_soc1 = np.zeros((24, 365)) # Battery state of charge data (total charge)
 bid_matrix = np.zeros((24, 365))
 # Set 1s for hours 0-7 and 19-23
 bid_matrix[0:6, :] = 1  # Hours 0-7
 bid_matrix[6:19, :] = None
 bid_matrix[19:24, :] = 1  # Hours 19-23
 
+
 # Reshape the matrix to 8760x1 in column-major order
 bid_matrix_reshaped = bid_matrix.reshape(-1, order='F')
 
-for i in range(len(total_soc1)):
-    if  2880 <= i <= 6551:
-        total_soc1[i] = bess_soc_values[i]
-    else:
-        total_soc1[i] = bess_soc_values[i] + boat_soc1_values[i] + boat_soc2_values[i] + boat_soc3_values[i]
+for i in range(365):
+    for j in range(24):
+        if  121 <= i <= 273:
+            total_soc1[j, i] = bess_soc[j, i]
+        else:
+            total_soc1[j,i] = bess_soc[j,i] + boat_soc1[j,i] + boat_soc2[j,i] + boat_soc3[j,i]
 
-total_soc2=bid_matrix_reshaped * total_soc1
+total_soc2=bid_matrix * total_soc1
+
 
 #FCR-D revenue   
-FCR_D_up_price_data=(frequency_price.FCR_D_up_1)/1000
+FCR_D_up_price_data=(frequency_price.FCR_D_up_2023)/1000
+bid_soc = np.zeros((24,365)) # Battery state of charge data (total charge)
+total_fcr_revenue=np.zeros((24,365)) 
+# hours=np.zeros(24,365)
+count=0
 
 # Iterate over the indices and values of total_soc
-for i in range(len(total_soc2)-1):
-    if total_soc2[i] >= 0.5 * TOTAL_CAPACITY and total_soc2[i + 1] >= 0.5 * TOTAL_CAPACITY:
-        hours[i] = i  # Store the index in hours
-        count += 1
-        total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud
-        bid_soc[i] = total_soc2[i]
-    elif 2880 <= i <= 6551 and total_soc2[i] >= 0.5 * bess_capacity and total_soc2[i + 1] >= 0.5 * bess_capacity:
-        hours[i] = i
-        count += 1
-        total_fcr_revenue[i]= FCR_D_up_price_data[i].item() * P_bud_summer
-        bid_soc[i] = total_soc2[i]
+for i in range(365):
+    for j in range(24):
+        if j < 23:
+            if 0 <= i <= 120 and total_soc2[j,i] >= 0.6 * TOTAL_CAPACITY and total_soc2[j+1, i] >= 0.6 * TOTAL_CAPACITY:
+                count += 1
+                total_fcr_revenue[j,i]= FCR_D_up_price_data[j,i].item() * P_bud
+                bid_soc[j,i] = total_soc2[j,i]
+            elif 121 <= i <= 273 and total_soc2[j,i] >= 0.6 * bess_capacity and total_soc2[j+1,i] >= 0.6 * bess_capacity:
+                count += 1
+                total_fcr_revenue[j,i]= FCR_D_up_price_data[j,i].item() * P_bud_summer
+                bid_soc[j,i] = total_soc2[j,i]
+            elif 274 <= i <= 365 and total_soc2[j,i] >= 0.6 * TOTAL_CAPACITY and total_soc2[j+1, i] >= 0.6 * TOTAL_CAPACITY:
+                count += 1
+                total_fcr_revenue[j,i]= FCR_D_up_price_data[j,i].item() * P_bud
+                bid_soc[j,i] = total_soc2[j,i]
+        else:  # For hour 23 (last hour of the day)
+            if 0 <= i <= 120 and total_soc2[j, i] >= 0.6 * TOTAL_CAPACITY:
+                count += 1
+                total_fcr_revenue[j, i] = FCR_D_up_price_data[j, i].item() * P_bud
+                bid_soc[j, i] = total_soc2[j, i]
+            elif 121 <= i <= 273 and total_soc2[j, i] >= 0.6 * bess_capacity:
+                count += 1
+                total_fcr_revenue[j, i] = FCR_D_up_price_data[j, i].item() * P_bud_summer
+                bid_soc[j, i] = total_soc2[j, i]
+            elif 274 <= i <= 365 and total_soc2[j, i] >= 0.6 * TOTAL_CAPACITY:
+                count += 1
+                total_fcr_revenue[j, i] = FCR_D_up_price_data[j, i].item() * P_bud
+                bid_soc[j, i] = total_soc2[j, i]
 
-print(f"FCR-D up revenue: {total_fcr_revenue.sum()} SEK")
+
+total_fcr_revenue_reshaped=np.zeros((365))  
+for i in range(365):
+    total_fcr_revenue_reshaped[i] = sum(total_fcr_revenue[:, i])
+
+print(f"FCR-D up revenue: {sum(total_fcr_revenue_reshaped)} SEK")
 print(f"FCR-D up participant: {count} h")
 
+
 #FCR-D down revenue
-FCR_D_down_price_data=(frequency_price.FCR_D_down_1)/1000
-total_fcr_down_revenue=np.zeros(8760) 
+FCR_D_down_price_data=(frequency_price.FCR_D_down_2023)/1000
+total_fcr_down_revenue=np.zeros((24,365)) 
 count_1=0
-bid_soc_down = np.zeros(8760)
-hours_1=np.zeros(8760)
+bid_soc_down = np.zeros((24,365))
 
 # Iterate over the indices and values of total_soc
-for i in range(len(total_soc2)-1):
-    if total_soc2[i] < 0.5 * TOTAL_CAPACITY and total_soc2[i + 1] < 0.5 * TOTAL_CAPACITY:
-        hours_1[i] = i  # Store the index in hours
-        count_1 += 1
-        total_fcr_down_revenue[i]= FCR_D_down_price_data[i].item() * P_bud
-        bid_soc_down[i] = total_soc2[i]
-        if 2880 <= i <= 6551 and total_soc2[i] < 0.5 * bess_capacity and total_soc2[i + 1] < 0.5 * bess_capacity:
-            hours_1[i] = i
-            count_1 += 1
-            total_fcr_down_revenue[i]= FCR_D_down_price_data[i].item() * P_bud_summer
-            bid_soc_down[i] = total_soc2[i]
+for i in range(365):
+    for j in range(24):
+        if j < 23:
+            if 0 <= i <= 120 and total_soc2[j,i] < 0.4 * TOTAL_CAPACITY and total_soc2[j+1, i] < 0.4 * TOTAL_CAPACITY:
+                count_1 += 1
+                total_fcr_down_revenue[j,i]= FCR_D_down_price_data[j,i].item() * P_bud
+                bid_soc_down[j,i] = total_soc2[j,i]
+            elif 121 <= i <= 273 and total_soc2[j,i] < 0.4 * bess_capacity and total_soc2[j+1,i] < 0.4 * bess_capacity:
+                count_1 += 1
+                total_fcr_down_revenue[j,i]= FCR_D_down_price_data[j,i].item() * P_bud_summer
+                bid_soc_down[j,i] = total_soc2[j,i]
+            elif 274 <= i <= 365 and total_soc2[j,i] < 0.4 * TOTAL_CAPACITY and total_soc2[j+1, i] < 0.4 * TOTAL_CAPACITY:
+                count_1 += 1
+                total_fcr_down_revenue[j,i]= FCR_D_down_price_data[j,i].item() * P_bud
+                bid_soc_down[j,i] = total_soc2[j,i]
+        else:  # For hour 23 (last hour of the day)
+            if 0 <= i <= 120 and total_soc2[j, i] < 0.4 * TOTAL_CAPACITY:
+                count_1 += 1
+                total_fcr_down_revenue[j, i] = FCR_D_down_price_data[j, i].item() * P_bud
+                bid_soc_down[j, i] = total_soc2[j, i]
+            elif 121 <= i <= 273 and total_soc2[j, i] < 0.4 * bess_capacity:
+                count_1 += 1
+                total_fcr_down_revenue[j, i] = FCR_D_down_price_data[j, i].item() * P_bud_summer
+                bid_soc_down[j, i] = total_soc2[j, i]
+            elif 274 <= i <= 365 and total_soc2[j, i] < 0.4 * TOTAL_CAPACITY:
+                count_1 += 1
+                total_fcr_down_revenue[j, i] = FCR_D_down_price_data[j, i].item() * P_bud
+                bid_soc_down[j, i] = total_soc2[j, i]
 
 
+total_fcr_down_revenue_reshaped=np.zeros((365))  
+for i in range(365):
+    total_fcr_down_revenue_reshaped[i] = sum(total_fcr_down_revenue[:, i])
 
-print(f"FCR-D down revenue: {total_fcr_down_revenue.sum()} SEK")
-print(f"FCR-D down participant: {count_1} h")
+print(f"FCR-D down revenue: {sum(total_fcr_down_revenue_reshaped)} SEK")
+print(f"FCR-D down participant: {count} h")
+
 
 #region
 # # Creating csv files
@@ -581,11 +627,11 @@ print(f"FCR-D down participant: {count_1} h")
 # self_production_pd = pd.DataFrame(self_production)
 # self_production_pd.to_csv('self_production.csv', index=False)
 
-spot_price_pd = pd.DataFrame(spot_price)
-spot_price_pd.to_csv('spot_price.csv', index=False)
+# spot_price_pd = pd.DataFrame(spot_price)
+# spot_price_pd.to_csv('spot_price.csv', index=False)
 
-sold_electricity_pd = pd.DataFrame(sold_electricity)
-sold_electricity_pd.to_csv('sold_electricity.csv', index=False)
+# sold_electricity_pd = pd.DataFrame(sold_electricity)
+# sold_electricity_pd.to_csv('sold_electricity.csv', index=False)
 
 # grid_used_battery_pd = pd.DataFrame(grid_used_battery)
 # grid_used_battery_pd.to_csv('grid_used_battery.csv', index=False)
@@ -623,22 +669,22 @@ sold_electricity_pd.to_csv('sold_electricity.csv', index=False)
 # total_soc2_pd = pd.DataFrame(total_soc2)
 # total_soc2_pd.to_csv('total_soc2.csv', index=False)
 
-# bid_soc_pd = pd.DataFrame(bid_soc)
-# bid_soc_pd.to_csv('bid_soc.csv', index=False)
+bid_soc_pd = pd.DataFrame(bid_soc)
+bid_soc_pd.to_csv('bid_soc.csv', index=False)
 
-# bid_soc_down_pd = pd.DataFrame(bid_soc_down)
-# bid_soc_down_pd.to_csv('bid_soc_down.csv', index=False)
+bid_soc_down_pd = pd.DataFrame(bid_soc_down)
+bid_soc_down_pd.to_csv('bid_soc_down.csv', index=False)
 
 # total_boat_pd = pd.DataFrame(total_boat)
 # total_boat_pd.to_csv('total_boat_soc.csv', index=False)
 
-FCR_D_down_price_data_pd = pd.DataFrame(FCR_D_down_price_data)
-FCR_D_down_price_data_pd.to_csv('FCR_D_down_price_data.csv', index=False)
+# FCR_D_down_price_data_pd = pd.DataFrame(FCR_D_down_price_data)
+# FCR_D_down_price_data_pd.to_csv('FCR_D_down_price_data.csv', index=False)
 
 # total_fcr_revenue_pd = pd.DataFrame(total_fcr_revenue)
 # total_fcr_revenue_pd.to_csv('total_fcr_revenue.csv', index=False)
 
-total_fcr_down_revenue_pd = pd.DataFrame(total_fcr_down_revenue)
-total_fcr_down_revenue_pd.to_csv('total_fcr_down_revenue.csv', index=False)
+# total_fcr_down_revenue_pd = pd.DataFrame(total_fcr_down_revenue)
+# total_fcr_down_revenue_pd.to_csv('total_fcr_down_revenue.csv', index=False)
 #endregion
 #endregion

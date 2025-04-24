@@ -7,18 +7,18 @@ import windpower
 import el_price
 from Frequency import frequency_price
 
-spot_price_2023=el_price.spotprice_2023
-spot_price_2024_winter=el_price.spotprice_2024_winter
-spot_price_2024_summer=el_price.spotprice_2024_summer
+# spot_price_2023=el_price.spotprice_2023
+# spot_price_2024_winter=el_price.spotprice_2024_winter
+# spot_price_2024_summer=el_price.spotprice_2024_summer
 
-price_winter_FCR_N=frequency_price.price_winter_mean_FCR_N
-pric_summer_FCR_N=frequency_price.price_summer_mean_FCR_N
+# price_winter_FCR_N=frequency_price.price_winter_mean_FCR_N
+# pric_summer_FCR_N=frequency_price.price_summer_mean_FCR_N
 
-price_winter_FCR_D_up=frequency_price.price_winter_mean_FCR_D_up_2023
-price_summer_FCR_D_up=frequency_price.price_summer_mean_FCR_D_up_2023
+# price_winter_FCR_D_up=frequency_price.price_winter_mean_FCR_D_up_2023
+# price_summer_FCR_D_up=frequency_price.price_summer_mean_FCR_D_up_2023
 
-price_winter_FCR_D_down=frequency_price.price_winter_mean_FCR_D_down_2023
-price_summer_FCR_D_down=frequency_price.price_summer_mean_FCR_D_down_2023
+# price_winter_FCR_D_down=frequency_price.price_winter_mean_FCR_D_down_2023
+# price_summer_FCR_D_down=frequency_price.price_summer_mean_FCR_D_down_2023
 
 import requests
 from io import BytesIO
@@ -60,45 +60,45 @@ P_s2=solar(167,0.20)
 P_wind2=windpower.wind(1) #1 turbine rated 5,5kW
 
 
-solarpower_2023_winter = P_s2[:, concatenate((arange(334, 365), arange(0, 59)))]
-solarpower_2023_spring = P_s2[:, 59:151]
-solarpower_2023_summer = P_s2[:, 151:243]
-solarpower_2023_autumn = P_s2[:, 243:334]
+# solarpower_2023_winter = P_s2[:, concatenate((arange(334, 365), arange(0, 59)))]
+# solarpower_2023_spring = P_s2[:, 59:151]
+# solarpower_2023_summer = P_s2[:, 151:243]
+# solarpower_2023_autumn = P_s2[:, 243:334]
 
-windpower_2023_winter = P_wind2[:, concatenate((arange(334, 365), arange(0, 59)))]
-windpower_2023_spring = P_wind2[:, 59:151]
-windpower_2023_summer = P_wind2[:, 151:243]
-windpower_2023_autumn = P_wind2[:, 243:334]
+# windpower_2023_winter = P_wind2[:, concatenate((arange(334, 365), arange(0, 59)))]
+# windpower_2023_spring = P_wind2[:, 59:151]
+# windpower_2023_summer = P_wind2[:, 151:243]
+# windpower_2023_autumn = P_wind2[:, 243:334]
 
-#Calculating the sum of the array for the mean solar power during a winter day
-solarpower_2023_winter_1=zeros(24)
-for i in range(24):
-    solarpower_2023_winter_1[i] = sum(solarpower_2023_winter[i])/len(solarpower_2023_winter[i])
+# #Calculating the sum of the array for the mean solar power during a winter day
+# solarpower_2023_winter_1=zeros(24)
+# for i in range(24):
+#     solarpower_2023_winter_1[i] = sum(solarpower_2023_winter[i])/len(solarpower_2023_winter[i])
 
-#Calculating the sum of the array for the mean solar power during a summer day
-solarpower_2023_summer_1=zeros(24)
-for i in range(24):
-    solarpower_2023_summer_1[i] = sum(solarpower_2023_summer[i])/len(solarpower_2023_summer[i])
+# #Calculating the sum of the array for the mean solar power during a summer day
+# solarpower_2023_summer_1=zeros(24)
+# for i in range(24):
+#     solarpower_2023_summer_1[i] = sum(solarpower_2023_summer[i])/len(solarpower_2023_summer[i])
 
-#Calculating the sum of the array for the mean wind power during a winter day
-windpower_2023_winter_1=zeros(24)
-for i in range(24):
-    windpower_2023_winter_1[i] = sum(windpower_2023_winter[i])/len(windpower_2023_winter[i])
+# #Calculating the sum of the array for the mean wind power during a winter day
+# windpower_2023_winter_1=zeros(24)
+# for i in range(24):
+#     windpower_2023_winter_1[i] = sum(windpower_2023_winter[i])/len(windpower_2023_winter[i])
 
-#Calculating the sum of the array for the mean wind power during a summer day
-windpower_2023_summer_1=zeros(24)
-for i in range(24):
-    windpower_2023_summer_1[i] = sum(windpower_2023_summer[i])/len(windpower_2023_summer[i])
+# #Calculating the sum of the array for the mean wind power during a summer day
+# windpower_2023_summer_1=zeros(24)
+# for i in range(24):
+#     windpower_2023_summer_1[i] = sum(windpower_2023_summer[i])/len(windpower_2023_summer[i])
 
-#Calculating the sum of the array for the yearly spot price in SE3 1X24
-spot_price_2023_winter_1=zeros(24)
-for i in range(24):
-    spot_price_2023_winter_1[i] = sum(spot_price_2024_winter[i])/len(spot_price_2024_winter[i])
+# #Calculating the sum of the array for the yearly spot price in SE3 1X24
+# spot_price_2023_winter_1=zeros(24)
+# for i in range(24):
+#     spot_price_2023_winter_1[i] = sum(spot_price_2024_winter[i])/len(spot_price_2024_winter[i])
 
-#Calculating the sum of the array for the yearly spot price in SE3 1X24
-spot_price_2023_summer_1=zeros(24)
-for i in range(24):
-    spot_price_2023_summer_1[i] = sum(spot_price_2024_summer[i])/len(spot_price_2024_summer[i])
+# #Calculating the sum of the array for the yearly spot price in SE3 1X24
+# spot_price_2023_summer_1=zeros(24)
+# for i in range(24):
+#     spot_price_2023_summer_1[i] = sum(spot_price_2024_summer[i])/len(spot_price_2024_summer[i])
 #endregion
 #_______________Plotting________________________________________________________________________________
 # # region Create subplots for mean winter and summer daily load in Krossholmen with two y-axes

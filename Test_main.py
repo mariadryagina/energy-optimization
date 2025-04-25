@@ -40,7 +40,7 @@ marinas = ['Björkö'] #, 'Krossholmen', 'Bessekroken']
 for i in list(marinas):
     if i == 'Björkö':
         load_data = load_björkö.load
-        solar_panel_area = 100 # m^2
+        solar_panel_area = 75*0.85 # m^2
         turbines = 0 # Number of wind turbines
         grid_limit = 242.2 #Limitations of grid, abbonerad effekt [kW]
 
@@ -53,7 +53,7 @@ for i in list(marinas):
         boat_discharge_rate = 60 #kW
     elif i == 'Krossholmen':
         load_data = load_krossholmen_2023.load
-        solar_panel_area = 100 # m^2
+        solar_panel_area = 167 # m^2
         turbines = 1 # Number of wind turbines
         grid_limit = 1680 #Limitations of grid, abbonerad effekt [kW]
 
@@ -66,7 +66,7 @@ for i in list(marinas):
         boat_discharge_rate = 60 #kW
     elif i == 'Bessekroken':
         load_data = load_björkö_bessekroken.load
-        solar_panel_area = 100 # m^2
+        solar_panel_area = 300*0.85 # m^2
         turbines = 1
         grid_limit = 13.8 #Limitations of grid, abbonerad effekt [kW]
 

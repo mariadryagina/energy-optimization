@@ -1,5 +1,14 @@
 #______Importing libraries_______________________________________________________________________________________________
 #region
+
+# This script requires the following::
+# pip install pandas
+# pip install matplotlib
+# pip install numpy
+# pip install scipy
+# pip install pyomo
+# pip install openpyxl
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,13 +20,14 @@ import load_björkö_bessekroken
 import el_price
 import el_cost
 import Optimization
+import Opt_test
 import usage_pattern
 from scipy.interpolate import interp1d
 from Effekthandel_väst import effekthandel_väst
 from Frequency import frequency_price
 import windequation
 
-user = 2 #User: Maja = 1, Maria = 2
+user = 1 #User: Maja = 1, Maria = 2
 #endregion
 #______Variable and parameters___________________________________________________________________________________________
 #region
@@ -235,6 +245,10 @@ for b in range(number_boats):
     else:
         number_boats3 += 1
 
+cycl_cost = ((3000000*0.35 + 9.66 * 150 * boat_capacity * (number_boats1 + number_boats2 + number_boats3)) * (1 - 0.3)) / (5380 * (bess_capacity + boat_capacity * (number_boats1 + number_boats2 + number_boats3)))
+#cycl_cost_boat = ((9.66 * 150 * boat_capacity * (number_boats1 + number_boats2 + number_boats3)) * (1 - 0.4)) / (5380 * (boat_capacity * (number_boats1 + number_boats2 + number_boats3)))
+#cycl_cost_bess = ((3000000 * 0.35) * (1 - 0.4)) / (5380 * (bess_capacity))
+
 boat_load1 = usage_pattern.boat_load(boat_availability1, (battery_upper_limit-battery_lower_limit)*boat_capacity*number_boats1, 0.1*boat_capacity*number_boats1)
 boat_load2 = usage_pattern.boat_load(boat_availability2, (battery_upper_limit-battery_lower_limit)*boat_capacity*number_boats2, 0.1*boat_capacity*number_boats2)
 boat_load3 = usage_pattern.boat_load(boat_availability3, (battery_upper_limit-battery_lower_limit)*boat_capacity*number_boats3, 0.1*boat_capacity*number_boats3)
@@ -251,7 +265,7 @@ bid_boat2 = activated_bids_effekthandelväst_data * boat_capacity * number_boats
 bid_boat3 = activated_bids_effekthandelväst_data * boat_capacity * number_boats3 * bid_size
 
 #______Calling optimization function________________________________________________________________________________________
-model = Optimization.optimize_microgrid(solar_power, wind_power, load_data, spot_price, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, battery_lower_limit, battery_upper_limit, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, bid_bess, bid_boat1, bid_boat2, bid_boat3, bid_size)
+model = Optimization.optimize_microgrid(solar_power, wind_power, load_data, spot_price, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, battery_lower_limit, battery_upper_limit, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, cycl_cost, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, bid_bess, bid_boat1, bid_boat2, bid_boat3, bid_size)
 
 #______Plotting results________________________________________________________________________________________
 old_grid_usage = np.zeros((24, 365))  # Initial load data
@@ -272,6 +286,7 @@ boat_discharge3 = np.zeros((24, 365))  # Boat discharge data
 boat_soc1 = np.zeros((24, 365)) # Boat state of charge data (total charge)
 boat_soc2 = np.zeros((24, 365)) # Boat state of charge data (total charge)
 boat_soc3 = np.zeros((24, 365)) # Boat state of charge data (total charge)
+#bidplaced = np.zeros((24, 365))  # Bid placed data
 spotprice = np.zeros((24, 365))  # Spot price data
 
 # Now you can access the model and its results
@@ -294,6 +309,7 @@ for h in model.HOURS:
         boat_soc1 [h, d] = model.boat_soc1[h, d].value
         boat_soc2 [h, d] = model.boat_soc2[h, d].value
         boat_soc3 [h, d] = model.boat_soc3[h, d].value
+        #bidplaced [h, d] = model.bid_placed[h, d].value  # Bid placed data
         spotprice [h, d] = spot_price[h][d]  # Spot price data
 
 old_cost = el_cost.cost(None, None, old_grid_usage, 61.55, 0.439, 0.113, 1.25)
@@ -361,38 +377,31 @@ sold_electricity_hourly = hourly_values2(sold_electricity_hourly, sold_electrici
 
 print(f"Old cost: {round(old_cost.sum())} SEK, Old grid usage: {round(old_grid_usage.sum())} MWh")
 print(f"Optimized cost: {round(opt_cost.sum())} SEK, Optimized grid usage: {round((grid_used_load + grid_used_battery).sum())} MWh")
+print(f"Cycl cost: {round(cycl_cost)} SEK/kWh")
+#print(f"Cycl cost boat: {round(cycl_cost_boat, 2)} SEK/kWh, Cycl cost BESS: {round(cycl_cost_bess, 2)} SEK/kWh")
 print(f'Grid to load: {round(grid_used_load.sum())} MWh, Grid to battery: {round(grid_used_battery.sum())} MWh')
 print(f"Electricity market revenue: {round((sold_electricity*spotprice).sum(),1)} SEK")
 print(f"Power bid revenue: {round((0.2*bid_size*(bess_capacity+boat_capacity*(number_boats1+number_boats2+number_boats3))*bids_effekthandelväst_data).sum())} SEK")
 print(f"Power activated revenue: {round(3.5*(bid_bess+bid_boat1+bid_boat2+bid_boat3).sum())} SEK")
+#print(f'Power throughput BESS: {round((bess_discharge.sum))}, Power throughput boat (mean): {round(((boat_discharge1+boat_discharge2+boat_discharge3)/number_boats).sum())} MWh')
 #print(f"Self sufficiency: {round(((self_sufficiency_hourly/(grid_used_battery_hourly + grid_used_load_hourly))*100).sum())} %")
 
 # Plotting)
 plt.figure(figsize=(12, 6))
 
 # Plot old grid usage
-plt.subplot(3, 1, 1)
-plt.plot((load_data_hourly))
-plt.title('Old Grid Usage (Initial Load)')
-plt.xlabel('Day')
-plt.ylabel('kWh')
-
-# Plot new grid usage
-plt.subplot(3, 1, 2)
-plt.plot((grid_used_battery_hourly + grid_used_load_hourly + self_production_hourly))
-plt.plot((grid_used_battery_hourly))
-plt.plot((self_production_hourly))
-plt.legend(['Grid usage', 'Grid usage to the battery', 'Self production'])
-plt.title('New Grid Usage (Optimized)')
-plt.xlabel('Days')
-plt.ylabel('kWh')
-
-plt.subplot(3, 1, 3)
-plt.plot((sold_electricity_hourly))
-plt.title('Sold Electricity')
-plt.xlabel('Days')
+plt.plot((load_data_hourly), color='blue', alpha=0.5)
+plt.plot((grid_used_load_hourly + grid_used_battery_hourly), color='green', alpha=0.5)
+plt.fill_between(range(len(load_data_hourly)), load_data_hourly, color='blue', alpha=0.5)
+plt.fill_between(range(len(grid_used_load_hourly + grid_used_battery_hourly)), grid_used_load_hourly + grid_used_battery_hourly, color='green', alpha=0.5)
+plt.legend(['Old grid usage', 'New grid usage'])
+plt.title('Grid usage')
+plt.xlim(0, 8760)  # Set x-axis limits to start at 0 and end at 8760
+plt.xlabel('Hour')
 plt.ylabel('kWh')
 plt.show()
+
+
 
 # Plot BESS and boat
 plt.figure
@@ -558,6 +567,10 @@ print(f"FCR-D down participant: {count_1} h")
 
 #region
 # # Creating csv files
+
+# bid_activated_pd = pd.DataFrame(activated_bids_effekthandelväst_data)
+# bid_activated_pd.to_csv('bid_activated.csv', index=False)
+
 # boat_load1_pd = pd.DataFrame(boat_load1)
 # boat_load1_pd.to_csv('BOAT_LOAD.csv', index=False)
 
@@ -579,11 +592,11 @@ print(f"FCR-D down participant: {count_1} h")
 # self_production_pd = pd.DataFrame(self_production)
 # self_production_pd.to_csv('self_production.csv', index=False)
 
-spot_price_pd = pd.DataFrame(spot_price)
-spot_price_pd.to_csv('spot_price.csv', index=False)
+# spot_price_pd = pd.DataFrame(spot_price)
+# spot_price_pd.to_csv('spot_price.csv', index=False)
 
-sold_electricity_pd = pd.DataFrame(sold_electricity)
-sold_electricity_pd.to_csv('sold_electricity.csv', index=False)
+# sold_electricity_pd = pd.DataFrame(sold_electricity)
+# sold_electricity_pd.to_csv('sold_electricity.csv', index=False)
 
 # grid_used_battery_pd = pd.DataFrame(grid_used_battery)
 # grid_used_battery_pd.to_csv('grid_used_battery.csv', index=False)

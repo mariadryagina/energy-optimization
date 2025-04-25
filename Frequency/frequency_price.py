@@ -13,15 +13,15 @@ url_2024 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/
 
 
 # Fetch the file from GitHub
-response = requests.get(url)
+response = requests.get(url, verify=False)
 response.raise_for_status()  # Check if the request was successful
-response_1 = requests.get(url_1)
+response_1 = requests.get(url_1, verify=False)
 response_1.raise_for_status()  # Check if the request was successful
-response_2022 = requests.get(url_2022)
+response_2022 = requests.get(url_2022, verify=False)
 response_2022.raise_for_status()  # Check if the request was successful
-response_2021 = requests.get(url_2021)
+response_2021 = requests.get(url_2021, verify=False)
 response_2021.raise_for_status()  # Check if the request was successful
-response_2024 = requests.get(url_2024)
+response_2024 = requests.get(url_2024, verify=False)
 response_2024.raise_for_status()  # Check if the request was successful
 
 # Read the Excel file into a DataFrame
@@ -81,11 +81,13 @@ for i in range(366):
     for j in range(24):
          FCR_D_up_2024[j,i]=(df_2024.iloc[i*24+j,8])*11.03
 
+FCR_D_up_2024 = np.delete(FCR_D_up_2024, 59, axis=1)  # Remove the 60th column (day)
+
 
 FCR_D_up_2024_8760 = FCR_D_up_2024.reshape(-1, order='F')
 
 for i in range(8760):
-    FCR_D_up_1[i]=(df.iloc[i,8])*11.03
+    FCR_D_up_1[i]=(df.iloc[i,8])
 
 
 #Storing FCR-D down prices in a matrix SEK/MWh
@@ -116,9 +118,13 @@ for i in range(366):
     for j in range(24):
          FCR_D_down_2024[j,i]=(df_2024.iloc[i*24+j,15])*11.03
 
+FCR_D_down_2024 = np.delete(FCR_D_down_2024, 59, axis=1)  # Remove the 60th column (day)
+
+
 
 FCR_D_down_2024_8760 = FCR_D_down_2024.reshape(-1, order='F')
 
+#2023
 for i in range(8760):
     FCR_D_down_1[i]=(df.iloc[i,15])*11.03
 
@@ -129,26 +135,26 @@ for i in range(8760):
 #Spring: March, April, May
 #Summer: June, July, August
 #Autumn: September, October, November
-price_winter_FCR_N = FCR_N[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
-price_spring_FCR_N = FCR_N[:, 59:151]
-price_summer_FCR_N = FCR_N[:, 151:243]
-price_autumn_FCR_N = FCR_N[:, 243:334]
+# price_winter_FCR_N = FCR_N[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
+# price_spring_FCR_N = FCR_N[:, 59:151]
+# price_summer_FCR_N = FCR_N[:, 151:243]
+# price_autumn_FCR_N = FCR_N[:, 243:334]
 
-price_winter_mean_FCR_N=np.zeros((24))
-for i in range(24):
-    price_winter_mean_FCR_N[i]=sum(price_winter_FCR_N[i])/len(price_winter_FCR_N[i])
+# price_winter_mean_FCR_N=np.zeros((24))
+# for i in range(24):
+#     price_winter_mean_FCR_N[i]=sum(price_winter_FCR_N[i])/len(price_winter_FCR_N[i])
 
-price_spring_mean_FCR_N=np.zeros((24))
-for i in range(24):
-    price_spring_mean_FCR_N[i]=sum(price_spring_FCR_N[i])/len(price_spring_FCR_N[i])
+# price_spring_mean_FCR_N=np.zeros((24))
+# for i in range(24):
+#     price_spring_mean_FCR_N[i]=sum(price_spring_FCR_N[i])/len(price_spring_FCR_N[i])
 
-price_summer_mean_FCR_N=np.zeros((24))
-for i in range(24):
-    price_summer_mean_FCR_N[i]=sum(price_summer_FCR_N[i])/len(price_summer_FCR_N[i])
+# price_summer_mean_FCR_N=np.zeros((24))
+# for i in range(24):
+#     price_summer_mean_FCR_N[i]=sum(price_summer_FCR_N[i])/len(price_summer_FCR_N[i])
 
-price_autumn_mean_FCR_N=np.zeros((24))
-for i in range(24):
-    price_autumn_mean_FCR_N[i]=sum(price_autumn_FCR_N[i])/len(price_autumn_FCR_N[i])
+# price_autumn_mean_FCR_N=np.zeros((24))
+# for i in range(24):
+#     price_autumn_mean_FCR_N[i]=sum(price_autumn_FCR_N[i])/len(price_autumn_FCR_N[i])
 
 
 # # Create subplots
@@ -198,63 +204,63 @@ for i in range(24):
 #Summer: June, July, August
 #Autumn: September, October, November
 
-#2023
-price_winter_FCR_D_up_2023 = FCR_D_up_2023[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
-price_spring_FCR_D_up_2023 = FCR_D_up_2023[:, 59:151]
-price_summer_FCR_D_up_2023 = FCR_D_up_2023[:, 151:243]
-price_autumn_FCR_D_up_2023 = FCR_D_up_2023[:, 243:334]
+# #2023
+# price_winter_FCR_D_up_2023 = FCR_D_up_2023[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
+# price_spring_FCR_D_up_2023 = FCR_D_up_2023[:, 59:151]
+# price_summer_FCR_D_up_2023 = FCR_D_up_2023[:, 151:243]
+# price_autumn_FCR_D_up_2023 = FCR_D_up_2023[:, 243:334]
 
-price_winter_mean_FCR_D_up_2023=np.zeros((24))
-for i in range(24):
-    price_winter_mean_FCR_D_up_2023[i]=sum(price_winter_FCR_D_up_2023[i])/len(price_winter_FCR_D_up_2023[i])
+# price_winter_mean_FCR_D_up_2023=np.zeros((24))
+# for i in range(24):
+#     price_winter_mean_FCR_D_up_2023[i]=sum(price_winter_FCR_D_up_2023[i])/len(price_winter_FCR_D_up_2023[i])
 
-price_spring_mean_FCR_D_up_2023=np.zeros((24))
-for i in range(24):
-    price_spring_mean_FCR_D_up_2023[i]=sum(price_spring_FCR_D_up_2023[i])/len(price_spring_FCR_D_up_2023[i])
+# price_spring_mean_FCR_D_up_2023=np.zeros((24))
+# for i in range(24):
+#     price_spring_mean_FCR_D_up_2023[i]=sum(price_spring_FCR_D_up_2023[i])/len(price_spring_FCR_D_up_2023[i])
 
-price_summer_mean_FCR_D_up_2023=np.zeros((24))
-for i in range(24):
-    price_summer_mean_FCR_D_up_2023[i]=sum(price_summer_FCR_D_up_2023[i])/len(price_summer_FCR_D_up_2023[i])
+# price_summer_mean_FCR_D_up_2023=np.zeros((24))
+# for i in range(24):
+#     price_summer_mean_FCR_D_up_2023[i]=sum(price_summer_FCR_D_up_2023[i])/len(price_summer_FCR_D_up_2023[i])
 
-price_autumn_mean_FCR_D_up_2023=np.zeros((24))
-for i in range(24):
-    price_autumn_mean_FCR_D_up_2023[i]=sum(price_autumn_FCR_D_up_2023[i])/len(price_autumn_FCR_D_up_2023[i])
+# price_autumn_mean_FCR_D_up_2023=np.zeros((24))
+# for i in range(24):
+#     price_autumn_mean_FCR_D_up_2023[i]=sum(price_autumn_FCR_D_up_2023[i])/len(price_autumn_FCR_D_up_2023[i])
 
-#2021
-price_winter_FCR_D_up_2021 = FCR_D_up_2021[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
-price_summer_FCR_D_up_2021 = FCR_D_up_2021[:, 151:243]
+# #2021
+# price_winter_FCR_D_up_2021 = FCR_D_up_2021[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
+# price_summer_FCR_D_up_2021 = FCR_D_up_2021[:, 151:243]
 
-price_winter_mean_FCR_D_up_2021=np.zeros((24))
-for i in range(24):
-    price_winter_mean_FCR_D_up_2021[i]=sum(price_winter_FCR_D_up_2021[i])/len(price_winter_FCR_D_up_2021[i])
+# price_winter_mean_FCR_D_up_2021=np.zeros((24))
+# for i in range(24):
+#     price_winter_mean_FCR_D_up_2021[i]=sum(price_winter_FCR_D_up_2021[i])/len(price_winter_FCR_D_up_2021[i])
 
-price_summer_mean_FCR_D_up_2021=np.zeros((24))
-for i in range(24):
-    price_summer_mean_FCR_D_up_2021[i]=sum(price_summer_FCR_D_up_2021[i])/len(price_summer_FCR_D_up_2021[i])
+# price_summer_mean_FCR_D_up_2021=np.zeros((24))
+# for i in range(24):
+#     price_summer_mean_FCR_D_up_2021[i]=sum(price_summer_FCR_D_up_2021[i])/len(price_summer_FCR_D_up_2021[i])
 
-#2022
-price_winter_FCR_D_up_2022 = FCR_D_up_2022[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
-price_summer_FCR_D_up_2022 = FCR_D_up_2022[:, 151:243]
+# #2022
+# price_winter_FCR_D_up_2022 = FCR_D_up_2022[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
+# price_summer_FCR_D_up_2022 = FCR_D_up_2022[:, 151:243]
 
-price_winter_mean_FCR_D_up_2022=np.zeros((24))
-for i in range(24):
-    price_winter_mean_FCR_D_up_2022[i]=sum(price_winter_FCR_D_up_2022[i])/len(price_winter_FCR_D_up_2022[i])
+# price_winter_mean_FCR_D_up_2022=np.zeros((24))
+# for i in range(24):
+#     price_winter_mean_FCR_D_up_2022[i]=sum(price_winter_FCR_D_up_2022[i])/len(price_winter_FCR_D_up_2022[i])
 
-price_summer_mean_FCR_D_up_2022=np.zeros((24))
-for i in range(24):
-    price_summer_mean_FCR_D_up_2022[i]=sum(price_summer_FCR_D_up_2022[i])/len(price_summer_FCR_D_up_2022[i])
+# price_summer_mean_FCR_D_up_2022=np.zeros((24))
+# for i in range(24):
+#     price_summer_mean_FCR_D_up_2022[i]=sum(price_summer_FCR_D_up_2022[i])/len(price_summer_FCR_D_up_2022[i])
 
-#2024
-price_winter_FCR_D_up_2024 = FCR_D_up_2024[:, np.concatenate((np.arange(334, 366), np.arange(0, 59)))]
-price_summer_FCR_D_up_2024 = FCR_D_up_2024[:, 151:243]
+# #2024
+# price_winter_FCR_D_up_2024 = FCR_D_up_2024[:, np.concatenate((np.arange(334, 366), np.arange(0, 59)))]
+# price_summer_FCR_D_up_2024 = FCR_D_up_2024[:, 151:243]
 
-price_winter_mean_FCR_D_up_2024=np.zeros((24))
-for i in range(24):
-    price_winter_mean_FCR_D_up_2024[i]=sum(price_winter_FCR_D_up_2024[i])/len(price_winter_FCR_D_up_2024[i])
+# price_winter_mean_FCR_D_up_2024=np.zeros((24))
+# for i in range(24):
+#     price_winter_mean_FCR_D_up_2024[i]=sum(price_winter_FCR_D_up_2024[i])/len(price_winter_FCR_D_up_2024[i])
 
-price_summer_mean_FCR_D_up_2024=np.zeros((24))
-for i in range(24):
-    price_summer_mean_FCR_D_up_2024[i]=sum(price_summer_FCR_D_up_2024[i])/len(price_summer_FCR_D_up_2024[i])
+# price_summer_mean_FCR_D_up_2024=np.zeros((24))
+# for i in range(24):
+#     price_summer_mean_FCR_D_up_2024[i]=sum(price_summer_FCR_D_up_2024[i])/len(price_summer_FCR_D_up_2024[i])
 
 # # Create subplots with 1x2 layout
 # fig, axs = plt.subplots(1, 2, figsize=(12, 5))
@@ -291,63 +297,63 @@ for i in range(24):
 #Summer: June, July, August
 #Autumn: September, October, November
 #2023
-price_winter_FCR_D_down_2023 = FCR_D_down_2023[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
-price_spring_FCR_D_down_2023 = FCR_D_down_2023[:, 59:151]
-price_summer_FCR_D_down_2023 = FCR_D_down_2023[:, 151:243]
-price_autumn_FCR_D_down_2023 = FCR_D_down_2023[:, 243:334]
+# price_winter_FCR_D_down_2023 = FCR_D_down_2023[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
+# price_spring_FCR_D_down_2023 = FCR_D_down_2023[:, 59:151]
+# price_summer_FCR_D_down_2023 = FCR_D_down_2023[:, 151:243]
+# price_autumn_FCR_D_down_2023 = FCR_D_down_2023[:, 243:334]
 
-price_winter_mean_FCR_D_down_2023=np.zeros((24))
-for i in range(24):
-    price_winter_mean_FCR_D_down_2023[i]=sum(price_winter_FCR_D_down_2023[i])/len(price_winter_FCR_D_down_2023[i])
+# price_winter_mean_FCR_D_down_2023=np.zeros((24))
+# for i in range(24):
+#     price_winter_mean_FCR_D_down_2023[i]=sum(price_winter_FCR_D_down_2023[i])/len(price_winter_FCR_D_down_2023[i])
 
-price_spring_mean_FCR_D_down_2023=np.zeros((24))
-for i in range(24):
-    price_spring_mean_FCR_D_down_2023[i]=sum(price_spring_FCR_D_down_2023[i])/len(price_spring_FCR_D_down_2023[i])
+# price_spring_mean_FCR_D_down_2023=np.zeros((24))
+# for i in range(24):
+#     price_spring_mean_FCR_D_down_2023[i]=sum(price_spring_FCR_D_down_2023[i])/len(price_spring_FCR_D_down_2023[i])
 
-price_summer_mean_FCR_D_down_2023=np.zeros((24))
-for i in range(24):
-    price_summer_mean_FCR_D_down_2023[i]=sum(price_summer_FCR_D_down_2023[i])/len(price_summer_FCR_D_down_2023[i])
+# price_summer_mean_FCR_D_down_2023=np.zeros((24))
+# for i in range(24):
+#     price_summer_mean_FCR_D_down_2023[i]=sum(price_summer_FCR_D_down_2023[i])/len(price_summer_FCR_D_down_2023[i])
 
-price_autumn_mean_FCR_D_down_2023=np.zeros((24))
-for i in range(24):
-    price_autumn_mean_FCR_D_down_2023[i]=sum(price_autumn_FCR_D_down_2023[i])/len(price_autumn_FCR_D_down_2023[i])
+# price_autumn_mean_FCR_D_down_2023=np.zeros((24))
+# for i in range(24):
+#     price_autumn_mean_FCR_D_down_2023[i]=sum(price_autumn_FCR_D_down_2023[i])/len(price_autumn_FCR_D_down_2023[i])
 
 
-#2021
-price_winter_FCR_D_down_2021 = FCR_D_down_2021[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
-price_summer_FCR_D_down_2021 = FCR_D_down_2021[:, 151:243]
+# #2021
+# price_winter_FCR_D_down_2021 = FCR_D_down_2021[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
+# price_summer_FCR_D_down_2021 = FCR_D_down_2021[:, 151:243]
 
-price_winter_mean_FCR_D_down_2021=np.zeros((24))
-for i in range(24):
-    price_winter_mean_FCR_D_down_2021[i]=sum(price_winter_FCR_D_down_2021[i])/len(price_winter_FCR_D_down_2021[i])
+# price_winter_mean_FCR_D_down_2021=np.zeros((24))
+# for i in range(24):
+#     price_winter_mean_FCR_D_down_2021[i]=sum(price_winter_FCR_D_down_2021[i])/len(price_winter_FCR_D_down_2021[i])
 
-price_summer_mean_FCR_D_down_2021=np.zeros((24))
-for i in range(24):
-    price_summer_mean_FCR_D_down_2021[i]=sum(price_summer_FCR_D_down_2021[i])/len(price_summer_FCR_D_down_2021[i])
+# price_summer_mean_FCR_D_down_2021=np.zeros((24))
+# for i in range(24):
+#     price_summer_mean_FCR_D_down_2021[i]=sum(price_summer_FCR_D_down_2021[i])/len(price_summer_FCR_D_down_2021[i])
 
-#2022
-price_winter_FCR_D_down_2022 = FCR_D_down_2022[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
-price_summer_FCR_D_down_2022 = FCR_D_down_2022[:, 151:243]
+# #2022
+# price_winter_FCR_D_down_2022 = FCR_D_down_2022[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
+# price_summer_FCR_D_down_2022 = FCR_D_down_2022[:, 151:243]
 
-price_winter_mean_FCR_D_down_2022=np.zeros((24))
-for i in range(24):
-    price_winter_mean_FCR_D_down_2022[i]=sum(price_winter_FCR_D_down_2022[i])/len(price_winter_FCR_D_down_2022[i])
+# price_winter_mean_FCR_D_down_2022=np.zeros((24))
+# for i in range(24):
+#     price_winter_mean_FCR_D_down_2022[i]=sum(price_winter_FCR_D_down_2022[i])/len(price_winter_FCR_D_down_2022[i])
 
-price_summer_mean_FCR_D_down_2022=np.zeros((24))
-for i in range(24):
-    price_summer_mean_FCR_D_down_2022[i]=sum(price_summer_FCR_D_down_2022[i])/len(price_summer_FCR_D_down_2022[i])
+# price_summer_mean_FCR_D_down_2022=np.zeros((24))
+# for i in range(24):
+#     price_summer_mean_FCR_D_down_2022[i]=sum(price_summer_FCR_D_down_2022[i])/len(price_summer_FCR_D_down_2022[i])
 
-#2024
-price_winter_FCR_D_down_2024 = FCR_D_down_2024[:, np.concatenate((np.arange(334, 366), np.arange(0, 59)))]
-price_summer_FCR_D_down_2024 = FCR_D_down_2024[:, 151:243]
+# #2024
+# price_winter_FCR_D_down_2024 = FCR_D_down_2024[:, np.concatenate((np.arange(334, 366), np.arange(0, 59)))]
+# price_summer_FCR_D_down_2024 = FCR_D_down_2024[:, 151:243]
 
-price_winter_mean_FCR_D_down_2024=np.zeros((24))
-for i in range(24):
-    price_winter_mean_FCR_D_down_2024[i]=sum(price_winter_FCR_D_down_2024[i])/len(price_winter_FCR_D_down_2024[i])
+# price_winter_mean_FCR_D_down_2024=np.zeros((24))
+# for i in range(24):
+#     price_winter_mean_FCR_D_down_2024[i]=sum(price_winter_FCR_D_down_2024[i])/len(price_winter_FCR_D_down_2024[i])
 
-price_summer_mean_FCR_D_down_2024=np.zeros((24))
-for i in range(24):
-    price_summer_mean_FCR_D_down_2024[i]=sum(price_summer_FCR_D_down_2024[i])/len(price_summer_FCR_D_down_2024[i])
+# price_summer_mean_FCR_D_down_2024=np.zeros((24))
+# for i in range(24):
+#     price_summer_mean_FCR_D_down_2024[i]=sum(price_summer_FCR_D_down_2024[i])/len(price_summer_FCR_D_down_2024[i])
 
 # # Create subplots with 1x2 layout
 # fig, axs = plt.subplots(1, 2, figsize=(12, 5))

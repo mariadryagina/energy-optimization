@@ -514,7 +514,7 @@ total_soc2=bid_matrix * total_soc1
 
 
 #FCR-D revenue   
-FCR_D_up_price_data=(frequency_price.FCR_D_up_2023)/1000
+FCR_D_up_price_data=(frequency_price.FCR_D_up_2024)/1000
 bid_soc = np.zeros((24,365)) # Battery state of charge data (total charge)
 total_fcr_revenue=np.zeros((24,365)) 
 # hours=np.zeros(24,365)
@@ -551,6 +551,7 @@ for i in range(365):
                 bid_soc[j, i] = total_soc2[j, i]
 
 
+
 total_fcr_revenue_reshaped=np.zeros((365))  
 for i in range(365):
     total_fcr_revenue_reshaped[i] = sum(total_fcr_revenue[:, i])
@@ -560,7 +561,7 @@ print(f"FCR-D up participant: {count} h")
 
 
 #FCR-D down revenue
-FCR_D_down_price_data=(frequency_price.FCR_D_down_2023)/1000
+FCR_D_down_price_data=(frequency_price.FCR_D_down_2024)/1000
 total_fcr_down_revenue=np.zeros((24,365)) 
 count_1=0
 bid_soc_down = np.zeros((24,365))
@@ -601,7 +602,7 @@ for i in range(365):
     total_fcr_down_revenue_reshaped[i] = sum(total_fcr_down_revenue[:, i])
 
 print(f"FCR-D down revenue: {sum(total_fcr_down_revenue_reshaped)} SEK")
-print(f"FCR-D down participant: {count} h")
+print(f"FCR-D down participant: {count_1} h")
 
 
 #region
@@ -666,14 +667,14 @@ print(f"FCR-D down participant: {count} h")
 # boat_soc3_pd = pd.DataFrame(boat_soc3)
 # boat_soc3_pd.to_csv('boat_soc3.csv', index=False)
 
-# total_soc2_pd = pd.DataFrame(total_soc2)
-# total_soc2_pd.to_csv('total_soc2.csv', index=False)
+total_soc2_pd = pd.DataFrame(total_soc2)
+total_soc2_pd.to_csv('total_soc2.csv', index=False)
 
 bid_soc_pd = pd.DataFrame(bid_soc)
 bid_soc_pd.to_csv('bid_soc.csv', index=False)
 
-bid_soc_down_pd = pd.DataFrame(bid_soc_down)
-bid_soc_down_pd.to_csv('bid_soc_down.csv', index=False)
+# bid_soc_down_pd = pd.DataFrame(bid_soc_down)
+# bid_soc_down_pd.to_csv('bid_soc_down.csv', index=False)
 
 # total_boat_pd = pd.DataFrame(total_boat)
 # total_boat_pd.to_csv('total_boat_soc.csv', index=False)
@@ -681,8 +682,8 @@ bid_soc_down_pd.to_csv('bid_soc_down.csv', index=False)
 # FCR_D_down_price_data_pd = pd.DataFrame(FCR_D_down_price_data)
 # FCR_D_down_price_data_pd.to_csv('FCR_D_down_price_data.csv', index=False)
 
-# total_fcr_revenue_pd = pd.DataFrame(total_fcr_revenue)
-# total_fcr_revenue_pd.to_csv('total_fcr_revenue.csv', index=False)
+total_fcr_revenue_pd = pd.DataFrame(total_fcr_revenue)
+total_fcr_revenue_pd.to_csv('total_fcr_revenue.csv', index=False)
 
 # total_fcr_down_revenue_pd = pd.DataFrame(total_fcr_down_revenue)
 # total_fcr_down_revenue_pd.to_csv('total_fcr_down_revenue.csv', index=False)

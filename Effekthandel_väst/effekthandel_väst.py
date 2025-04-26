@@ -11,7 +11,7 @@ from io import BytesIO
 url = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Effekthandel_väst/Effekthandelväst_aktivering.xlsx"
 
 # Fetch the file from GitHub
-response = requests.get(url, verify=False)
+response = requests.get(url,verify=False)
 response.raise_for_status()  # Check if the request was successful
 
 # Read the Excel file into a DataFrame

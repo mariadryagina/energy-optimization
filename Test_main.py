@@ -667,11 +667,11 @@ print(f"FCR-D down participant: {count_1} h")
 # boat_soc3_pd = pd.DataFrame(boat_soc3)
 # boat_soc3_pd.to_csv('boat_soc3.csv', index=False)
 
-total_soc2_pd = pd.DataFrame(total_soc2)
-total_soc2_pd.to_csv('total_soc2.csv', index=False)
+# total_soc2_pd = pd.DataFrame(total_soc2)
+# total_soc2_pd.to_csv('total_soc2.csv', index=False)
 
-bid_soc_pd = pd.DataFrame(bid_soc)
-bid_soc_pd.to_csv('bid_soc.csv', index=False)
+# bid_soc_pd = pd.DataFrame(bid_soc)
+# bid_soc_pd.to_csv('bid_soc.csv', index=False)
 
 # bid_soc_down_pd = pd.DataFrame(bid_soc_down)
 # bid_soc_down_pd.to_csv('bid_soc_down.csv', index=False)
@@ -682,8 +682,8 @@ bid_soc_pd.to_csv('bid_soc.csv', index=False)
 # FCR_D_down_price_data_pd = pd.DataFrame(FCR_D_down_price_data)
 # FCR_D_down_price_data_pd.to_csv('FCR_D_down_price_data.csv', index=False)
 
-total_fcr_revenue_pd = pd.DataFrame(total_fcr_revenue)
-total_fcr_revenue_pd.to_csv('total_fcr_revenue.csv', index=False)
+# total_fcr_revenue_pd = pd.DataFrame(total_fcr_revenue)
+# total_fcr_revenue_pd.to_csv('total_fcr_revenue.csv', index=False)
 
 # total_fcr_down_revenue_pd = pd.DataFrame(total_fcr_down_revenue)
 # total_fcr_down_revenue_pd.to_csv('total_fcr_down_revenue.csv', index=False)

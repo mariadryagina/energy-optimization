@@ -5,7 +5,7 @@ from pyomo.opt import SolverStatus, TerminationCondition
 import matplotlib as plt
 
 # Define the optimization model
-def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, battery_lower_limit, battery_upper_limit, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, bid_bess_data, bid_boat1_data, bid_boat2_data, bid_boat3_data, bid_size):
+def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, battery_lower_limit, battery_upper_limit, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, peak_cost, cycl_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, bid_bess_data, bid_boat1_data, bid_boat2_data, bid_boat3_data, bid_size):
     model = ConcreteModel()
 
     # --- Define Sets ---
@@ -58,6 +58,8 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     model.grid_used_battery = Var(model.HOURS, model.DAYS, bounds=(0, 0.1*(bess_capacity + boat_capacity * (number_boats1 + number_boats2 + number_boats3))))
     model.grid_sold = Var(model.HOURS, model.DAYS, bounds=(0, grid_limit/2))
     model.peak_month = Var(model.MONTHS, bounds=(0, grid_limit))
+    model.peak_old_month = Var(model.MONTHS, bounds=(0, grid_limit))
+    model.self_production_used = Var(model.HOURS, model.DAYS, bounds=(0, grid_limit/2))
 
     model.bess_soc = Var(model.HOURS, model.DAYS, bounds=(bess_capacity*battery_lower_limit, bess_capacity*battery_upper_limit))
     model.bess_charge = Var(model.HOURS, model.DAYS, bounds=(0, bess_charge_rate))
@@ -79,22 +81,27 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     # Minimize cost of grid electricity
     def total_grid_cost(model):
         electricity_cost = sum(
-            (energy_tax + transmission_fee + model.spot_price[h, d]) * (model.grid_used_load[h, d] + model.grid_used_battery[h, d]) #Cost of electricity
+            (energy_tax + transmission_fee + model.spot_price[h, d]) * (model.grid_used_load[h, d] + model.grid_used_battery[h, d])*1.25 #Cost of electricity
             for h in model.HOURS for d in model.DAYS)
         
         peak_total_cost = sum(
-            peak_cost * model.peak_month[m] 
+            peak_cost * model.peak_month[m] * 1.25
+            for m in model.MONTHS)
+        
+        peak_penalty = sum(
+            1000 * (model.peak_old_month[m] * 1.25)
             for m in model.MONTHS)
 
         electricity_revenue = sum(
-            model.spot_price[h, d] * model.grid_sold[h, d] #Revenue from selling electricity
+            (model.spot_price[h, d] + 0.07) * model.grid_sold[h, d] #Revenue from selling electricity
             for h in model.HOURS for d in model.DAYS)
             
         cycling_cost = sum((model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d]
                            + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d] + model.boat_discharge3[h, d])
-                           * 1
+                           * (0.24/2) #cycl_cost/2
                            for h in model.HOURS for d in model.DAYS)
-        return (electricity_cost + peak_total_cost - electricity_revenue + cycling_cost)
+        
+        return (electricity_cost + peak_total_cost + peak_penalty - electricity_revenue + cycling_cost) #Cost of electricity
     model.objective = Objective(rule=total_grid_cost, sense=minimize)
 
     # Returns the maximum grid load for each month
@@ -105,10 +112,28 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
         return Constraint.Skip 
     model.peak_month_constraint = Constraint(model.HOURS, model.DAYS, rule=peak_month_rule)
 
+    def new_peak_month_rule(model, h, d):
+        for month, (start, end) in month_day_ranges.items():
+            if start <= d <= end:
+                return 0.95*model.load_param[h, d] <= model.peak_old_month[month]
+        return Constraint.Skip
+    model.new_peak_month_constraint = Constraint(model.HOURS, model.DAYS, rule=new_peak_month_rule)
+
+    def peak_rule(model, h, d):
+        for month, (start, end) in month_day_ranges.items():
+            if start <= d <= end:
+                return model.peak_month[month] <= model.peak_old_month[month]
+        return Constraint.Skip
+    model.peak_constraint = Constraint(model.HOURS, model.DAYS, rule=peak_rule)
+
     # ---Constraints---
     # Load balance constraint: the sum of all energy going in to the system must equal the sum of all energy going out of the system
     def load_balance_rule(model, h, d):
-        return model.self_production[h, d] + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d]+ model.boat_discharge3[h, d] + (model.grid_used_load[h, d] + model.grid_used_battery[h, d]) == model.load_param[h, d] + model.grid_sold[h, d] + model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d] # + model.boat_load1[h, d] + model.boat_load2[h, d] + model.boat_load3[h, d]
+        if model.self_production[h, d] > 5*model.load_param[h, d]:
+            model.self_production_used[h, d] = model.self_production[h, d] - 2*model.load_param[h, d]
+            return model.self_production_used[h, d] + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d]+ model.boat_discharge3[h, d] + (model.grid_used_load[h, d] + model.grid_used_battery[h, d]) == 2*model.load_param[h, d] + model.grid_sold[h, d] + model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d] # + model.boat_load1[h, d] + model.boat_load2[h, d] + model.boat_load3[h, d]
+        else:
+            return model.self_production[h, d] + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d]+ model.boat_discharge3[h, d] + (model.grid_used_load[h, d] + model.grid_used_battery[h, d]) == model.load_param[h, d] + model.grid_sold[h, d] + model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d] # + model.boat_load1[h, d] + model.boat_load2[h, d] + model.boat_load3[h, d]
     model.load_balance_constraint = Constraint(model.HOURS, model.DAYS, rule=load_balance_rule)
 
     # The load must be met by the self-sufficiency, electricity from the grid and the batteries, 
@@ -137,7 +162,11 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
 
     # Batteries may only charge from the self-produced electricity (that is not used to meet the load) and from the grid)
     def battery_charge_rule(model, h, d):
-        return model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d] == model.self_production[h, d] - model.self_sufficiency[h, d] + model.grid_used_battery[h, d]
+        if model.self_production[h, d] > 5*model.load_param[h, d]:
+            model.self_production_used[h, d] = model.self_production[h, d] - 2*model.load_param[h, d]
+            return model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d] == model.self_production_used[h, d] - model.self_sufficiency[h, d] + model.grid_used_battery[h, d]
+        else:
+            return model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d] == model.self_production[h, d] - model.self_sufficiency[h, d] + model.grid_used_battery[h, d]
     model.battery_charge_constraint = Constraint(model.HOURS, model.DAYS, rule=battery_charge_rule)
 
     # Battery SOC limits: limits the charging to the available storage in the battery
@@ -296,8 +325,12 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
         def rule(model, h, d):
             if h == 23 and d == 364:
                 return Constraint.Skip
+            elif h == 22 and d == 364:
+                return Constraint.Skip
             elif h == 23:
-                if BID[h, d] == 0 and BID[0, d+1]==1:            # (0)  1  1  0
+                if BID[h, d] == 0 and BID[0, d+1]==0 and BID[1, d+1]==1:
+                    return  SOC[h, d] >= CAP * (battery_lower_limit + bid_size)
+                elif BID[h, d] == 0 and BID[0, d+1]==1:            # (0)  1  1  0
                     return  SOC[h, d] >= CAP * (battery_lower_limit + 2*bid_size)
                 elif BID[h, d] == 1 and BID[0, d+1]==1:          # 0  (1)  1  0
                     return  SOC[h, d] >= CAP * (battery_lower_limit + 2*bid_size)
@@ -305,8 +338,21 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
                     return SOC[h, d] >= CAP * (battery_lower_limit + bid_size)
                 else:
                     return Constraint.Skip
+            elif h == 22:
+                if BID[h, d] == 0 and BID[23, d]==0 and BID[0, d+1]==1:
+                    return  SOC[h, d] >= CAP * (battery_lower_limit + bid_size)
+                elif BID[h, d] == 0 and BID[23, d]==1:            # (0)  1  1  0
+                    return  SOC[h, d] >= CAP * (battery_lower_limit + 2*bid_size)
+                elif BID[h, d] == 1 and BID[23, d]==1:          # 0  (1)  1  0
+                    return  SOC[h, d] >= CAP * (battery_lower_limit + 2*bid_size)
+                elif BID[h, d] == 1 and BID[23, d] == 0:        # 0  1  (1)  0
+                    return SOC[h, d] >= CAP * (battery_lower_limit + bid_size)
+                else:
+                    return Constraint.Skip
             else:
-                if BID[h, d] == 0 and BID[h+1, d] == 1:          # (0)  1  1  0
+                if BID[h, d] == 0 and BID[h+1, d] == 0 and BID[h+2, d] == 1:
+                    return SOC[h, d] >= CAP * (battery_lower_limit + bid_size)
+                elif BID[h, d] == 0 and BID[h+1, d] == 1:          # (0)  1  1  0
                     return SOC[h, d] >= CAP * (battery_lower_limit + 2*bid_size)
                 elif BID[h, d] == 1 and BID[h+1, d] == 1:        # 0  (1)  1  0
                     return  SOC[h, d] >= CAP * (battery_lower_limit + 2*bid_size)

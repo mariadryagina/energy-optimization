@@ -20,8 +20,6 @@ import load_björkö_bessekroken
 import el_price
 import el_cost
 import Optimization
-import Opt_test
-import Opt_test2
 import usage_pattern
 from scipy.interpolate import interp1d
 from Effekthandel_väst import effekthandel_väst

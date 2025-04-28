@@ -34,7 +34,7 @@ user = 1 #User: Maja = 1, Maria = 2
 # load_summer_krossholmen = load_krossholmen_2023.load_summer
 
 # marinas = ['Björkö', 'Krossholmen', 'Bessekroken']
-marinas = ['Krossholmen'] #, 'Krossholmen', 'Bessekroken']
+marinas = ['Bessekroken'] #, 'Krossholmen', 'Bessekroken']
 
 for i in list(marinas):
     if i == 'Björkö':
@@ -274,6 +274,7 @@ grid_used_battery = np.zeros((24, 365))  # Grid usage with battery data
 grid_used_load = np.zeros((24, 365))  # Grid usage with load data
 self_sufficiency = np.zeros((24, 365))  # Self sufficiency data
 self_production = np.zeros((24, 365))  # Self production data
+self_production_used = np.zeros((24, 365))  # Self production used data
 sold_electricity = np.zeros((24, 365))  # Sold electricity data
 bess_charge = np.zeros((24, 365))  # Battery charge data
 bess_discharge = np.zeros((24, 365))  # Battery discharge data
@@ -296,7 +297,8 @@ for h in model.HOURS:
         old_grid_usage[h, d] = load_data[h][d]  # Initial load
         grid_used_battery[h, d] = model.grid_used_battery[h, d].value  # Grid usage with battery
         grid_used_load[h, d] = model.grid_used_load[h, d].value  # Grid usage with load
-        self_production[h, d] = solar_power[h][d] + wind_power[h][d]  # Self production
+        self_production[h, d] = model.self_production[h, d]  # Self production
+        self_production_used[h, d] = model.self_production_used[h, d].value
         sold_electricity[h, d] = model.grid_sold[h, d].value
         bess_charge [h, d] = model.bess_charge[h, d].value
         bess_discharge [h, d] = model.bess_discharge[h, d].value
@@ -332,8 +334,11 @@ load_data_hourly = np.zeros(8760)
 grid_used_battery_hourly = np.zeros(8760)
 grid_used_load_hourly = np.zeros(8760)
 self_production_hourly = np.zeros(8760)
+self_production_used_hourly = np.zeros(8760)
 self_sufficiency_hourly = np.zeros(8760)
 sold_electricity_hourly = np.zeros(8760)
+sold_electricity_solar_hourly = np.zeros(8760)
+spot_price_hourly = np.zeros(8760)
 
 def hourly_values(SOC, SOCRES, CHR, CHRRES, DIS, BOAT):
     i = 0
@@ -385,17 +390,25 @@ load_data_hourly = hourly_values2(load_data_hourly, load_data)
 grid_used_battery_hourly = hourly_values2(grid_used_battery_hourly, grid_used_battery)
 grid_used_load_hourly = hourly_values2(grid_used_load_hourly, grid_used_load)
 self_production_hourly = hourly_values2(self_production_hourly, self_production)
+self_production_used_hourly = hourly_values2(self_production_used_hourly, self_production_used)
 self_sufficiency_hourly = hourly_values2(self_sufficiency_hourly, self_sufficiency)
 sold_electricity_hourly = hourly_values2(sold_electricity_hourly, sold_electricity)
+spot_price_hourly = hourly_values2(spot_price_hourly, spotprice)
 
+for h in range(8760):
+    if self_production_used_hourly[h] == 0:
+        sold_electricity_solar_hourly[h] = 0 
+    else:
+        sold_electricity_solar_hourly[h] = self_production_hourly[h] - self_production_used_hourly[h]
 
 print(f"Old cost: {round(old_cost.sum())} SEK, Old grid usage: {round(old_grid_usage.sum()/1000)} MWh")
 print(f"Optimized cost: {round(opt_cost.sum())} SEK, Optimized grid usage: {round((grid_used_load + grid_used_battery).sum()/1000)} MWh")
 print(f'Grid to load: {round(grid_used_load.sum()/1000)} MWh, Grid to battery: {round(grid_used_battery.sum()/1000)} MWh')
-print(f"Self production: {round(self_production.sum()/1000)} MWh")
+print(f"Self production: {round(self_production.sum()/1000)} MWh", 
+      f"Solar electricity sold: {round(np.nansum(sold_electricity_solar_hourly)/1000)} MWh")
 print(f"Cycl cost: {round(cycl_cost, 2)} SEK/kWh")
-print(f"Energy thorughput BESS: {round(((bess_discharge.sum()+bess_charge.sum())/2))} kWh, Energy thorughput boat (mean): {energy_throughput} kWh")
-print(f"Electricity market revenue: {round((sold_electricity*spotprice).sum(),1)} SEK")
+print(f"Energy throughput BESS: {round(((bess_discharge.sum()+bess_charge.sum())/2))} kWh, Energy throughput boat (mean): {energy_throughput} kWh")
+print(f"Electricity market revenue, from BESS and boats: {round((sold_electricity*spotprice).sum(),1)} SEK, from solar: {round(np.nansum(sold_electricity_solar_hourly*spot_price_hourly),1)} SEK")
 print(f"Power bid revenue: {round((0.2*bid_size*(bess_capacity+boat_capacity*(number_boats1+number_boats2+number_boats3))*bids_effekthandelväst_data).sum())} SEK")
 print(f"Power activated revenue: {round(3.5*(bid_bess+bid_boat1+bid_boat2+bid_boat3).sum())} SEK")
 #print(f'Power throughput BESS: {round((bess_discharge.sum))}, Power throughput boat (mean): {round(((boat_discharge1+boat_discharge2+boat_discharge3)/number_boats).sum())} MWh')
@@ -661,8 +674,11 @@ print(f"FCR-D down participant: {count_1} h")
 # sold_electricity_pd = pd.DataFrame(sold_electricity)
 # sold_electricity_pd.to_csv('sold_electricity.csv', index=False)
 
-# self_production_pd = pd.DataFrame(self_production)
-# self_production_pd.to_csv('self_production.csv', index=False)
+self_production_pd = pd.DataFrame(self_production)
+self_production_pd.to_csv('self_production.csv', index=False)
+
+self_production_used_pd = pd.DataFrame(self_production_used)
+self_production_used_pd.to_csv('self_production_used.csv', index=False)
 
 # spot_price_pd = pd.DataFrame(spot_price)
 # spot_price_pd.to_csv('spot_price.csv', index=False)

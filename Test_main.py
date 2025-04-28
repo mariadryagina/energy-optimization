@@ -14,7 +14,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import load_krossholmen_2023
 import solarpower
-import windpower
 import load_björkö
 import load_björkö_bessekroken
 import el_price
@@ -34,7 +33,7 @@ user = 2 #User: Maja = 1, Maria = 2
 # load_summer_krossholmen = load_krossholmen_2023.load_summer
 
 # marinas = ['Björkö', 'Krossholmen', 'Bessekroken']
-marinas = ['Bessekroken'] #, 'Krossholmen', 'Bessekroken']
+marinas = ['Björkö'] #, 'Krossholmen', 'Bessekroken']
 
 for i in list(marinas):
     if i == 'Björkö':
@@ -86,10 +85,10 @@ energy_tax = 0.439 #SEK/kWh
 transmission_fee = 0.113 #SEK/kWh 
 peak_cost = 61.55 #SEK/kWh
 
-number_boats = 0 #Number of boats in the marina
+number_boats = 2 #Number of boats in the marina
 
 # Bid size for the boats and BESS on the LFM
-bid_size = 0.2 # % of the capacity
+bid_size = 0 # % of the capacity
 
 # Days for when the boat is unavailable for 14 days in a row
 a = 162 # söndag 11 juni
@@ -254,8 +253,10 @@ boat_load3 = usage_pattern.boat_load(boat_availability3, (battery_upper_limit-ba
 
 #______LCM: Effekthandel väst________________________________________________________________________________________
 # LCM: Matrix for bids and activation'
-bids_effekthandelväst_data = effekthandel_väst.I_bid
-activated_bids_effekthandelväst_data = effekthandel_väst.I_activated
+# bids_effekthandelväst_data = effekthandel_väst.I_bid
+# activated_bids_effekthandelväst_data = effekthandel_väst.I_activated
+bids_effekthandelväst_data = np.zeros((24, 365))  # Placeholder for bids data
+activated_bids_effekthandelväst_data = np.zeros((24, 365))  # Placeholder for activated bids data
 
 # Matrix with bids for the different batteries
 bid_bess = activated_bids_effekthandelväst_data * bess_capacity * bid_size
@@ -401,11 +402,11 @@ for h in range(8760):
     else:
         sold_electricity_solar_hourly[h] = self_production_hourly[h] - self_production_used_hourly[h]
 
-print(f"Old cost: {round(old_cost.sum())} SEK, Old grid usage: {round(old_grid_usage.sum()/1000)} MWh")
-print(f"Optimized cost: {round(opt_cost.sum())} SEK, Optimized grid usage: {round((grid_used_load + grid_used_battery).sum()/1000)} MWh")
-print(f'Grid to load: {round(grid_used_load.sum()/1000)} MWh, Grid to battery: {round(grid_used_battery.sum()/1000)} MWh')
-print(f"Self production: {round(self_production.sum()/1000)} MWh", 
-      f"Solar electricity sold: {round(np.nansum(sold_electricity_solar_hourly)/1000)} MWh")
+print(f"Old cost: {round(old_cost.sum())} SEK, Old grid usage: {round(old_grid_usage.sum()/1000,2)} MWh")
+print(f"Optimized cost: {round(opt_cost.sum())} SEK, Optimized grid usage: {round((grid_used_load + grid_used_battery).sum()/1000,2)} MWh")
+print(f'Grid to load: {round(grid_used_load.sum()/1000, 2)} MWh, Grid to battery: {round(grid_used_battery.sum()/1000, 2)} MWh')
+print(f"Self production: {round(self_production.sum()/1000, 2)} MWh", 
+      f"PV+wind electricity sold: {round(np.nansum(sold_electricity_solar_hourly)/1000, 2)} MWh")
 print(f"Cycl cost: {round(cycl_cost, 2)} SEK/kWh")
 print(f"Energy throughput BESS: {round(((bess_discharge.sum()+bess_charge.sum())/2))} kWh, Energy throughput boat (mean): {energy_throughput} kWh")
 print(f"Electricity market revenue, from BESS and boats: {round((sold_electricity*spotprice).sum(),1)} SEK, from solar: {round(np.nansum(sold_electricity_solar_hourly*spot_price_hourly),1)} SEK")
@@ -674,11 +675,11 @@ print(f"FCR-D down participant: {count_1} h")
 # sold_electricity_pd = pd.DataFrame(sold_electricity)
 # sold_electricity_pd.to_csv('sold_electricity.csv', index=False)
 
-self_production_pd = pd.DataFrame(self_production)
-self_production_pd.to_csv('self_production.csv', index=False)
+# self_production_pd = pd.DataFrame(self_production)
+# self_production_pd.to_csv('self_production.csv', index=False)
 
-self_production_used_pd = pd.DataFrame(self_production_used)
-self_production_used_pd.to_csv('self_production_used.csv', index=False)
+# self_production_used_pd = pd.DataFrame(self_production_used)
+# self_production_used_pd.to_csv('self_production_used.csv', index=False)
 
 # spot_price_pd = pd.DataFrame(spot_price)
 # spot_price_pd.to_csv('spot_price.csv', index=False)

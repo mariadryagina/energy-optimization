@@ -26,7 +26,7 @@ from Effekthandel_väst import effekthandel_väst
 from Frequency import frequency_price
 import windequation
 
-user = 1 #User: Maja = 1, Maria = 2
+user = 2 #User: Maja = 1, Maria = 2
 #endregion
 #______Variable and parameters___________________________________________________________________________________________
 #region

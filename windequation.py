@@ -53,12 +53,12 @@ def wind(n):
     watt_new=np.interp(V, m_s, watt)*n
     return watt_new
 
-watt_new=wind(1)
+# watt_new=wind(1)
 
-print(watt_new)
+# # print(watt_new)
 
-total_sum=ceil(np.sum(watt_new))
-print(f"The yearly production of wind power is {total_sum}kWh")
+# # total_sum=ceil(np.sum(watt_new))
+# # print(f"The yearly production of wind power is {total_sum}kWh")
 
 # # Creating the plot
 # plt.figure(figsize=(10, 5))

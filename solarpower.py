@@ -56,8 +56,8 @@ def solar(A, eta):
     return P_s
 #__________________________________________________________________________________________#
 # region Calling on function
-P_s2=solar(167,0.20)
-P_wind2=windpower.wind(1) #1 turbine rated 5,5kW
+# P_s2=solar(167,0.20)
+# P_wind2=windpower.wind(1) #1 turbine rated 5,5kW
 
 
 # solarpower_2023_winter = P_s2[:, concatenate((arange(334, 365), arange(0, 59)))]

@@ -145,10 +145,10 @@ def flexibility_market(R_cap, R_energy, boat_capacity, bess_capacity, number_boa
 
 R_LFM, P_bid =flexibility_market(R_cap, R_energy, boat_capacity, bess_capacity, number_boats, range)
 
-print(R_LFM)
-print(P_bid)
+# print(R_LFM)
+# print(P_bid)
 
-total_revenue=R_LFM.sum()
+# total_revenue=R_LFM.sum()
 
 # # Print the result
 # print(f"Total revenue generated: {total_revenue}")

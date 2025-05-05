@@ -4,7 +4,7 @@ boat = [0, 2, 4, 6, 8, 10, 20, 50]
 
 
 old_grid_usage_be = 13.09 # MWh
-old_grid_usage_kr = 906.8
+old_grid_usage_kr = [906.8, 906.8, 906.8, 906.8, 906.8, 906.8, 906.8, 906.8]
 old_grid_usage_bj = 145.18
 
 old_cost_be = 24269
@@ -54,7 +54,7 @@ nord_boat_throughput_bj = [0, 7657, 6426, 5265, 4550, 4449, 3129, 1687]
 #Grid usage
 plt.figure(figsize=(8, 5))
 plt.plot(boat, peak_grid_usage_kr, marker='o')
-plt.axhline(y=old_grid_usage_kr, color='orange', linestyle='--')
+plt.plot(boat, old_grid_usage_kr, color='orange', linestyle='--')
 plt.legend('New grid usage', 'Old grid usage')
 plt.xlabel('Number of Boats')
 plt.ylabel('MWh')

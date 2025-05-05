@@ -1,16 +1,18 @@
 import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 
 boat = [0, 2, 4, 6, 8, 10, 20, 50]
 
-
+#_____Original data___________________________________________________________________________________________________________________________  
 old_grid_usage_be = 13.09 # MWh
 old_grid_usage_kr = [906.8, 906.8, 906.8, 906.8, 906.8, 906.8, 906.8, 906.8]
 old_grid_usage_bj = 145.18
 
 old_cost_be = 24269
 old_cost_bj = 264804
-old_cost_kr = 1608118
+old_cost_kr = [1608118, 1608118, 1608118, 1608118, 1608118, 1608118, 1608118, 1608118]
 
+#_____Case 1____________________________________________________________________________________________________________________________
 peak_grid_usage_kr = [859.56, 860.46, 861.87, 863.29, 864.75, 866.21, 873.51, 895.41]
 peak_grid_usage_be = [0, 0.02, 0.02, 0.09, 0.17, 0.17, 0, 0]
 peak_grid_usage_bj = [123.52, 124.72, 126.15, 127.61, 129.07, 130.53, 137.83, 159.73]
@@ -23,11 +25,15 @@ peak_boat_throughput_kr = [0, 14376, 12882, 11509, 10526, 9369, 6673, 3771]
 peak_boat_throughput_be = [0, 1916, 1402, 1082, 922, 756, 0, 0]
 peak_boat_throughput_bj = [0, 7018, 5038, 4489, 3931, 3223, 2380, 1264]
 
+peak_throughput_kr= [peak_bess_throughput_kr[i] + peak_boat_throughput_kr[i] for i in range(len(peak_bess_throughput_kr))]
+peak_throughput_be= [peak_bess_throughput_be[i] + peak_boat_throughput_be[i] for i in range(len(peak_bess_throughput_be))] 
+peak_throughput_bj= [peak_bess_throughput_bj[i] + peak_boat_throughput_bj[i] for i in range(len(peak_bess_throughput_bj))]  
+
 peak_cost_kr = [1440970, 1422105, 1409541, 1400206, 1392958, 1386754, 1364202, 1339059]
 peak_cost_be = [0, 271, 271, 387, 722, 722, 0, 0]
 peak_cost_bj = [194084, 192804, 191815, 191118, 190808, 190661, 191888, 206593]
 
-
+#____Case 2____________________________________________________________________________________________________________________________
 # Nord pool: allowing electricity to be sold on Nord pool
 nordpool_grid_usage_kr = [864.16, 867.91, 871.45, 875.62, 879.51, 882.86, 898.21, 928.8]
 nordpool_grid_usage_be = [1.14, 1.3, 1.38, 1.54, 1.86, 2.16, 0, 0]
@@ -49,17 +55,129 @@ nord_boat_throughput_kr = [0, 13185, 11618, 10463, 9581, 8751, 6473, 3798]
 nord_boat_throughput_be = [0, 5614, 3284, 2234, 1832, 1569, 0, 0]
 nord_boat_throughput_bj = [0, 7657, 6426, 5265, 4550, 4449, 3129, 1687]
 
+nord_throughput_kr= [nord_bess_throughput_kr[i] + nord_boat_throughput_kr[i] for i in range(len(nord_bess_throughput_kr))]
+nord_throughput_be= [nord_bess_throughput_be[i] + nord_boat_throughput_be[i] for i in range(len(nord_bess_throughput_be))]
+nord_throughput_bj= [nord_bess_throughput_bj[i] + nord_boat_throughput_bj[i] for i in range(len(nord_bess_throughput_bj))]
 
-# Peak shave
+#New costs
+optimized_cost_nordpool_kr = [nord_pool_cost_kr[i] - nord_pool_revenue_kr[i] for i in range(len(nord_pool_cost_kr))]
+optimized_cost_nordpool_be = [nord_pool_cost_be[i] - nord_pool_revenue_be[i] for i in range(len(nord_pool_cost_be))]
+optimized_cost_nordpool_bj = [nord_pool_cost_bj[i] - nord_pool_revenue_bj[i] for i in range(len(nord_pool_cost_bj))]
+
+#_____P_bid 0.1___________________________________________________________________________________________________________________________
+#______Case 3____________________________________________________________________________________________________________________________
+LFM_grid_usage_01_kr = [860.55,  864.9 , 870.72, 875.53, 880.84, 885.72, 905.48, 947.77]
+LFM_grid_usage_01_be = [2.42, 2.9, 3.32, 4.2, 5.04, 5.52, 0, 0]
+LFM_grid_usage_01_bj = [138.0, 143.41, 149.04, 153.65, 159.06, 161.95, 178.54, 214.41]
+
+LFM_bess_throughput_01_kr = [114142, 106131, 96510, 87003, 83137, 77825, 63501, 40565]
+LFM_bess_throughput_01_be = [23854, 14333, 9946, 9887, 8230 , 7389 ]
+LFM_bess_throughput_01_bj = [56017, 44632, 34969, 32839, 29370, 26880, 19964, 14045]
+
+LFM_boat_throughput_01_kr = [0, 16515, 14499, 13565, 12198, 11388, 7923 , 4464]
+LFM_boat_throughput_01_be = [0, 4576, 3306, 2184 , 1831, 1456, 0, 0]
+LFM_boat_throughput_01_bj = [0, 8968, 8187, 6469,  5829,  5131, 3515, 1842]
+
+LFM_cost_01_kr = [1440170 , 1425957, 1420173, 1415729, 1413978, 1411829, 1408106, 1419099]
+LFM_cost_01_be = [5085, 5780, 6194, 7476, 8996, 9955, 0, 0]
+LFM_cost_01_bj = [194084, 192804, 191815, 191118, 190808, 190661, 191888, 206593]
+
+LFM_throughput_01_kr= [LFM_bess_throughput_01_kr[i] + LFM_boat_throughput_01_kr[i] for i in range(len(LFM_bess_throughput_01_kr))]  
+LFM_throughput_01_be= [LFM_bess_throughput_01_be[i] + LFM_boat_throughput_01_be[i] for i in range(len(LFM_bess_throughput_01_be))]
+LFM_throughput_01_bj= [LFM_bess_throughput_01_bj[i] + LFM_boat_throughput_01_bj[i] for i in range(len(LFM_bess_throughput_01_bj))]
+
+#Revenue
+# LFM:
+LFM_revenue_kr = [(3283+7462), (4515+10262), (5747+13062), (6979+15862) , (8211+18662), (9443+21462), (15603+35462), (34083+77462)]
+LFM_revenue_be = [(3283+7462), (4515+10262), (5747+13062), (6979+15862), (8211+18662), (9443+21462), 0, 0]
+LFM_revenue_bj = [(3283+7462), (4515+10262), (5747+13062), (6979+15862), (8211+18662), (9443+21462), (15603+35462), (34083+77462)]
+
+#New costs
+optimized_cost_LFM_kr= [LFM_cost_01_kr[i] - LFM_revenue_kr[i] for i in range(len(LFM_cost_01_kr))]
+optimized_cost_LFM_be= [LFM_cost_01_be[i] - LFM_revenue_be[i] for i in range(len(LFM_cost_01_be))]
+optimized_cost_LFM_bj= [LFM_cost_01_bj[i] - LFM_revenue_bj[i] for i in range(len(LFM_cost_01_bj))]
+
+#______Case 4____________________________________________________________________________________________________________________________
+# FCR-D up: 
+FCR_D_up_revenue_kr = [22671.5, 28914.1, 35422.9,  43437.3, 52581.0, 61113.0, 98670.5, 197662.2]
+FCR_D_up_revenue_be = [22756.2,30517.5,31623.4,28296.4, 41305.3, 49801.3, 0, 0]
+FCR_D_up_revenue_bj = [26009.0, 33969.2, 44092.7,49962.7 , 58410.0, 65553.6,  98361.6, 255452.3]
+
+# FCR-D up: 
+FCR_D_down_revenue_kr = [92152, 115428.1, 136467.5, 165199.1, 187236.4, 224826.7, 389319.6,  854701.1]
+FCR_D_down_revenue_be = [97729.6,132102.8,192188.9,289707.5, 336921.9,366774.0, 0, 0]
+FCR_D_down_revenue_bj = [87280.6,109815.2, 146115.5,162649,191137.4, 206706.0,333123.1, 696786.6]
+
+#New costs
+optimized_cost_FCR_D_LFM_kr = [optimized_cost_LFM_kr[i] - FCR_D_up_revenue_kr[i] - FCR_D_down_revenue_kr[i] for i in range(len(optimized_cost_LFM_kr))]
+optimized_cost_FCR_D_LFM_be = [optimized_cost_LFM_be[i] - FCR_D_up_revenue_be[i] - FCR_D_down_revenue_be[i] for i in range(len(optimized_cost_LFM_be))]
+optimized_cost_FCR_D_LFM_bj = [optimized_cost_LFM_bj[i] - FCR_D_up_revenue_bj[i] - FCR_D_down_revenue_bj[i] for i in range(len(optimized_cost_LFM_bj))]
+
+
+#__Plotting___________________________________________________________________________________________________________________________
 #Grid usage
 plt.figure(figsize=(8, 5))
-plt.plot(boat, peak_grid_usage_kr, marker='o')
 plt.plot(boat, old_grid_usage_kr, color='orange', linestyle='--')
-plt.legend('New grid usage', 'Old grid usage')
+plt.plot(boat, peak_grid_usage_kr, marker='o')
+plt.plot(boat, nordpool_grid_usage_kr, marker='o')
+plt.plot(boat, LFM_grid_usage_01_kr, marker='o')
+plt.legend(['Reference Case','Case 1', 'Case 2', 'Case 3'])
 plt.xlabel('Number of Boats')
-plt.ylabel('MWh')
+plt.ylabel('Grid usage [MWh]')
 plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+#Energy throughput
+plt.figure(figsize=(8, 5))
+plt.plot(boat, peak_throughput_kr , color='orange', linestyle='--')
+plt.plot(boat, nord_throughput_kr, marker='o')
+plt.plot(boat, LFM_throughput_01_kr , marker='o')
+# plt.plot(boat, LFM_grid_usage_01_kr, marker='o')
+plt.legend(['Case 1', 'Case 2', 'Case 3'])
+plt.xlabel('Number of Boats')
+plt.ylabel('Energy Throughput [MWh]')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
 #Costs
+plt.figure(figsize=(8, 5))
+plt.plot(boat, old_cost_kr, color='orange', linestyle='--')
+plt.plot(boat, peak_cost_kr , marker='o')
+plt.plot(boat, nord_pool_cost_kr, marker='o', color='Green')
+plt.plot(boat, optimized_cost_nordpool_kr, marker='o', color='Green', linestyle='--')
+plt.plot(boat, LFM_cost_01_kr, marker='o', color='red')
+plt.plot(boat, optimized_cost_LFM_kr, marker='o', color='red', linestyle='--')
+# plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
+plt.legend(['Reference Case', 'Case 1', 'Case 2', 'Case 2 - revenue', 'Case 3', 'Case 3 - revenue'])
+plt.xlabel('Number of Boats')
+plt.ylabel('SEK')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+
+#Case 4
+#Costs
+plt.figure(figsize=(8, 5))
+plt.plot(boat, old_cost_kr, color='orange', linestyle='--')
+plt.plot(boat, peak_cost_kr , marker='o')
+plt.plot(boat, nord_pool_cost_kr, marker='o', color='Green')
+plt.plot(boat, optimized_cost_nordpool_kr, marker='o', color='Green', linestyle='--')
+plt.plot(boat, LFM_cost_01_kr, marker='o', color='red')
+plt.plot(boat, optimized_cost_LFM_kr, marker='o', color='red', linestyle='--')
+plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
+plt.legend(['Reference Case', 'Case 1', 'Case 2', 'Case 2 - revenue', 'Case 3', 'Case 3 - revenue'])
+plt.xlabel('Number of Boats')
+plt.ylabel('SEK')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+

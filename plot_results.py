@@ -65,7 +65,8 @@ optimized_cost_nordpool_be = [nord_pool_cost_be[i] - nord_pool_revenue_be[i] for
 optimized_cost_nordpool_bj = [nord_pool_cost_bj[i] - nord_pool_revenue_bj[i] for i in range(len(nord_pool_cost_bj))]
 
 #_____P_bid 0.1___________________________________________________________________________________________________________________________
-#______Case 3____________________________________________________________________________________________________________________________
+#region
+# ______Case 3____________________________________________________________________________________________________________________________
 LFM_grid_usage_01_kr = [860.55,  864.9 , 870.72, 875.53, 880.84, 885.72, 905.48, 947.77]
 LFM_grid_usage_01_be = [2.42, 2.9, 3.32, 4.2, 5.04, 5.52, 0, 0]
 LFM_grid_usage_01_bj = [138.0, 143.41, 149.04, 153.65, 159.06, 161.95, 178.54, 214.41]
@@ -88,30 +89,83 @@ LFM_throughput_01_bj= [LFM_bess_throughput_01_bj[i] + LFM_boat_throughput_01_bj[
 
 #Revenue
 # LFM:
-LFM_revenue_kr = [(3283+7462), (4515+10262), (5747+13062), (6979+15862) , (8211+18662), (9443+21462), (15603+35462), (34083+77462)]
-LFM_revenue_be = [(3283+7462), (4515+10262), (5747+13062), (6979+15862), (8211+18662), (9443+21462), 0, 0]
-LFM_revenue_bj = [(3283+7462), (4515+10262), (5747+13062), (6979+15862), (8211+18662), (9443+21462), (15603+35462), (34083+77462)]
+LFM_revenue_01_kr = [(3283+7462), (4515+10262), (5747+13062), (6979+15862) , (8211+18662), (9443+21462), (15603+35462), (34083+77462)]
+LFM_revenue_01_be = [(3283+7462), (4515+10262), (5747+13062), (6979+15862), (8211+18662), (9443+21462), 0, 0]
+LFM_revenue_01_bj = [(3283+7462), (4515+10262), (5747+13062), (6979+15862), (8211+18662), (9443+21462), (15603+35462), (34083+77462)]
 
 #New costs
-optimized_cost_LFM_kr= [LFM_cost_01_kr[i] - LFM_revenue_kr[i] for i in range(len(LFM_cost_01_kr))]
-optimized_cost_LFM_be= [LFM_cost_01_be[i] - LFM_revenue_be[i] for i in range(len(LFM_cost_01_be))]
-optimized_cost_LFM_bj= [LFM_cost_01_bj[i] - LFM_revenue_bj[i] for i in range(len(LFM_cost_01_bj))]
+optimized_cost_LFM_01_kr= [LFM_cost_01_kr[i] - LFM_revenue_01_kr[i] for i in range(len(LFM_cost_01_kr))]
+optimized_cost_LFM_01_be= [LFM_cost_01_be[i] - LFM_revenue_01_be[i] for i in range(len(LFM_cost_01_be))]
+optimized_cost_LFM_01_bj= [LFM_cost_01_bj[i] - LFM_revenue_01_bj[i] for i in range(len(LFM_cost_01_bj))]
 
 #______Case 4____________________________________________________________________________________________________________________________
 # FCR-D up: 
-FCR_D_up_revenue_kr = [22671.5, 28914.1, 35422.9,  43437.3, 52581.0, 61113.0, 98670.5, 197662.2]
-FCR_D_up_revenue_be = [22756.2,30517.5,31623.4,28296.4, 41305.3, 49801.3, 0, 0]
-FCR_D_up_revenue_bj = [26009.0, 33969.2, 44092.7,49962.7 , 58410.0, 65553.6,  98361.6, 255452.3]
+FCR_D_up_revenue_01_kr = [22671.5, 28914.1, 35422.9,  43437.3, 52581.0, 61113.0, 98670.5, 197662.2]
+FCR_D_up_revenue_01_be = [22756.2,30517.5,31623.4,28296.4, 41305.3, 49801.3, 0, 0]
+FCR_D_up_revenue_01_bj = [26009.0, 33969.2, 44092.7,49962.7 , 58410.0, 65553.6,  98361.6, 255452.3]
 
 # FCR-D up: 
-FCR_D_down_revenue_kr = [92152, 115428.1, 136467.5, 165199.1, 187236.4, 224826.7, 389319.6,  854701.1]
-FCR_D_down_revenue_be = [97729.6,132102.8,192188.9,289707.5, 336921.9,366774.0, 0, 0]
-FCR_D_down_revenue_bj = [87280.6,109815.2, 146115.5,162649,191137.4, 206706.0,333123.1, 696786.6]
+FCR_D_down_revenue_01_kr = [92152, 115428.1, 136467.5, 165199.1, 187236.4, 224826.7, 389319.6,  854701.1]
+FCR_D_down_revenue_01_be = [97729.6,132102.8,192188.9,289707.5, 336921.9,366774.0, 0, 0]
+FCR_D_down_revenue_01_bj = [87280.6,109815.2, 146115.5,162649,191137.4, 206706.0,333123.1, 696786.6]
 
 #New costs
-optimized_cost_FCR_D_LFM_kr = [optimized_cost_LFM_kr[i] - FCR_D_up_revenue_kr[i] - FCR_D_down_revenue_kr[i] for i in range(len(optimized_cost_LFM_kr))]
-optimized_cost_FCR_D_LFM_be = [optimized_cost_LFM_be[i] - FCR_D_up_revenue_be[i] - FCR_D_down_revenue_be[i] for i in range(len(optimized_cost_LFM_be))]
-optimized_cost_FCR_D_LFM_bj = [optimized_cost_LFM_bj[i] - FCR_D_up_revenue_bj[i] - FCR_D_down_revenue_bj[i] for i in range(len(optimized_cost_LFM_bj))]
+optimized_cost_FCR_D_LFM_01_kr = [optimized_cost_LFM_01_kr[i] - FCR_D_up_revenue_01_kr[i] - FCR_D_down_revenue_01_kr[i] for i in range(len(optimized_cost_LFM_01_kr))]
+optimized_cost_FCR_D_LFM_01_be = [optimized_cost_LFM_01_be[i] - FCR_D_up_revenue_01_be[i] - FCR_D_down_revenue_01_be[i] for i in range(len(optimized_cost_LFM_01_be))]
+optimized_cost_FCR_D_LFM_01_bj = [optimized_cost_LFM_01_bj[i] - FCR_D_up_revenue_01_bj[i] - FCR_D_down_revenue_01_bj[i] for i in range(len(optimized_cost_LFM_01_bj))]
+#endregion
+
+#_____P_bid 0.2___________________________________________________________________________________________________________________________
+#region
+# ______Case 3____________________________________________________________________________________________________________________________
+LFM_grid_usage_02_kr = [862.25,  868.2  , 873.96 , 880.18,  887.14 , 891.9 , 915.3, 970.61 ]
+LFM_grid_usage_02_be = [3.62,4.82,6.25,0,0,0,0,0]
+LFM_grid_usage_02_bj = [139.72 , 145.51 , 151.88 ,  157.5, 162.49 ,  166.7, 186.34 , 246.47]
+
+LFM_bess_throughput_02_kr = [114291, 104619, 95491, 86090, 83420 , 79648, 59175 , 45829]
+LFM_bess_throughput_02_be = [23865, 13645, 11595,0,0,0,0,0]
+LFM_bess_throughput_02_bj = [55317, 42390, 36394 , 32145 , 27748 , 26643, 23445 , 17048]
+
+LFM_boat_throughput_02_kr = [0, 16344 , 14772,  13875 , 12252 , 11005 ,7994, 4541]
+LFM_boat_throughput_02_be = [0, 4757, 3076,0,0,0,0,0]
+LFM_boat_throughput_02_bj = [0,9622 ,7825  , 6594 , 5865,5202 , 3302, 2282]
+
+LFM_cost_02_kr = [1443234 , 1433550 ,1427009 , 1426009, 1426214 ,  1427093 , 1430323 , 1471090 ]
+LFM_cost_02_be = [7768, 9222, 12372,0,0,0,0,0]
+LFM_cost_02_bj = [215810,220009,225596,  230874 , 236936 ,241127 ,262300 ,343927 ]
+
+LFM_throughput_02_kr= [LFM_bess_throughput_02_kr[i] + LFM_boat_throughput_02_kr[i] for i in range(len(LFM_bess_throughput_02_kr))]  
+LFM_throughput_02_be= [LFM_bess_throughput_02_be[i] + LFM_boat_throughput_02_be[i] for i in range(len(LFM_bess_throughput_02_be))]
+LFM_throughput_02_bj= [LFM_bess_throughput_02_bj[i] + LFM_boat_throughput_02_bj[i] for i in range(len(LFM_bess_throughput_02_bj))]
+
+#Revenue
+# LFM:
+LFM_revenue_02_kr = [(6567+14924), (9031+20524), (11495+26124), (13959+31724 ) , (16423+37324), (18887+42924 ), (42924 +70924), (68167+154924)]
+LFM_revenue_02_be = [(6567+14924), (9031+20524), (11495+26124), 0, 0, 0, 0, 0]
+LFM_revenue_02_bj = [(6567+14924), (9031+20524), (11495+26124), (13959+31724 ) , (16423+37324), (18887+42924 ), (42924 +70924), (68167+154924)]
+
+#New costs
+optimized_cost_LFM_02_kr= [LFM_cost_02_kr[i] - LFM_revenue_02_kr[i] for i in range(len(LFM_cost_02_kr))]
+optimized_cost_LFM_02_be= [LFM_cost_02_be[i] - LFM_revenue_02_be[i] for i in range(len(LFM_cost_02_be))]
+optimized_cost_LFM_02_bj= [LFM_cost_02_bj[i] - LFM_revenue_02_bj[i] for i in range(len(LFM_cost_02_bj))]
+
+#______Case 4____________________________________________________________________________________________________________________________
+# FCR-D up: 
+FCR_D_up_revenue_02_kr = [22638.1,30389.1 ,35245.4 ,45048.4 , 53155.5, 62797.9 , 100682.5 , 215814]
+FCR_D_up_revenue_02_be = [27209.1,42185.5, 49218.4,0,0,0,0,0]
+FCR_D_up_revenue_02_bj = [26879.4, 34506.8 ,43744.6 , 54116.9 , 58107.7 , 68805.0,119117.9 , 279061.3 ]
+
+# FCR-D up: 
+FCR_D_down_revenue_02_kr = [91597.4,111764.6 ,129560.2 , 155571.2 , 178078.3 , 209068.6 , 364260.1,757333.8 ]
+FCR_D_down_revenue_02_be = [76158.0,88418.9, 151125.8,0,0,0,0,0]
+FCR_D_down_revenue_02_bj = [85090.1, 101055.4,128502.9 ,  148270.1,169312.5,189256.3,248754.3, 545269.0]
+
+#New costs
+optimized_cost_FCR_D_LFM_02_kr = [optimized_cost_LFM_02_kr[i] - FCR_D_up_revenue_02_kr[i] - FCR_D_down_revenue_02_kr[i] for i in range(len(optimized_cost_LFM_02_kr))]
+optimized_cost_FCR_D_LFM_02_be = [optimized_cost_LFM_02_be[i] - FCR_D_up_revenue_02_be[i] - FCR_D_down_revenue_02_be[i] for i in range(len(optimized_cost_LFM_02_be))]
+optimized_cost_FCR_D_LFM_02_bj = [optimized_cost_LFM_02_bj[i] - FCR_D_up_revenue_02_bj[i] - FCR_D_down_revenue_02_bj[i] for i in range(len(optimized_cost_LFM_02_bj))]
+#endregion
+
 
 
 #__Plotting___________________________________________________________________________________________________________________________
@@ -136,7 +190,7 @@ plt.plot(boat, LFM_throughput_01_kr , marker='o')
 # plt.plot(boat, LFM_grid_usage_01_kr, marker='o')
 plt.legend(['Case 1', 'Case 2', 'Case 3'])
 plt.xlabel('Number of Boats')
-plt.ylabel('Energy Throughput [MWh]')
+plt.ylabel('Energy Throughput [kWh]')
 plt.grid(True)
 plt.tight_layout()
 plt.show()
@@ -149,7 +203,7 @@ plt.plot(boat, peak_cost_kr , marker='o')
 plt.plot(boat, nord_pool_cost_kr, marker='o', color='Green')
 plt.plot(boat, optimized_cost_nordpool_kr, marker='o', color='Green', linestyle='--')
 plt.plot(boat, LFM_cost_01_kr, marker='o', color='red')
-plt.plot(boat, optimized_cost_LFM_kr, marker='o', color='red', linestyle='--')
+plt.plot(boat, optimized_cost_LFM_01_kr, marker='o', color='red', linestyle='--')
 # plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
 plt.legend(['Reference Case', 'Case 1', 'Case 2', 'Case 2 - revenue', 'Case 3', 'Case 3 - revenue'])
 plt.xlabel('Number of Boats')
@@ -169,9 +223,9 @@ plt.plot(boat, peak_cost_kr , marker='o')
 plt.plot(boat, nord_pool_cost_kr, marker='o', color='Green')
 plt.plot(boat, optimized_cost_nordpool_kr, marker='o', color='Green', linestyle='--')
 plt.plot(boat, LFM_cost_01_kr, marker='o', color='red')
-plt.plot(boat, optimized_cost_LFM_kr, marker='o', color='red', linestyle='--')
-plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
-plt.legend(['Reference Case', 'Case 1', 'Case 2', 'Case 2 - revenue', 'Case 3', 'Case 3 - revenue'])
+plt.plot(boat, optimized_cost_LFM_01_kr, marker='o', color='red', linestyle='--')
+plt.plot(boat, optimized_cost_FCR_D_LFM_01_kr, marker='o')
+plt.legend(['Reference Case', 'Case 1', 'Case 2', 'Case 2 - revenue', 'Case 3', 'Case 3 - revenue', "Case 4"])
 plt.xlabel('Number of Boats')
 plt.ylabel('SEK')
 plt.grid(True)

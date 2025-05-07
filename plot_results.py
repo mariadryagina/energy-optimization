@@ -12,6 +12,7 @@ old_cost_be = 24269
 old_cost_bj = 264804
 old_cost_kr = [1608118, 1608118, 1608118, 1608118, 1608118, 1608118, 1608118, 1608118]
 
+
 #_____Case 1____________________________________________________________________________________________________________________________
 peak_grid_usage_kr = [859.56, 860.46, 861.87, 863.29, 864.75, 866.21, 873.51, 895.41]
 peak_grid_usage_be = [0, 0.02, 0.02, 0.09, 0.17, 0.17, 0, 0]
@@ -180,6 +181,29 @@ optimized_cost_FCR_D_LFM_02_bj = [optimized_cost_LFM_02_bj[i] - FCR_D_up_revenue
 #endregion
 
 
+#____Per boat, revenue _____________________________________________________________________________________________________________________________
+revenue_per_boat_case1_kr = [
+    (old_cost_kr[i] - peak_cost_kr[i])  / boat[i]
+    if boat[i] != 0 else old_cost_kr[0] - peak_cost_kr[0]  # Skip division if boat[i] is 0
+    for i in range(len(peak_bess_throughput_kr))
+]
+
+revenue_per_boat_case2_kr = [
+    (old_cost_kr[i] - nord_pool_cost_kr[i] + nord_pool_revenue_kr[i]) / boat[i]
+    if boat[i] != 0 else old_cost_kr[0] - nord_pool_cost_kr[0] + nord_pool_revenue_kr[0]  # Skip division if boat[i] is 0
+    for i in range(len(nord_pool_revenue_kr))
+]
+
+revenue_per_boat_case3_kr = [
+    (old_cost_kr[i] - LFM_cost_01_kr[i] + LFM_revenue_01_kr[i] + LFM_revenue_Nordpool_01_kr[i]) / boat[i]
+    if boat[i] != 0 else old_cost_kr[0] - LFM_cost_01_kr[0] + LFM_revenue_01_kr[0] + LFM_revenue_Nordpool_01_kr[0]  # Skip division if boat[i] is 0
+    for i in range(len(LFM_revenue_01_kr))
+]
+revenue_per_boat_case4_kr = [
+    (old_cost_kr[i] - LFM_cost_01_kr[i] + LFM_revenue_01_kr[i] + LFM_revenue_Nordpool_01_kr[i] + FCR_D_down_revenue_01_kr[i] + FCR_D_up_revenue_01_kr[i]) / boat[i]
+    if boat[i] != 0 else old_cost_kr[0] - LFM_cost_01_kr[0] + LFM_revenue_01_kr[0] + LFM_revenue_Nordpool_01_kr[0] + FCR_D_down_revenue_01_kr[0] + FCR_D_up_revenue_01_kr[0]  # Skip division if boat[i] is 0
+    for i in range(len(LFM_revenue_01_kr))
+]
 
 #__Plotting___________________________________________________________________________________________________________________________
 #Grid usage
@@ -188,24 +212,37 @@ plt.plot(boat, old_grid_usage_kr, color='orange', linestyle='--')
 plt.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.')
 plt.plot(boat, nordpool_grid_usage_kr,color='teal', marker='.')
 plt.plot(boat, LFM_grid_usage_01_kr, color='indianred', marker='.')
-plt.legend(['Reference Case','Case 1', 'Case 2', 'Case 3'])
-plt.xlabel('Number of Boats')
+plt.legend(['Reference Case','Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM'])
+plt.xlabel('Number of Electric Leisure Boats')
 plt.ylabel('Grid usage [MWh]')
 plt.grid(True)
 plt.tight_layout()
 plt.show()
 
-#Energy throughput
+#Energy throughput BESS
 plt.figure(figsize=(8, 5))
-plt.plot(boat, peak_throughput_kr , color='olivedrab', marker='.')
-plt.plot(boat, nord_throughput_kr, color='teal', marker='.')
-plt.plot(boat, LFM_throughput_01_kr , color='indianred' , marker='.')
-plt.legend(['Case 1', 'Case 2', 'Case 3'])
-plt.xlabel('Number of Boats')
-plt.ylabel('Energy Throughput [kWh]')
+plt.plot(boat, peak_bess_throughput_kr , color='olivedrab', marker='.')
+plt.plot(boat, nord_bess_throughput_kr, color='teal', marker='.')
+plt.plot(boat, LFM_bess_throughput_01_kr , color='indianred', marker='.')
+plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM'])
+plt.xlabel('Number of Electric Leisure Boats')
+plt.ylabel('Electricity Throughput BESS [kWh]')
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
+#Energy throughput boat
+plt.figure(figsize=(8, 5))
+plt.plot(boat[1:], peak_boat_throughput_kr[1:] , color='olivedrab', marker='.')
+plt.plot(boat[1:], nord_boat_throughput_kr[1:], color='teal', marker='.')
+plt.plot(boat[1:], LFM_boat_throughput_01_kr[1:] , color='indianred' , marker='.')
+plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM'])
+plt.xlabel('Number of Electric Leisure Boats')
+plt.ylabel('Electricity Throughput per Boat [kWh]')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
 
 
 #Costs
@@ -217,9 +254,9 @@ plt.plot(boat, optimized_cost_nordpool_kr, marker='.', color='teal')
 plt.plot(boat, LFM_cost_01_kr, marker='.', color='indianred', linestyle='--')
 plt.plot(boat, optimized_cost_LFM_01_kr, marker='.', color='indianred')
 # plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
-plt.legend(['Case 1', 'Case 2', 'Case 2 - revenue', 'Case 3', 'Case 3 - revenue'])
-plt.xlabel('Number of Boats')
-plt.ylabel('SEK')
+plt.legend(['Optimized cost Case 1: Peak Shaved', 'Optimized cost Case 2: Spot Price', 'Cost after revenue Case 2: Spot Price ', 'Optimized cost Case 3: LFM ', 'Cost after revenue Case 3: LFM'])
+plt.xlabel('Number of Electric Leisure Boats')
+plt.ylabel('Cost of Electricity [SEK]')
 plt.grid(True)
 # Force full numbers on the y-axis
 formatter = ScalarFormatter(useOffset=False, useMathText=False)
@@ -239,13 +276,58 @@ plt.plot(boat, optimized_cost_LFM_01_kr, marker='.', color='indianred')
 plt.plot(boat, optimized_cost_FCR_D_up_LFM_01_kr, color='lightsteelblue', marker='.', linestyle='--')
 plt.plot(boat, optimized_cost_FCR_D_down_LFM_01_kr, color='cornflowerblue', marker='.', linestyle='--')
 plt.plot(boat, optimized_cost_FCR_D_LFM_01_kr, color='royalblue', marker='.')
-plt.legend(['Case 1', 'Case 2', 'Case 2 - revenue', 'Case 3', 'Case 3 - revenue', "Case 4 - FCR-D up", "Case 4 - FCR-D down", "Case 4"])
-plt.xlabel('Number of Boats'), 
-plt.ylabel('SEK')
+plt.legend(['Optimized cost Case 1: Peak Shaved', 'Optimized cost Case 2: Spot Price', 'Cost after revenue Case 2: Spot Price ', 'Optimized cost Case 3: LFM ', 'Cost after revenue Case 3: LFM', 'Cost after revenue Case 4: FCR-D up', 'Cost after revenue Case 4: FCR-D down', "Cost after revenue Case 4: FCR-D"])
+plt.xlabel('Number of Electric Leisure Boats'), 
+plt.ylabel('Cost of Electricity [SEK]')
 plt.grid(True)
 # Force full numbers on the y-axis
 formatter = ScalarFormatter(useOffset=False, useMathText=False)
 formatter.set_scientific(False)  # Disable scientific notation
 plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+
+#Plot energy and cost together
+# Plot grid usage on the primary y-axis
+fig, ax1 = plt.subplots(figsize=(8, 5))
+#ax1.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.', label='Electricity usage')
+ax1.plot(boat, nordpool_grid_usage_kr, color='teal', marker='.', label='Elelctricity usage')
+#ax1.plot(boat, LFM_grid_usage_01_kr, color='indianred', marker='.', label='Case 3')
+ax1.set_xlabel('Number of Electric Leisure Boats')
+ax1.set_ylabel('Grid usage [MWh]', color='black')
+ax1.tick_params(axis='y', labelcolor='black')
+ax1.grid(True)
+
+# Add a secondary y-axis for cost
+ax2 = ax1.twinx()
+#ax2.plot(boat, peak_cost_kr, color='olivedrab', marker='.', linestyle='--', label='Cost')
+ax2.plot(boat, optimized_cost_nordpool_kr, color='teal', marker='.', linestyle='--', label='Cost of Electricity')
+#ax2.plot(boat, optimized_cost_LFM_01_bj, color='indianred', marker='.', linestyle='--', label='Cost')
+ax2.set_ylabel('Cost of Electricity [SEK]', color='dimgrey')
+ax2.tick_params(axis='y', labelcolor='dimgrey')
+
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+
+# Combine legends from both axes
+lines_1, labels_1 = ax1.get_legend_handles_labels()
+lines_2, labels_2 = ax2.get_legend_handles_labels()
+ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper left')
+plt.tight_layout()
+plt.show()
+
+
+#Plot revenue per boat
+plt.figure(figsize=(8, 5))
+plt.plot(boat, revenue_per_boat_case1_kr, color='olivedrab', marker='.')
+plt.plot(boat, revenue_per_boat_case2_kr, color='teal', marker='.')
+plt.plot(boat, revenue_per_boat_case3_kr, color='indianred', marker='.')
+plt.plot(boat, revenue_per_boat_case4_kr, color='royalblue', marker='.')
+plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM', 'Case 4: FCR-D'])
+plt.xlabel('Number of Electric Leisure Boats')
+plt.ylabel('Revenue per boat [SEK]')
+plt.grid(True)
+plt.tight_layout()
 plt.show()
 

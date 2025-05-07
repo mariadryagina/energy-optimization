@@ -98,10 +98,10 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
             
         cycling_cost = sum((model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d]
                            + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d] + model.boat_discharge3[h, d])
-                           * (0.2378/2) #cycl_cost/2
+                           * (0.1951/2) #cycl_cost/2
                            for h in model.HOURS for d in model.DAYS)
         
-        return (electricity_cost + peak_total_cost + peak_penalty - electricity_revenue + cycling_cost) #Cost of electricity
+        return (electricity_cost + peak_total_cost + 10*peak_penalty - electricity_revenue + cycling_cost) #Cost of electricity
     model.objective = Objective(rule=total_grid_cost, sense=minimize)
 
     # Returns the maximum grid load for each month

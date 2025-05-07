@@ -60,11 +60,11 @@ def wind(n):
 # # total_sum=ceil(np.sum(watt_new))
 # # print(f"The yearly production of wind power is {total_sum}kWh")
 
-# Creating the plot
-plt.figure(figsize=(10, 5))
-plt.plot(m_s, watt, marker='o', linestyle='-', label='Power Output')
-plt.xlabel('Wind Speed [m/s]')
-plt.ylabel('Power Output [kW]')
-plt.legend()
-plt.grid(True)
-plt.show()
+# # Creating the plot
+# plt.figure(figsize=(10, 5))
+# plt.plot(m_s, watt, marker='o', linestyle='-', label='Power Output')
+# plt.xlabel('Wind Speed [m/s]')
+# plt.ylabel('Power Output [kW]')
+# plt.legend()
+# plt.grid(True)
+# plt.show()

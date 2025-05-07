@@ -33,18 +33,17 @@ user = 2 #User: Maja = 1, Maria = 2
 # load_summer_krossholmen = load_krossholmen_2023.load_summer
 
 # marinas = ['Björkö', 'Krossholmen', 'Bessekroken']
-marinas = ['Björkö'] #, 'Krossholmen', 'Bessekroken']
-
+marinas = ['Björkö'] 
 for i in list(marinas):
     if i == 'Björkö':
         load_data = load_björkö.load
-        solar_panel_area = 75*0.85 # m^2
+        solar_panel_area = (75+50)*0.85 # m^2
         turbines = 0 # Number of wind turbines
         grid_limit = 242.2 #Limitations of grid, abbonerad effekt [kW]
 
-        bess_capacity = 500 #kWh
-        bess_charge_rate = 350 #kW
-        bess_discharge_rate = 350 #kW
+        bess_capacity = 533 #kWh
+        bess_charge_rate = 352 #kW
+        bess_discharge_rate = 352 #kW
 
         boat_capacity = 100 #kWh
         boat_charge_rate = 60 #kW
@@ -55,9 +54,9 @@ for i in list(marinas):
         turbines = 1 # Number of wind turbines
         grid_limit = 1680 #Limitations of grid, abbonerad effekt [kW]
 
-        bess_capacity = 500 #kWh
-        bess_charge_rate = 350 #kW
-        bess_discharge_rate = 350 #kW
+        bess_capacity = 533 #kWh
+        bess_charge_rate = 352 #kW
+        bess_discharge_rate = 352 #kW
 
         boat_capacity = 100 #kWh
         boat_charge_rate = 60 #kW
@@ -68,9 +67,9 @@ for i in list(marinas):
         turbines = 1
         grid_limit = 13.8 #Limitations of grid, abbonerad effekt [kW]
 
-        bess_capacity = 500 #kWh
-        bess_charge_rate = 350 #kW
-        bess_discharge_rate = 350 #kW
+        bess_capacity = 533 #kWh
+        bess_charge_rate = 352 #kW
+        bess_discharge_rate = 352 #kW
 
         boat_capacity = 100 #kWh
         boat_charge_rate = 60 #kW
@@ -85,10 +84,10 @@ energy_tax = 0.439 #SEK/kWh
 transmission_fee = 0.113 #SEK/kWh 
 peak_cost = 61.55 #SEK/kWh
 
-number_boats = 2 #Number of boats in the marina
+number_boats = 50 #Number of boats in the marina
 
 # Bid size for the boats and BESS on the LFM
-bid_size = 0.2 # % of the capacity
+bid_size = 0.35 # % of the capacity
 
 # Days for when the boat is unavailable for 14 days in a row
 a = 162 # söndag 11 juni
@@ -652,8 +651,8 @@ print(f"FCR-D down participant: {count_1} h")
 #region
 # # Creating csv files
 
-# bid_activated_pd = pd.DataFrame(activated_bids_effekthandelväst_data)
-# bid_activated_pd.to_csv('bid_activated.csv', index=False)
+bid_activated_pd = pd.DataFrame(bids_effekthandelväst_data)
+bid_activated_pd.to_csv('bid_activated.csv', index=False)
 
 # boat_load1_pd = pd.DataFrame(boat_load1)
 # boat_load1_pd.to_csv('BOAT_LOAD.csv', index=False)

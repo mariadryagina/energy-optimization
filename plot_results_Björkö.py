@@ -6,6 +6,8 @@ boat = [0, 2, 4, 6, 8, 10, 20, 50]
 #_____Original data___________________________________________________________________________________________________________________________  
 old_grid_usage_bj = [145.18, 145.18, 145.18, 145.18, 145.18, 145.18, 145.18, 145.18]
 
+reference_grid_usage_bj = [old_grid_usage_bj[i] + 0.07 *11 * boat[i] for i in range(len(old_grid_usage_bj))]
+
 old_cost_bj = [264804, 264804, 264804, 264804, 264804, 264804, 264804, 264804]
 
 #_____Case 1____________________________________________________________________________________________________________________________
@@ -154,9 +156,21 @@ revenue_per_boat_case4_bj = [
 total_revenue_bj = [LFM_total_revenue_01_bj[i] + FCR_D_up_revenue_01_bj[i] + FCR_D_down_revenue_01_bj[i] for i in range(len(nord_pool_revenue_bj))]
 
 final_cost = [optimized_cost_FCR_D_LFM_01_bj[i] - LFM_revenue_Nordpool_01_bj[i] - LFM_revenue_01_bj[i] - FCR_D_up_revenue_01_bj[i] - FCR_D_down_revenue_01_bj[i] for i in range(len(optimized_cost_FCR_D_LFM_01_bj))]
-    
+final_cost_per_boat = [final_cost[i] / boat[i] if boat[i] != 0 else final_cost[0] for i in range(len(final_cost))]
+total_savings = [old_cost_bj[i] - final_cost[i] for i in range(len(old_cost_bj))]
+total_savings_per_boat = [total_savings[i] / boat[i] if boat[i] != 0 else total_savings[0] for i in range(len(total_savings))]
 
-print("Final cost: ", )
+bess_throughput_participation_factor = [(LFM_bess_throughput_01_bj[i]) / (LFM_bess_throughput_01_bj[i] + (LFM_boat_throughput_01_bj[i] * boat[i])) * 100 for i in range(len(LFM_bess_throughput_01_bj))]
+boat_throughput_participation_factor = [(LFM_boat_throughput_01_bj[i] * boat[i]) / (LFM_bess_throughput_01_bj[i] + (LFM_boat_throughput_01_bj[i] * boat[i])) * 100 for i in range(len(LFM_boat_throughput_01_bj))]
+
+print("Reference grid usage: ", reference_grid_usage_bj)
+print("Final cost: ", final_cost)
+print("Total savings: ", total_savings)
+print("Final cost/boat: ", final_cost_per_boat)
+print("Total savings/boat: ", total_savings_per_boat)
+print("BESS throughput: ", LFM_bess_throughput_01_bj, "participation factor: ", bess_throughput_participation_factor, "%")
+print("Boat throughput: ", LFM_boat_throughput_01_bj, "participation factor: ", boat_throughput_participation_factor, "%")
+print("Total savings/boat, allocated:", [total_savings_per_boat[i] * (boat_throughput_participation_factor[i] / 100) for i in range(len(total_savings_per_boat))])
 
 #__Plotting___________________________________________________________________________________________________________________________
 #Grid usage

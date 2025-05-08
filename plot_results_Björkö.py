@@ -151,7 +151,7 @@ revenue_per_boat_case4_bj = [
 ]
 
 
-total_revenue_bj = [nord_pool_revenue_bj[i] + LFM_total_revenue_01_bj[i] + FCR_D_up_revenue_01_bj[i] + FCR_D_down_revenue_01_bj[i] for i in range(len(nord_pool_revenue_bj))]
+total_revenue_bj = [LFM_total_revenue_01_bj[i] + FCR_D_up_revenue_01_bj[i] + FCR_D_down_revenue_01_bj[i] for i in range(len(nord_pool_revenue_bj))]
 
 final_cost = [optimized_cost_FCR_D_LFM_01_bj[i] - LFM_revenue_Nordpool_01_bj[i] - LFM_revenue_01_bj[i] - FCR_D_up_revenue_01_bj[i] - FCR_D_down_revenue_01_bj[i] for i in range(len(optimized_cost_FCR_D_LFM_01_bj))]
     
@@ -246,7 +246,7 @@ plt.plot(boat, LFM_total_revenue_01_bj, marker='.', color='indianred')
 plt.plot(boat, FCR_D_up_revenue_01_bj, color='lightsteelblue', marker='.')
 plt.plot(boat, FCR_D_down_revenue_01_bj, color='cornflowerblue', marker='.')
 plt.plot(boat, total_revenue_bj, color='black', marker='.')
-plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'Case 4: FCR-D up ', 'Case 4: FCR-D down', 'Total Revenue'])
+plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'FCR-D up ', 'FCR-D down', 'Case 4: FCR-D'])
 plt.xlabel('Number of Electric Leisure Boats'), 
 plt.ylabel('Revenue [SEK]')
 plt.grid(True)

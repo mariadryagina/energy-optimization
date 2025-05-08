@@ -167,10 +167,11 @@ revenue_per_boat_case4_kr = [
 ]
 
 #Total revenue
-total_revenue_kr = [FCR_D_up_revenue_01_kr[i] + FCR_D_down_revenue_01_kr[i]+ nord_pool_revenue_kr[i] +LFM_revenue_01_kr[i] + LFM_revenue_Nordpool_01_kr[i] for i in range(len(LFM_revenue_01_kr))]
+total_revenue_kr = [FCR_D_up_revenue_01_kr[i] + FCR_D_down_revenue_01_kr[i] +LFM_revenue_01_kr[i] + LFM_revenue_Nordpool_01_kr[i] for i in range(len(LFM_revenue_01_kr))]
 
 #__Plotting___________________________________________________________________________________________________________________________
-#Grid usage
+#region
+# Grid usage
 plt.figure(figsize=(8, 5))
 plt.plot(boat, old_grid_usage_kr, color='orange', linestyle='--')
 plt.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.')
@@ -256,7 +257,7 @@ plt.plot(boat, LFM_total_revenue_01_kr, marker='.', color='indianred')
 plt.plot(boat, FCR_D_up_revenue_01_kr, color='lightsteelblue', marker='.')
 plt.plot(boat, FCR_D_down_revenue_01_kr, color='cornflowerblue', marker='.')
 plt.plot(boat, total_revenue_kr, color='black', marker='.')
-plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'Case 4: FCR-D up ', 'Case 4: FCR-D down', 'Total Revenue'])
+plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'FCR-D up ', 'FCR-D down', 'Case 4: FCR-D'])
 plt.xlabel('Number of Electric Leisure Boats'), 
 plt.ylabel('Revenue [SEK]')
 plt.grid(True)
@@ -270,17 +271,20 @@ plt.show()
 # Plot grid usage on the primary y-axis
 fig, ax1 = plt.subplots(figsize=(8, 5))
 #ax1.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.', label='Electricity usage')
-ax1.plot(boat, nordpool_grid_usage_kr, color='teal', marker='.', label='Elelctricity usage')
-#ax1.plot(boat, LFM_grid_usage_01_kr, color='indianred', marker='.', label='Case 3')
+#ax1.plot(boat, nordpool_grid_usage_kr, color='teal', marker='.', label='Electricity usage')
+ax1.plot(boat, LFM_grid_usage_01_kr, color='indianred', marker='.', label='Electricity usage')
 ax1.set_xlabel('Number of Electric Leisure Boats')
 ax1.set_ylabel('Grid usage [MWh]', color='black')
 ax1.tick_params(axis='y', labelcolor='black')
 ax1.grid(True)
 # Add a secondary y-axis for cost
 ax2 = ax1.twinx()
-#ax2.plot(boat, peak_cost_kr, color='olivedrab', marker='.', linestyle='--', label='Cost')
-ax2.plot(boat, nord_pool_cost_kr, color='teal', marker='.', linestyle='--', label='Cost of Electricity')
-#ax2.plot(boat, LFM_cost_01_kr, color='indianred', marker='.', linestyle='--', label='Cost')
+#ax2.plot(boat, peak_cost_kr, color='olivedrab', marker='.', linestyle='--', label='Final Cost')
+#ax2.plot(boat, nord_pool_cost_kr, color='teal', marker='.', linestyle='--', label='Final Cost')
+# ax2.plot(boat, optimized_cost_LFM_01_kr, color='indianred', marker='.', linestyle='--', label='Final Cost LFM')
+# ax2.plot(boat, optimized_cost_FCR_D_up_LFM_01_kr, color='olivedrab', marker='.', linestyle='--', label='Final Cost FCR-D up')
+# ax2.plot(boat, optimized_cost_FCR_D_down_LFM_01_kr, color='teal', marker='.', linestyle='--', label='Final Cost FCR-D down')
+ax2.plot(boat, optimized_cost_FCR_D_LFM_01_kr, color='teal', marker='.', linestyle='--', label='Final Cost')
 ax2.set_ylabel('Cost of Electricity [SEK]', color='dimgrey')
 ax2.tick_params(axis='y', labelcolor='dimgrey')
 # Force full numbers on the y-axis
@@ -308,3 +312,9 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+#endregion
+
+#____Esay calculation of increased grid usage without any cool stuff____________________________________________________________________________________________________________________________
+new_grid_usage_kr = [old_grid_usage_kr[i] + 0.007*11*boat[i] for i in range(len(old_grid_usage_kr))]
+
+print(f"Increased grid usage: {[round(value,2) for value in new_grid_usage_kr]}")

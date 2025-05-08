@@ -134,10 +134,11 @@ revenue_per_boat_case4_be = [
 ]
 
 #Total revenue
-total_revenue_be = [nord_pool_revenue_be[i] + LFM_total_revenue_01_be[i] + FCR_D_up_revenue_01_be[i] + FCR_D_down_revenue_01_be[i] for i in range(len(nord_pool_revenue_be))]
+total_revenue_be = [LFM_total_revenue_01_be[i] + FCR_D_up_revenue_01_be[i] + FCR_D_down_revenue_01_be[i] for i in range(len(nord_pool_revenue_be))]
 
 #__Plotting___________________________________________________________________________________________________________________________
 #Grid usage
+#region
 plt.figure(figsize=(8, 5))
 plt.plot(boat, old_grid_usage_be, color='orange', linestyle='--')
 plt.plot(boat, peak_grid_usage_be, color='olivedrab', marker='.')
@@ -223,7 +224,7 @@ plt.plot(boat, LFM_total_revenue_01_be, marker='.', color='indianred')
 plt.plot(boat, FCR_D_up_revenue_01_be, color='lightsteelblue', marker='.')
 plt.plot(boat, FCR_D_down_revenue_01_be, color='cornflowerblue', marker='.')
 plt.plot(boat, total_revenue_be, color='black', marker='.')
-plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'Case 4: FCR-D up ', 'Case 4: FCR-D down', 'Total Revenue'])
+plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'FCR-D up ', 'FCR-D down', 'Case 4: FCR-D'])
 plt.xlabel('Number of Electric Leisure Boats'), 
 plt.ylabel('Revenue [SEK]')
 plt.grid(True)
@@ -247,7 +248,8 @@ ax1.grid(True)
 ax2 = ax1.twinx()
 #ax2.plot(boat, peak_cost_be, color='olivedrab', marker='.', linestyle='--', label='Cost')
 #ax2.plot(boat, nord_pool_cost_be, color='teal', marker='.', linestyle='--', label='Cost')
-ax2.plot(boat, LFM_revenue_01_be, color='indianred', marker='.', linestyle='--', label='Cost')
+#ax2.plot(boat, LFM_revenue_01_be, color='indianred', marker='.', linestyle='--', label='Cost')
+ax2.plot(boat, optimized_cost_FCR_D_LFM_01_be, color='indianred', marker='.', linestyle='--', label='Final Cost')
 ax2.set_ylabel('Cost of Electricity [SEK]', color='dimgrey')
 ax2.tick_params(axis='y', labelcolor='dimgrey')
 
@@ -277,3 +279,9 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+#endregion
+
+#____Esay calculation of increased grid usage without any cool stuff____________________________________________________________________________________________________________________________
+new_grid_usage_be = [old_grid_usage_be[i] + 0.007*11*boat[i] for i in range(len(old_grid_usage_be))]
+
+print(f"Increased grid usage: {[round(value,2) for value in new_grid_usage_be]}")

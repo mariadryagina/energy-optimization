@@ -153,6 +153,11 @@ revenue_per_boat_case4_bj = [
 
 total_revenue_bj = [nord_pool_revenue_bj[i] + LFM_total_revenue_01_bj[i] + FCR_D_up_revenue_01_bj[i] + FCR_D_down_revenue_01_bj[i] for i in range(len(nord_pool_revenue_bj))]
 
+final_cost = [optimized_cost_FCR_D_LFM_01_bj[i] - LFM_revenue_Nordpool_01_bj[i] - LFM_revenue_01_bj[i] - FCR_D_up_revenue_01_bj[i] - FCR_D_down_revenue_01_bj[i] for i in range(len(optimized_cost_FCR_D_LFM_01_bj))]
+    
+
+print("Final cost: ", )
+
 #__Plotting___________________________________________________________________________________________________________________________
 #Grid usage
 plt.figure(figsize=(8, 5))

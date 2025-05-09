@@ -72,6 +72,7 @@ for b in boat:
         boat_load_cost_be.append(float(total_cost))
 
 reference_cost_be = [old_cost_be[i] + boat_load_cost_be[i] for i in range(len(old_cost_be))]
+print("Boat load cost: ", boat_load_cost_be)
 print("Reference cost: ", reference_cost_be)
 
 

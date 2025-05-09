@@ -73,7 +73,9 @@ for b in boat:
         boat_load_cost_bj.append(float(total_cost))
 
 reference_cost_bj = [old_cost_bj[i] + boat_load_cost_bj[i] for i in range(len(old_cost_bj))]
+print("Boat load cost: ", boat_load_cost_bj)
 print("Reference cost: ", reference_cost_bj)
+
 #_____Case 1____________________________________________________________________________________________________________________________
 peak_grid_usage_bj = [123.52, 124.72, 126.15, 127.61, 129.07, 130.53, 137.83, 159.73]
 peak_bess_throughput_bj = [41474, 31575, 28408, 23848, 21071, 21863, 14645, 11631]

@@ -78,25 +78,8 @@ for b in boat:
         total_cost, _, _, _, _, _, _ = boat_load_cost(b, spotprice)
         boat_load_cost_kr.append(float(total_cost))
 
-_, boatcost1, boatcost2, boatcost3, boatload1, boatload2, boatload3 = boat_load_cost(3, spotprice)
-
-boatcost1_pd = pd.DataFrame(boatcost1)
-boatcost2_pd = pd.DataFrame(boatcost2)
-boatcost3_pd = pd.DataFrame(boatcost3)
-boatcost1_pd.to_csv('boatcost1.csv', index=False)
-boatcost2_pd.to_csv('boatcost2.csv', index=False)
-boatcost3_pd.to_csv('boatcost3.csv', index=False)
-boatload1_pd = pd.DataFrame(boatload1)
-boatload2_pd = pd.DataFrame(boatload2)
-boatload3_pd = pd.DataFrame(boatload3)
-boatload1_pd.to_csv('boatload1.csv', index=False)
-boatload2_pd.to_csv('boatload2.csv', index=False)
-boatload3_pd.to_csv('boatload3.csv', index=False)
-spotprice_pd = pd.DataFrame(spotprice)
-spotprice_pd.to_csv('spotprice.csv', index=False)
-
 reference_cost_kr = [old_cost_kr[i] + boat_load_cost_kr[i] for i in range(len(old_cost_kr))]
-print("Boat load cost: ", boat_load_cost_kr, "Boat type 1 cost: ", boatcost1.sum(), "Boat type 2 cost: ", boatcost2.sum(),"Boat type 3 cost: ", boatcost3.sum())
+print("Boat load cost: ", boat_load_cost_kr)
 print("Reference cost: ", reference_cost_kr)
 
 #_____Case 1____________________________________________________________________________________________________________________________

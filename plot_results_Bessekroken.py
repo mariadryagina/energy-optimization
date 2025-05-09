@@ -84,14 +84,14 @@ peak_boat_throughput_be = [0, 1916, 1402, 1082, 922, 756]
 
 peak_throughput_be= [peak_bess_throughput_be[i] + peak_boat_throughput_be[i] for i in range(len(peak_bess_throughput_be))] 
 
-peak_cost_be = [0, 271, 271, 387, 722, 722]
+peak_cost_be = array([0, 271, 271, 387, 722, 722])/1000
 
 
 #____Case 2____________________________________________________________________________________________________________________________
 # Nord pool: allowing electricity to be sold on Nord pool
 nordpool_grid_usage_be = [1.14, 1.3, 1.38, 1.54, 1.86, 2.16]
-nord_pool_cost_be = [3213, 3815, 4204, 4529, 5313, 5635]
-nord_pool_revenue_be = [17069.2, 17477.0, 17369.4, 17134.5, 16840.1, 16362.1]
+nord_pool_cost_be = array([3213, 3815, 4204, 4529, 5313, 5635])/1000
+nord_pool_revenue_be = array([17069.2, 17477.0, 17369.4, 17134.5, 16840.1, 16362.1])/1000
 nord_bess_throughput_be = [21757, 11594, 9666, 9233, 7707, 6160]
 nord_boat_throughput_be = [0, 5614, 3284, 2234, 1832, 1569]
 
@@ -109,14 +109,14 @@ LFM_grid_usage_01_be = [2.42, 2.9, 3.32, 4.2, 5.04, 5.52]
 LFM_bess_throughput_01_be = [23854, 14333, 9946, 9887, 8230 , 7389]
 LFM_boat_throughput_01_before_be = [0, 4576, 3306, 2184 , 1831, 1456]
 LFM_boat_throughput_01_be = [(LFM_boat_throughput_01_before_be[i] * 2 - 0.07*11*boat[i])/2 for i in range(len(LFM_boat_throughput_01_before_be))]
-LFM_cost_01_be = [5085, 5780, 6194, 7476, 8996, 9955]
+LFM_cost_01_be = array([5085, 5780, 6194, 7476, 8996, 9955])/1000
 
 LFM_throughput_01_be= [LFM_bess_throughput_01_be[i] + LFM_boat_throughput_01_be[i] for i in range(len(LFM_bess_throughput_01_be))]
 
 #Revenue
 # LFM:
-LFM_revenue_01_be = [(3283+7462), (4515+10262), (5747+13062), (6979+15862), (8211+18662), (9443+21462)]
-LFM_revenue_Nordpool_01_be = [16809.0, 16075.2 , 15426.8 , 14923.6, 14191.7 , 12750.6] 
+LFM_revenue_01_be = array([(3283+7462), (4515+10262), (5747+13062), (6979+15862), (8211+18662), (9443+21462)])/1000
+LFM_revenue_Nordpool_01_be = array([16809.0, 16075.2 , 15426.8 , 14923.6, 14191.7 , 12750.6])/1000
 LFM_total_revenue_01_be = [LFM_revenue_01_be[i] + LFM_revenue_Nordpool_01_be[i] for i in range(len(LFM_revenue_01_be))]
 
 
@@ -126,10 +126,10 @@ optimized_cost_LFM_01_be= [LFM_cost_01_be[i] - LFM_revenue_01_be[i] - LFM_revenu
 
 #______Case 4____________________________________________________________________________________________________________________________
 # FCR-D up: 
-FCR_D_up_revenue_01_be = [22756.2,30517.5,31623.4,28296.4, 41305.3, 49801.3]
+FCR_D_up_revenue_01_be = array([22756.2,30517.5,31623.4,28296.4, 41305.3, 49801.3])/1000
 
 # FCR-D up: 
-FCR_D_down_revenue_01_be = [97729.6,132102.8,192188.9,289707.5, 336921.9,366774.0]
+FCR_D_down_revenue_01_be = array([97729.6,132102.8,192188.9,289707.5, 336921.9,366774.0])/1000
 
 
 #New costs
@@ -271,7 +271,7 @@ plt.plot(boat, LFM_cost_01_be, marker='.', color='indianred')
 # plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
 plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM '])
 plt.xlabel('Number of Electric Leisure Boats')
-plt.ylabel('Optimized Grid Usage Cost [SEK]')
+plt.ylabel('Optimized Grid Usage Cost [kSEK]')
 plt.grid(True)
 # Force full numbers on the y-axis
 formatter = ScalarFormatter(useOffset=False, useMathText=False)
@@ -311,7 +311,7 @@ plt.plot(boat, FCR_D_down_revenue_01_be, color='cornflowerblue', marker='.')
 plt.plot(boat, total_revenue_be, color='black', marker='.')
 plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'FCR-D up ', 'FCR-D down', 'Case 4: FCR-D'])
 plt.xlabel('Number of Electric Leisure Boats'), 
-plt.ylabel('Revenue [SEK]')
+plt.ylabel('Revenue [kSEK]')
 plt.grid(True)
 # Force full numbers on the y-axis
 formatter = ScalarFormatter(useOffset=False, useMathText=False)
@@ -331,11 +331,11 @@ ax1.tick_params(axis='y', labelcolor='black')
 ax1.grid(True)
 # Add a secondary y-axis for cost
 ax2 = ax1.twinx()
-#ax2.plot(boat, peak_cost_be, color='olivedrab', marker='.', linestyle='--', label='Cost')
-#ax2.plot(boat, nord_pool_cost_be, color='teal', marker='.', linestyle='--', label='Cost')
-#ax2.plot(boat, LFM_revenue_01_be, color='indianred', marker='.', linestyle='--', label='Cost')
+#ax2.plot(boat, peak_cost_be, color='olivedrab', marker='.', linestyle='--', label='Optimized Grid Usage Cost')
+ax2.plot(boat, optimized_cost_nordpool_be, color='teal', marker='.', linestyle='--', label='Final Cost')
+ax2.plot(boat, optimized_cost_LFM_01_be, color='indianred', marker='.', linestyle='--', label='Final Cost')
 ax2.plot(boat, optimized_cost_FCR_D_LFM_01_be, color='indianred', marker='.', linestyle='--', label='Final Cost')
-ax2.set_ylabel('Final Cost [SEK]', color='dimgrey')
+ax2.set_ylabel('Final Cost [kSEK]', color='dimgrey')
 ax2.tick_params(axis='y', labelcolor='dimgrey')
 # Force full numbers on the y-axis
 formatter = ScalarFormatter(useOffset=False, useMathText=False)

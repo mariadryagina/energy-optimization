@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
+from usage_pattern import usage_pattern
+import el_cost
+from numpy import *
 
 boat = [0, 2, 4, 6, 8, 10, 20, 50]
 
@@ -9,6 +12,59 @@ old_grid_usage_bj = [145.18, 145.18, 145.18, 145.18, 145.18, 145.18, 145.18, 145
 reference_grid_usage_bj = [old_grid_usage_bj[i] + 0.07 *11 * boat[i] for i in range(len(old_grid_usage_bj))]
 
 old_cost_bj = [264804, 264804, 264804, 264804, 264804, 264804, 264804, 264804]
+
+boat_load_cost_bj = []
+
+def boat_load_cost(NUMBOAT):
+    USE1, _ = usage_pattern(162, 100, 0.9, 60)  # Example usage pattern for a specific day
+    USE2, _ = usage_pattern(183, 100, 0.9, 60)  # Example usage pattern for a specific day
+    USE3, _ = usage_pattern(204, 100, 0.9, 60)  # Example usage pattern for a specific day
+    BOATLOAD1 = zeros((24, 365))
+    BOATLOAD2 = zeros((24, 365))
+    BOATLOAD3 = zeros((24, 365))
+    NUMBOAT1 = 0
+    NUMBOAT2 = 0
+    NUMBOAT3 = 0
+    for b in range(NUMBOAT):
+        if b % 3 == 0:
+            NUMBOAT1 += 1
+        elif b % 3 == 1:
+            NUMBOAT2 += 1
+        else:
+            NUMBOAT3 += 1
+    for d in range(365):
+        for h in range(24):
+            if h == 23:
+                BOATLOAD1[h, d] == 0
+                BOATLOAD2[h, d] == 0
+                BOATLOAD3[h, d] == 0
+            else:
+                if USE1[h, d] == 1 and USE1[h+1, d] == 0:
+                    BOATLOAD1[23, d-1] = 10 * NUMBOAT1
+                    BOATLOAD1[0:6, d] = 10 * NUMBOAT1
+                elif USE2[h, d] == 1 and USE2[h+1, d] == 0:
+                    BOATLOAD2[23, d-1] = 10 * NUMBOAT2
+                    BOATLOAD2[0:6, d] = 10 * NUMBOAT2
+                elif USE3[h, d] == 1 and USE3[h+1, d] == 0:
+                    BOATLOAD3[23, d-1] = 10 * NUMBOAT3
+                    BOATLOAD3[0:6, d] = 10 * NUMBOAT3
+                else:
+                    BOATLOAD1[h-1, d] = 0
+                    BOATLOAD2[h-1, d] = 0
+                    BOATLOAD3[h-1, d] = 0
+            CHARGECOST1 = el_cost.cost(None, None, BOATLOAD1, 61.55, 0.439, 0.113, 1.25)
+            CHARGECOST2 = el_cost.cost(None, None, BOATLOAD2, 61.55, 0.439, 0.113, 1.25)
+            CHARGECOST3 = el_cost.cost(None, None, BOATLOAD3, 61.55, 0.439, 0.113, 1.25)
+            TOTCOST = CHARGECOST1 + CHARGECOST2 + CHARGECOST3
+    return TOTCOST
+ 
+for b in boat:
+    if b == 0:
+        continue  # Skip the first iteration where b is 0
+    else:
+        boat_load_cost_bj.append(boat_load_cost(b))
+ 
+print("Boat load cost: ", boat_load_cost_bj)
 
 #_____Case 1____________________________________________________________________________________________________________________________
 peak_grid_usage_bj = [123.52, 124.72, 126.15, 127.61, 129.07, 130.53, 137.83, 159.73]
@@ -155,6 +211,8 @@ revenue_per_boat_case4_bj = [
 
 total_revenue_bj = [LFM_total_revenue_01_bj[i] + FCR_D_up_revenue_01_bj[i] + FCR_D_down_revenue_01_bj[i] for i in range(len(nord_pool_revenue_bj))]
 
+#____Calculating cool stuff___________________________________________________________________________________________________________________________
+#region
 final_cost = [optimized_cost_FCR_D_LFM_01_bj[i] - LFM_revenue_Nordpool_01_bj[i] - LFM_revenue_01_bj[i] - FCR_D_up_revenue_01_bj[i] - FCR_D_down_revenue_01_bj[i] for i in range(len(optimized_cost_FCR_D_LFM_01_bj))]
 final_cost_per_boat = [final_cost[i] / boat[i] if boat[i] != 0 else final_cost[0] for i in range(len(final_cost))]
 total_savings = [old_cost_bj[i] - final_cost[i] for i in range(len(old_cost_bj))]
@@ -171,9 +229,11 @@ print("Total savings/boat: ", total_savings_per_boat)
 print("BESS throughput: ", LFM_bess_throughput_01_bj, "participation factor: ", bess_throughput_participation_factor, "%")
 print("Boat throughput: ", LFM_boat_throughput_01_bj, "participation factor: ", boat_throughput_participation_factor, "%")
 print("Total savings/boat, allocated:", [total_savings_per_boat[i] * (boat_throughput_participation_factor[i] / 100) for i in range(len(total_savings_per_boat))])
+#endregion
 
 #__Plotting___________________________________________________________________________________________________________________________
 #Grid usage
+#region
 plt.figure(figsize=(8, 5))
 plt.plot(boat, old_grid_usage_bj, color='orange', linestyle='--')
 plt.plot(boat, peak_grid_usage_bj, color='olivedrab', marker='.')
@@ -275,8 +335,8 @@ plt.show()
 # Plot grid usage on the primary y-axis
 fig, ax1 = plt.subplots(figsize=(8, 5))
 #ax1.plot(boat, peak_grid_usage_bj, color='olivedrab', marker='.', label='Electricity usage')
-ax1.plot(boat, nordpool_grid_usage_bj, color='teal', marker='.', label='Electricity usage')
-#ax1.plot(boat, LFM_grid_usage_01_bj, color='indianred', marker='.', label='Electricity usage')
+#ax1.plot(boat, nordpool_grid_usage_bj, color='teal', marker='.', label='Electricity usage')
+ax1.plot(boat, LFM_grid_usage_01_bj, color='indianred', marker='.', label='Electricity usage')
 ax1.set_xlabel('Number of Electric Leisure Boats')
 ax1.set_ylabel('Grid usage [MWh]', color='black')
 ax1.tick_params(axis='y', labelcolor='black')
@@ -284,8 +344,9 @@ ax1.grid(True)
 # Add a secondary y-axis for cost
 ax2 = ax1.twinx()
 #ax2.plot(boat, peak_cost_bj, color='olivedrab', marker='.', linestyle='--', label='Cost')
-ax2.plot(boat, nord_pool_cost_bj, color='teal', marker='.', linestyle='--', label='Cost')
+#x2.plot(boat, nord_pool_cost_bj, color='teal', marker='.', linestyle='--', label='Cost')
 #ax2.plot(boat, LFM_cost_01_bj, color='indianred', marker='.', linestyle='--', label='Cost')
+ax2.plot(boat, optimized_cost_FCR_D_LFM_01_bj, color='indianred', marker='.', linestyle='--', label='Final Cost')
 ax2.set_ylabel('Cost of Electricity [SEK]', color='dimgrey')
 ax2.tick_params(axis='y', labelcolor='dimgrey')
 # Force full numbers on the y-axis
@@ -313,3 +374,8 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+#endregion
+
+new_grid_usage_kr = [old_grid_usage_bj[i] + 0.007*11*boat[i] for i in range(len(old_grid_usage_bj))]
+
+print(f"Increased grid usage: {[round(value,2) for value in new_grid_usage_kr]}")

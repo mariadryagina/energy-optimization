@@ -1,5 +1,10 @@
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
+from usage_pattern import usage_pattern
+import el_price
+from numpy import *
+import pandas as pd
+spotprice = el_price.spotprice_2023
 
 boat = [0, 2, 4, 6, 8, 10]
 
@@ -7,10 +12,67 @@ boat = [0, 2, 4, 6, 8, 10]
 old_grid_usage_be = [13.09, 13.09, 13.09, 13.09, 13.09, 13.09] # MWh
 reference_grid_usage_be = [old_grid_usage_be[i] + 0.07 *11 * boat[i] for i in range(len(old_grid_usage_be))]
 
+boat_load_cost_be = []
 
 old_cost_be = [24269, 24269, 24269, 24269, 24269, 24269] # SEK
 
+def boat_load_cost(NUMBOAT, SPOTPRICE):
+    USE1, _ = usage_pattern(162, 100, 0.9, 60)  # Example usage pattern for a specific day
+    USE2, _ = usage_pattern(183, 100, 0.9, 60)  # Example usage pattern for a specific day
+    USE3, _ = usage_pattern(204, 100, 0.9, 60)  # Example usage pattern for a specific day
+    BOATLOAD1 = zeros((24, 365))
+    BOATLOAD2 = zeros((24, 365))
+    BOATLOAD3 = zeros((24, 365))
+    BOATCOST1 = zeros((24, 365))
+    BOATCOST2 = zeros((24, 365))
+    BOATCOST3 = zeros((24, 365))
+    NUMBOAT1 = 0
+    NUMBOAT2 = 0
+    NUMBOAT3 = 0
+    for b in range(NUMBOAT):
+        if b % 3 == 0:
+            NUMBOAT1 += 1
+        elif b % 3 == 1:
+            NUMBOAT2 += 1
+        else:
+            NUMBOAT3 += 1
+    for d in range(365):
+        for h in range(24):
+            if h == 23:
+                BOATLOAD1[h, d] = 0
+                BOATLOAD2[h, d] = 0
+                BOATLOAD3[h, d] = 0
+            else:
+                if USE1[h, d] == 1 and USE1[h+1, d] == 0:
+                    BOATLOAD1[23, d-1] = 10 * NUMBOAT1
+                    BOATLOAD1[0:6, d] = 10 * NUMBOAT1
+                elif USE2[h, d] == 1 and USE2[h+1, d] == 0:
+                    BOATLOAD2[23, d-1] = 10 * NUMBOAT2
+                    BOATLOAD2[0:6, d] = 10 * NUMBOAT2
+                elif USE3[h, d] == 1 and USE3[h+1, d] == 0:
+                    BOATLOAD3[23, d-1] = 10 * NUMBOAT3
+                    BOATLOAD3[0:6, d] = 10 * NUMBOAT3
+                else:
+                    BOATLOAD1[h-1, d] = 0
+                    BOATLOAD2[h-1, d] = 0
+                    BOATLOAD3[h-1, d] = 0
+    for d in range(365):
+        for h in range(24):
+            BOATCOST1[h, d] = (SPOTPRICE[h, d] + 0.439 + 0.113) * BOATLOAD1[h, d] * 1.25
+            BOATCOST2[h, d] = (SPOTPRICE[h, d] + 0.439 + 0.113) * BOATLOAD2[h, d] * 1.25
+            BOATCOST3[h, d] = (SPOTPRICE[h, d] + 0.439 + 0.113) * BOATLOAD3[h, d] * 1.25
+    TOTCOST = BOATCOST1.sum() + BOATCOST2.sum() + BOATCOST3.sum()
+    return TOTCOST, BOATCOST1, BOATCOST2, BOATCOST3, BOATLOAD1, BOATLOAD2, BOATLOAD3
 
+for b in boat:
+    if b == 0:
+        boat_load_cost_be.append(0)
+    else:
+        total_cost, _, _, _, _, _, _ = boat_load_cost(b, spotprice)
+        boat_load_cost_be.append(float(total_cost))
+
+reference_cost_be = [old_cost_be[i] + boat_load_cost_be[i] for i in range(len(old_cost_be))]
+print("Reference cost: ", reference_cost_be)
 
 
 #_____Case 1____________________________________________________________________________________________________________________________

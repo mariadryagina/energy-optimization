@@ -293,7 +293,7 @@ plt.plot(boat, LFM_cost_01_bj, marker='.', color='indianred')
 # plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
 plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM '])
 plt.xlabel('Number of Electric Leisure Boats')
-plt.ylabel('Cost of Electricity [SEK]')
+plt.ylabel('Optimized Grid Usage Cost [SEK]')
 plt.grid(True)
 # Force full numbers on the y-axis
 formatter = ScalarFormatter(useOffset=False, useMathText=False)
@@ -301,27 +301,27 @@ formatter.set_scientific(False)  # Disable scientific notation
 plt.gca().yaxis.set_major_formatter(formatter)
 plt.show()
 
-#Case 4
-#Costs
-plt.figure(figsize=(8, 5))
-#plt.plot(boat, old_cost_bj, color='orange', linestyle='--')
-plt.plot(boat, peak_cost_bj , color='olivedrab',  marker='.')
-plt.plot(boat, nord_pool_cost_bj, marker='.', color='teal', linestyle='--')
-plt.plot(boat, optimized_cost_nordpool_bj, marker='.', color='teal')
-plt.plot(boat, LFM_cost_01_bj, marker='.', color='indianred', linestyle='--')
-plt.plot(boat, optimized_cost_LFM_01_bj, marker='.', color='indianred')
-plt.plot(boat, optimized_cost_FCR_D_up_LFM_01_bj, color='lightsteelblue', marker='.', linestyle='--')
-plt.plot(boat, optimized_cost_FCR_D_down_LFM_01_bj, color='cornflowerblue', marker='.', linestyle='--')
-plt.plot(boat, optimized_cost_FCR_D_LFM_01_bj, color='royalblue', marker='.')
-plt.legend(['Optimized cost Case 1: Peak Shaved', 'Optimized cost Case 2: Spot Price', 'Cost after revenue Case 2: Spot Price ', 'Optimized cost Case 3: LFM ', 'Cost after revenue Case 3: LFM', 'Cost after revenue Case 4: FCR-D up', 'Cost after revenue Case 4: FCR-D down', "Cost after revenue Case 4: FCR-D"])
-plt.xlabel('Number of Electric Leisure Boats'), 
-plt.ylabel('Cost of Electricity [SEK]')
-plt.grid(True)
-# Force full numbers on the y-axis
-formatter = ScalarFormatter(useOffset=False, useMathText=False)
-formatter.set_scientific(False)  # Disable scientific notation
-plt.gca().yaxis.set_major_formatter(formatter)
-plt.show()
+# #Case 4
+# #Costs
+# plt.figure(figsize=(8, 5))
+# #plt.plot(boat, old_cost_bj, color='orange', linestyle='--')
+# plt.plot(boat, peak_cost_bj , color='olivedrab',  marker='.')
+# plt.plot(boat, nord_pool_cost_bj, marker='.', color='teal', linestyle='--')
+# plt.plot(boat, optimized_cost_nordpool_bj, marker='.', color='teal')
+# plt.plot(boat, LFM_cost_01_bj, marker='.', color='indianred', linestyle='--')
+# plt.plot(boat, optimized_cost_LFM_01_bj, marker='.', color='indianred')
+# plt.plot(boat, optimized_cost_FCR_D_up_LFM_01_bj, color='lightsteelblue', marker='.', linestyle='--')
+# plt.plot(boat, optimized_cost_FCR_D_down_LFM_01_bj, color='cornflowerblue', marker='.', linestyle='--')
+# plt.plot(boat, optimized_cost_FCR_D_LFM_01_bj, color='royalblue', marker='.')
+# plt.legend(['Optimized cost Case 1: Peak Shaved', 'Optimized cost Case 2: Spot Price', 'Cost after revenue Case 2: Spot Price ', 'Optimized cost Case 3: LFM ', 'Cost after revenue Case 3: LFM', 'Cost after revenue Case 4: FCR-D up', 'Cost after revenue Case 4: FCR-D down', "Cost after revenue Case 4: FCR-D"])
+# plt.xlabel('Number of Electric Leisure Boats'), 
+# plt.ylabel('Cost of Electricity [SEK]')
+# plt.grid(True)
+# # Force full numbers on the y-axis
+# formatter = ScalarFormatter(useOffset=False, useMathText=False)
+# formatter.set_scientific(False)  # Disable scientific notation
+# plt.gca().yaxis.set_major_formatter(formatter)
+# plt.show()
 
 
 #Revenue
@@ -359,7 +359,7 @@ ax2 = ax1.twinx()
 #x2.plot(boat, nord_pool_cost_bj, color='teal', marker='.', linestyle='--', label='Cost')
 #ax2.plot(boat, LFM_cost_01_bj, color='indianred', marker='.', linestyle='--', label='Cost')
 ax2.plot(boat, optimized_cost_FCR_D_LFM_01_bj, color='indianred', marker='.', linestyle='--', label='Final Cost')
-ax2.set_ylabel('Cost of Electricity [SEK]', color='dimgrey')
+ax2.set_ylabel('Final cost [SEK]', color='dimgrey')
 ax2.tick_params(axis='y', labelcolor='dimgrey')
 # Force full numbers on the y-axis
 formatter = ScalarFormatter(useOffset=False, useMathText=False)
@@ -373,18 +373,18 @@ plt.tight_layout()
 plt.show()
 
 
-#Plot revenue per boat
-plt.figure(figsize=(8, 5))
-plt.plot(boat, revenue_per_boat_case1_bj, color='olivedrab', marker='.')
-plt.plot(boat, revenue_per_boat_case2_bj, color='teal', marker='.')
-plt.plot(boat, revenue_per_boat_case3_bj, color='indianred', marker='.')
-plt.plot(boat, revenue_per_boat_case4_bj, color='royalblue', marker='.')
-plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM', 'Case 4: FCR-D'])
-plt.xlabel('Number of Electric Leisure Boats')
-plt.ylabel('Revenue per boat [SEK]')
-plt.grid(True)
-plt.tight_layout()
-plt.show()
+# #Plot revenue per boat
+# plt.figure(figsize=(8, 5))
+# plt.plot(boat, revenue_per_boat_case1_bj, color='olivedrab', marker='.')
+# plt.plot(boat, revenue_per_boat_case2_bj, color='teal', marker='.')
+# plt.plot(boat, revenue_per_boat_case3_bj, color='indianred', marker='.')
+# plt.plot(boat, revenue_per_boat_case4_bj, color='royalblue', marker='.')
+# plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM', 'Case 4: FCR-D'])
+# plt.xlabel('Number of Electric Leisure Boats')
+# plt.ylabel('Revenue per boat [SEK]')
+# plt.grid(True)
+# plt.tight_layout()
+# plt.show()
 
 #endregion
 

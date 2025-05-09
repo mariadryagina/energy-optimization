@@ -3,27 +3,19 @@ import numpy as np
 import requests
 from io import BytesIO
 
-# # URL to the Excel file on GitHub
-# url23 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Spotpriser/price_2023.csv"
-# url24 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Spotpriser/price_2024.csv"
+# URL to the Excel file on GitHub
+url23 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Spotpriser/price_2023.csv"
+url24 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Spotpriser/price_2024.csv"
 
-# # Fetch the file from GitHub
-# response23 = requests.get(url23, verify=False)
-# response24 = requests.get(url24, verify=False)
-# response23.raise_for_status()  # Check if the request was successful
-# response24.raise_for_status()  # Check if the request was successful
+# Fetch the file from GitHub
+response23 = requests.get(url23, verify=False)
+response24 = requests.get(url24, verify=False)
+response23.raise_for_status()  # Check if the request was successful
+response24.raise_for_status()  # Check if the request was successful
 
-# # Read the Excel file into a DataFrame
-# df23 = pd.read_csv(BytesIO(response23.content))
-# df24 = pd.read_csv(BytesIO(response24.content))
-
-# Local file paths
-file_path_2023 = r"c:\Users\a517469\Python\energy-optimization\Spotpriser\price_2023.csv"
-file_path_2024 = r"c:\Users\a517469\Python\energy-optimization\Spotpriser\price_2024.csv"
-
-# Read the CSV files into DataFrames
-df23 = pd.read_csv(file_path_2023)
-df24 = pd.read_csv(file_path_2024)
+# Read the Excel file into a DataFrame
+df23 = pd.read_csv(BytesIO(response23.content))
+df24 = pd.read_csv(BytesIO(response24.content))
 
 # Extract values from the second column (index 1)
 values_2023 = df23.iloc[0:8761, 1].values
@@ -65,10 +57,10 @@ spotprice_2024_summer = spotprice_2024[:, 151:243]
 sptorprice_2024_autumn = spotprice_2024[:, 243:334]
 
 
-# Printing the spotprice
-spotprice_df_2023 = pd.DataFrame(spotprice_matrix_2023)
-spotprice_df_2024 = pd.DataFrame(spotprice_matrix_2024)
-print(np.size(spotprice_2023))
-print(spotprice_df_2024)
+# # Printing the spotprice
+# spotprice_df_2023 = pd.DataFrame(spotprice_matrix_2023)
+# spotprice_df_2024 = pd.DataFrame(spotprice_matrix_2024)
+# print(np.size(spotprice_2023))
+# print(spotprice_df_2024)
 
 

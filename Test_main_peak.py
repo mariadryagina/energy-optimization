@@ -14,11 +14,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import load_krossholmen_2023
 import solarpower
+import windpower
 import load_björkö
 import load_björkö_bessekroken
 import el_price
 import el_cost
 import Optimization
+import Optimization_peak
 import usage_pattern
 from scipy.interpolate import interp1d
 from Effekthandel_väst import effekthandel_väst
@@ -88,7 +90,7 @@ peak_cost = 61.55 #SEK/kWh
 number_boats = 2 #Number of boats in the marina
 
 # Bid size for the boats and BESS on the LFM
-bid_size = 0.1 # % of the capacity
+bid_size = 0 # % of the capacity
 
 # Days for when the boat is unavailable for 14 days in a row
 a = 162 # söndag 11 juni
@@ -179,19 +181,12 @@ for i in range(365):
 
 #Calculating the total 
 total_sum_sun=round(sum(P_solar)*10,1)/10
-print(f"The yearly production of solar power is {round(total_sum_sun/1000, 2)} MWh")
+print(f"The yearly production of solar power is {round(total_sum_sun/1000)} MWh")
 
 total_sum_wind=round(sum(P_wind)*10,1)/10
-print(f"The yearly production of wind power is {round(total_sum_wind/1000, 2)} MWh")
+print(f"The yearly production of wind power is {round(total_sum_wind/1000)} MWh")
 #endregion
 
-# plt.figure()
-# plt.plot(P_wind)
-# plt.plot(P_solar, color='darkorange')
-# plt.legend(['Yearly wind production','Yearly solar production'])
-# plt.ylabel('Electricity production [kWh]')
-# plt.xlabel('Days')
-# plt.show()
 
 #______Plotting Case 1___________________________________________________________________________________________________
 #region Maybe remove??
@@ -250,8 +245,7 @@ for b in range(number_boats):
     else:
         number_boats3 += 1
 
-cycl_cost = round((((3000000*0.35) + (9.66 * 150 * boat_capacity * number_boats)) * (1 - 0.3)) / (5380 * (bess_capacity + boat_capacity * number_boats)), 3)
-print(f"Cycl cost: {cycl_cost} SEK/kWh")
+cycl_cost = ((3000000*0.35 + 9.66 * 150 * boat_capacity * (number_boats1 + number_boats2 + number_boats3)) * (1 - 0.3)) / (5380 * (bess_capacity + boat_capacity * (number_boats1 + number_boats2 + number_boats3)))
 #cycl_cost_boat = ((9.66 * 150 * boat_capacity * (number_boats1 + number_boats2 + number_boats3)) * (1 - 0.4)) / (5380 * (boat_capacity * (number_boats1 + number_boats2 + number_boats3)))
 #cycl_cost_bess = ((3000000 * 0.35) * (1 - 0.4)) / (5380 * (bess_capacity))
 
@@ -261,10 +255,10 @@ boat_load3 = usage_pattern.boat_load(boat_availability3, (battery_upper_limit-ba
 
 #______LCM: Effekthandel väst________________________________________________________________________________________
 # LCM: Matrix for bids and activation'
-bids_effekthandelväst_data = effekthandel_väst.I_bid
-activated_bids_effekthandelväst_data = effekthandel_väst.I_activated
-# bids_effekthandelväst_data = np.zeros((24,365))
-# activated_bids_effekthandelväst_data = np.zeros((24,365))
+# bids_effekthandelväst_data = effekthandel_väst.I_bid
+# activated_bids_effekthandelväst_data = effekthandel_väst.I_activated
+bids_effekthandelväst_data = np.zeros((24, 365))  # Placeholder for bids data
+activated_bids_effekthandelväst_data = np.zeros((24, 365))  # Placeholder for activated bids data
 
 # Matrix with bids for the different batteries
 bid_bess = activated_bids_effekthandelväst_data * bess_capacity * bid_size
@@ -275,7 +269,7 @@ bid_boat3 = activated_bids_effekthandelväst_data * boat_capacity * number_boats
 old_cost = el_cost.cost(None, None, load_data, 61.55, 0.439, 0.113, 1.25)
 
 #______Calling optimization function________________________________________________________________________________________
-model = Optimization.optimize_microgrid(solar_power, wind_power, load_data, spot_price, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, battery_lower_limit, battery_upper_limit, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, cycl_cost, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, bid_bess, bid_boat1, bid_boat2, bid_boat3, bid_size)
+model = Optimization_peak.optimize_microgrid(solar_power, wind_power, load_data, spot_price, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, battery_lower_limit, battery_upper_limit, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, cycl_cost, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, bid_bess, bid_boat1, bid_boat2, bid_boat3, bid_size)
 
 #______Plotting results________________________________________________________________________________________
 old_grid_usage = np.zeros((24, 365))  # Initial load data
@@ -284,7 +278,6 @@ grid_used_load = np.zeros((24, 365))  # Grid usage with load data
 self_sufficiency = np.zeros((24, 365))  # Self sufficiency data
 self_production = np.zeros((24, 365))  # Self production data
 self_production_used = np.zeros((24, 365))  # Self production used data
-sold_electricity = np.zeros((24, 365))  # Sold electricity data
 bess_charge = np.zeros((24, 365))  # Battery charge data
 bess_discharge = np.zeros((24, 365))  # Battery discharge data
 bess_soc = np.zeros((24, 365))  # Battery state of charge data
@@ -308,7 +301,6 @@ for h in model.HOURS:
         grid_used_load[h, d] = model.grid_used_load[h, d].value  # Grid usage with load
         self_production[h, d] = model.self_production[h, d]  # Self production
         self_production_used[h, d] = model.self_production_used[h, d].value
-        sold_electricity[h, d] = model.grid_sold[h, d].value
         bess_charge [h, d] = model.bess_charge[h, d].value
         bess_discharge [h, d] = model.bess_discharge[h, d].value
         bess_soc [h, d] = model.bess_soc[h, d].value
@@ -326,17 +318,6 @@ for h in model.HOURS:
 
 #old_cost = el_cost.cost(None, None, old_grid_usage, 61.55, 0.439, 0.113, 1.25)
 opt_cost = el_cost.cost(None, None, grid_used_load + grid_used_battery, 61.55, 0.439, 0.113, 1.25)
-
-total_grid_usage = np.zeros((24, 365))
-total_grid_usage = grid_used_battery + grid_used_load
-
-plt.figure()
-plt.plot(np.sum(old_grid_usage, axis=0))
-plt.plot(np.sum(total_grid_usage, axis=0))
-plt.legend(['Old grid usage', 'New grid usage'])
-plt.ylabel(['Electricity drawn from the grid [kWh]'])
-plt.xlabel(['Days'])
-plt.show()
 
 bess_soc_values = np.zeros(8760) 
 bess_charge_values = np.zeros( 8760) 
@@ -356,7 +337,6 @@ grid_used_load_hourly = np.zeros(8760)
 self_production_hourly = np.zeros(8760)
 self_production_used_hourly = np.zeros(8760)
 self_sufficiency_hourly = np.zeros(8760)
-sold_electricity_hourly = np.zeros(8760)
 sold_electricity_solar_hourly = np.zeros(8760)
 spot_price_hourly = np.zeros(8760)
 
@@ -412,23 +392,7 @@ grid_used_load_hourly = hourly_values2(grid_used_load_hourly, grid_used_load)
 self_production_hourly = hourly_values2(self_production_hourly, self_production)
 self_production_used_hourly = hourly_values2(self_production_used_hourly, self_production_used)
 self_sufficiency_hourly = hourly_values2(self_sufficiency_hourly, self_sufficiency)
-sold_electricity_hourly = hourly_values2(sold_electricity_hourly, sold_electricity)
 spot_price_hourly = hourly_values2(spot_price_hourly, spotprice)
-
-old_load_winter = old_grid_usage[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
-old_load_spring = old_grid_usage[:, 59:151]
-old_load_summer = old_grid_usage[:, 151:243]
-old_load_autumn = old_grid_usage[:, 243:334]
-
-new_load_winter = total_grid_usage[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
-new_load_spring = total_grid_usage[:, 59:151]
-new_load_summer = total_grid_usage[:, 151:243]
-new_load_autumn = total_grid_usage[:, 243:334]
-
-spot_price_winter = spotprice[:, np.concatenate((np.arange(334, 365), np.arange(0, 59)))]
-spot_price_spring = spotprice[:, 59:151]
-spot_price_summer = spotprice[:, 151:243]
-spot_price_autumn = spotprice[:, 243:334]
 
 for h in range(8760):
     if self_production_used_hourly[h] == 0:
@@ -443,7 +407,7 @@ print(f"Self production: {round(self_production.sum()/1000, 2)} MWh",
       f"PV+wind electricity sold: {round(np.nansum(sold_electricity_solar_hourly)/1000, 2)} MWh")
 print(f"Cycl cost: {round(cycl_cost, 2)} SEK/kWh")
 print(f"Energy throughput BESS: {round(((bess_discharge.sum()+bess_charge.sum())/2))} kWh, Energy throughput boat (mean): {energy_throughput} kWh")
-print(f"Electricity market revenue, from BESS and boats: {round((sold_electricity*spotprice).sum(),1)} SEK, from solar: {round(np.nansum(sold_electricity_solar_hourly*spot_price_hourly),1)} SEK")
+print(f"Electricity market revenue from solar: {round(np.nansum(sold_electricity_solar_hourly*spot_price_hourly),1)} SEK")
 print(f"Power bid revenue: {round((0.2*bid_size*(bess_capacity+boat_capacity*(number_boats1+number_boats2+number_boats3))*bids_effekthandelväst_data).sum())} SEK")
 print(f"Power activated revenue: {round(3.5*(bid_bess+bid_boat1+bid_boat2+bid_boat3).sum())} SEK")
 #print(f'Power throughput BESS: {round((bess_discharge.sum))}, Power throughput boat (mean): {round(((boat_discharge1+boat_discharge2+boat_discharge3)/number_boats).sum())} MWh')
@@ -460,17 +424,6 @@ plt.xlim(0, 8760)  # Set x-axis limits to start at 0 and end at 8760
 plt.xlabel('Hour')
 plt.ylabel('Electricity drawn from the grid [kWh]')
 plt.show()
-
-# plt.figure(figsize=(12, 6))
-
-# # Plot old grid usage
-# plt.plot((sold_electricity_hourly))
-# plt.title('Sold electricity')
-# plt.xlim(0, 8760)  # Set x-axis limits to start at 0 and end at 8760
-# plt.xlabel('Hour')
-# plt.ylabel('kWh')
-# plt.show()
-
 
 
 # # Plot BESS and boat
@@ -559,210 +512,6 @@ plt.show()
 
 # plt.tight_layout()
 # plt.show()
-
-
-#Arrays for daytype for each month, 0 = weekday, 1 = weekend
-jan_daytype = np.array([1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0])
-feb_daytype = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0])
-mar_daytype = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0])
-apr_daytype = np.array([1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1])
-may_daytype = np.array([1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0])
-jun_daytype = np.array([0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0])
-jul_daytype = np.array([1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0])
-aug_daytype = np.array([0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0])
-sep_daytype = np.array([0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1])
-oct_daytype = np.array([1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0])
-nov_daytype = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0])
-dec_daytype = np.array([0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1])
-
-winter_daytype = np.concatenate((dec_daytype, jan_daytype, feb_daytype))
-spring_daytype = np.concatenate((mar_daytype, apr_daytype, may_daytype))
-summer_daytype = np.concatenate((jun_daytype, jul_daytype, aug_daytype))
-autumn_daytype = np.concatenate((sep_daytype, oct_daytype, nov_daytype))
-
-#Empty matrixes for the next step
-old_load_winter_weekday = []
-old_load_winter_weekend = []
-old_load_spring_weekday = []
-old_load_spring_weekend = []
-old_load_summer_weekday = []
-old_load_summer_weekend = []
-old_load_autumn_weekday = []
-old_load_autumn_weekend = []
-new_load_winter_weekday = []
-new_load_winter_weekend = []
-new_load_spring_weekday = []
-new_load_spring_weekend = []
-new_load_summer_weekday = []
-new_load_summer_weekend = []
-new_load_autumn_weekday = []
-new_load_autumn_weekend = []
-spot_price_winter_weekday = []
-spot_price_winter_weekend = []
-spot_price_summer_weekday = []
-spot_price_summer_weekend = []
-
-#for-loops positioning the load values for either weekday or weekend in different matrixes
-#each row represents the load for one hour in the day
-
-def load_weekday_weekend(DAYTYPE, WEEKDAY, WEEKEND, OLDLOAD):
-    for i, value in enumerate(DAYTYPE):
-        if value == 0:
-            WEEKDAY.append(OLDLOAD[:, i])
-        if value == 1:
-            WEEKEND.append(OLDLOAD[:, i])
-    return WEEKDAY, WEEKEND
-old_load_winter_weekday, old_load_winter_weekend = load_weekday_weekend(winter_daytype, old_load_winter_weekday, old_load_winter_weekend, old_load_winter)
-old_load_spring_weekday, old_load_spring_weekend = load_weekday_weekend(spring_daytype, old_load_spring_weekday, old_load_spring_weekend, old_load_spring)
-old_load_summer_weekday, old_load_summer_weekend = load_weekday_weekend(summer_daytype, old_load_summer_weekday, old_load_summer_weekend, old_load_summer)
-old_load_autumn_weekday, old_load_autumn_weekend = load_weekday_weekend(autumn_daytype, old_load_autumn_weekday, old_load_autumn_weekend, old_load_autumn)
-new_load_winter_weekday, new_load_winter_weekend = load_weekday_weekend(winter_daytype, new_load_winter_weekday, new_load_winter_weekend, new_load_winter)
-new_load_spring_weekday, new_load_spring_weekend = load_weekday_weekend(spring_daytype, new_load_spring_weekday, new_load_spring_weekend, new_load_spring)
-new_load_summer_weekday, new_load_summer_weekend = load_weekday_weekend(summer_daytype, new_load_summer_weekday, new_load_summer_weekend, new_load_summer)
-new_load_autumn_weekday, new_load_autumn_weekend = load_weekday_weekend(autumn_daytype, new_load_autumn_weekday, new_load_autumn_weekend, new_load_autumn)
-spot_price_winter_weekday, spot_price_winter_weekend = load_weekday_weekend(winter_daytype, spot_price_winter_weekday, spot_price_winter_weekend, spot_price_winter)
-spot_price_summer_weekday, spot_price_summer_weekend = load_weekday_weekend(summer_daytype, spot_price_summer_weekday, spot_price_summer_weekend, spot_price_summer)
-
-# #_____________________________________________________________________________________________
-# #PLOT
-# #position for the time on the x-axis
-tick_locations = [0, 6, 12, 18, 24]
-
-#Winter, weekday
-ffig, ax1 = plt.subplots(figsize=(8, 6))
-
-mean_old_load_winter_weekday = np.mean(old_load_winter_weekday, axis=0)
-mean_new_load_winter_weekday = np.mean(new_load_winter_weekday, axis=0)
-ax1.plot(mean_old_load_winter_weekday, label='Old mean grid usage')
-ax1.plot(mean_new_load_winter_weekday, label='New mean grid usage', color='darkseagreen')
-ax1.set_ylabel('Electricity drawn from the grid [kWh]')
-ax1.set_ylim(78, 238)
-ax1.set_xlabel('Hour of day')
-ax1.set_xticks(tick_locations)
-ax1.set_xticklabels([str(h) for h in tick_locations])
-
-# Horizontal grid lines (match both y-axes)
-ax1.grid(True, axis='y', color='lightgray', linewidth=0.7, zorder=1)
-
-# Vertical grid lines only at selected hours
-for x in tick_locations:
-    ax1.axvline(x=x, color='lightgray', linewidth=0.7, zorder=0)
-
-# Twin y-axis for spot price
-ax2 = ax1.twinx()
-mean_spot_price_winter_weekday = np.mean(spot_price_winter_weekday, axis=0)
-ax2.plot(mean_spot_price_winter_weekday, label='Mean spot price', color='teal', linestyle='dashed', linewidth=1)
-ax2.set_ylabel('Spot price [SEK/kWh]', color='teal')
-ax2.tick_params(axis='y', which='both', labelcolor='teal')
-
-# Optional: add legends
-ax1.legend(loc='upper left')
-ax2.legend(loc='upper right')
-
-plt.tight_layout()
-plt.show()
-
-#Winter, weekend
-ffig, ax1 = plt.subplots(figsize=(8, 6))
-
-mean_old_load_winter_weekend = np.mean(old_load_winter_weekend, axis=0)
-mean_new_load_winter_weekend = np.mean(new_load_winter_weekend, axis=0)
-ax1.plot(mean_old_load_winter_weekend, label='Old mean grid usage')
-ax1.plot(mean_new_load_winter_weekend, label='New mean grid usage', color='darkseagreen')
-ax1.set_ylabel('Electricity drawn from the grid [kWh]')
-ax1.set_ylim(68, 210)
-ax1.set_xlabel('Hour of day')
-ax1.set_xticks(tick_locations)
-ax1.set_xticklabels([str(h) for h in tick_locations])
-
-# Horizontal grid lines (match both y-axes)
-ax1.grid(True, axis='y', color='lightgray', linewidth=0.7, zorder=1)
-
-# Vertical grid lines only at selected hours
-for x in tick_locations:
-    ax1.axvline(x=x, color='lightgray', linewidth=0.7, zorder=0)
-
-# Twin y-axis for spot price
-ax2 = ax1.twinx()
-mean_spot_price_winter_weekend = np.mean(spot_price_winter_weekend, axis=0)
-ax2.plot(mean_spot_price_winter_weekend, label='Mean spot price', color='teal', linestyle='dashed', linewidth=1)
-ax2.set_ylabel('Spot price [SEK/kWh]', color='teal', )
-ax2.tick_params(axis='y', which='both', labelcolor='teal')
-
-# Optional: add legends
-ax1.legend(loc='upper left')
-ax2.legend(loc='upper right')
-
-plt.tight_layout()
-plt.show()
-
-#Summer, weekday
-ffig, ax1 = plt.subplots(figsize=(8, 6))
-
-mean_old_load_summer_weekday = np.mean(old_load_summer_weekday, axis=0)
-mean_new_load_summer_weekday = np.mean(new_load_summer_weekday, axis=0)
-ax1.plot(mean_old_load_summer_weekday, label='Old mean grid usage')
-ax1.plot(mean_new_load_summer_weekday, label='New mean grid usage', color='darkseagreen')
-ax1.set_ylabel('Electricity drawn from the grid [kWh]')
-ax1.set_xlabel('Hour of day')
-ax1.set_xticks(tick_locations)
-ax1.set_xticklabels([str(h) for h in tick_locations])
-
-# Horizontal grid lines (match both y-axes)
-ax1.grid(True, axis='y', color='lightgray', linewidth=0.7, zorder=1)
-
-# Vertical grid lines only at selected hours
-for x in tick_locations:
-    ax1.axvline(x=x, color='lightgray', linewidth=0.7, zorder=0)
-
-# Twin y-axis for spot price
-ax2 = ax1.twinx()
-mean_spot_price_summer_weekday = np.mean(spot_price_summer_weekday, axis=0)
-ax2.plot(mean_spot_price_summer_weekday, label='Mean spot price', color='teal', linestyle='dashed', linewidth=1)
-ax2.set_ylabel('Spot price [SEK/kWh]', color='teal', )
-ax2.tick_params(axis='y', which='both', labelcolor='teal')
-
-# Optional: add legends
-ax1.legend(loc='upper left')
-ax2.legend(loc='upper right')
-
-plt.tight_layout()
-plt.show()
-
-#Summer, weekend
-ffig, ax1 = plt.subplots(figsize=(8, 6))
-
-mean_old_load_summer_weekend = np.mean(old_load_summer_weekend, axis=0)
-mean_new_load_summer_weekend = np.mean(new_load_summer_weekend, axis=0)
-ax1.plot(mean_old_load_summer_weekend, label='Old mean grid usage')
-ax1.plot(mean_new_load_summer_weekend, label='New mean grid usage', color='darkseagreen')
-ax1.set_ylabel('Electricity drawn from the grid [kWh]')
-ax1.set_xlabel('Hour of day')
-ax1.set_xticks(tick_locations)
-ax1.set_xticklabels([str(h) for h in tick_locations])
-
-# Horizontal grid lines (match both y-axes)
-ax1.grid(True, axis='y', color='lightgray', linewidth=0.7, zorder=1)
-
-# Vertical grid lines only at selected hours
-for x in tick_locations:
-    ax1.axvline(x=x, color='lightgray', linewidth=0.7, zorder=0)
-
-# Twin y-axis for spot price
-ax2 = ax1.twinx()
-mean_spot_price_summer_weekend = np.mean(spot_price_summer_weekend, axis=0)
-ax2.plot(mean_spot_price_summer_weekend, label='Mean spot price', color='teal', linestyle='dashed', linewidth=1)
-ax2.set_ylabel('Spot price [SEK/kWh]', color='teal', )
-ax2.tick_params(axis='y', which='both', labelcolor='teal')
-
-# Optional: add legends
-ax1.legend(loc='upper left')
-ax2.legend(loc='upper right')
-
-plt.tight_layout()
-plt.show()
-
-
 
 # #_____Frequency market: FCR-D_________________________________________________________________________________________________________
 # #region

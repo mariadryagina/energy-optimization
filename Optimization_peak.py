@@ -56,7 +56,6 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     model.self_sufficiency = Var(model.HOURS, model.DAYS, within=NonNegativeReals)
     model.grid_used_load = Var(model.HOURS, model.DAYS, bounds=(0, grid_limit))
     model.grid_used_battery = Var(model.HOURS, model.DAYS, bounds=(0, 0.1*(bess_capacity + boat_capacity * (number_boats1 + number_boats2 + number_boats3))))
-    model.grid_sold = Var(model.HOURS, model.DAYS, bounds=(0, grid_limit/2))
     model.peak_month = Var(model.MONTHS, bounds=(0, grid_limit))
     model.peak_old_month = Var(model.MONTHS, bounds=(0, grid_limit))
     model.self_production_used = Var(model.HOURS, model.DAYS, bounds=(0, grid_limit/2))
@@ -91,17 +90,13 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
         peak_penalty = sum(
             1000 * (model.peak_old_month[m] * 1.25)
             for m in model.MONTHS)
-
-        electricity_revenue = sum(
-            (model.spot_price[h, d] + 0.07) * model.grid_sold[h, d] #Revenue from selling electricity
-            for h in model.HOURS for d in model.DAYS)
             
         cycling_cost = sum((model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d]
                            + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d] + model.boat_discharge3[h, d])
-                           * 0.2378/2
+                           * (0.2378/2) #cycl_cost/2
                            for h in model.HOURS for d in model.DAYS)
         
-        return (electricity_cost + peak_total_cost + 1000000*peak_penalty - electricity_revenue + cycling_cost) #Cost of electricity
+        return (electricity_cost + peak_total_cost + peak_penalty + cycling_cost) #Cost of electricity
     model.objective = Objective(rule=total_grid_cost, sense=minimize)
 
     # Returns the maximum grid load for each month
@@ -131,9 +126,9 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     def load_balance_rule(model, h, d):
         if model.self_production[h, d] > 5*model.load_param[h, d]:
             model.self_production_used[h, d] = model.self_production[h, d] - 5*model.load_param[h, d]
-            return model.self_production_used[h, d] + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d]+ model.boat_discharge3[h, d] + (model.grid_used_load[h, d] + model.grid_used_battery[h, d]) == 2*model.load_param[h, d] + model.grid_sold[h, d] + model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d] # + model.boat_load1[h, d] + model.boat_load2[h, d] + model.boat_load3[h, d]
+            return model.self_production_used[h, d] + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d]+ model.boat_discharge3[h, d] + (model.grid_used_load[h, d] + model.grid_used_battery[h, d]) == 2*model.load_param[h, d] + model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d] # + model.boat_load1[h, d] + model.boat_load2[h, d] + model.boat_load3[h, d]
         else:
-            return model.self_production[h, d] + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d]+ model.boat_discharge3[h, d] + (model.grid_used_load[h, d] + model.grid_used_battery[h, d]) == model.load_param[h, d] + model.grid_sold[h, d] + model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d] # + model.boat_load1[h, d] + model.boat_load2[h, d] + model.boat_load3[h, d]
+            return model.self_production[h, d] + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d]+ model.boat_discharge3[h, d] + (model.grid_used_load[h, d] + model.grid_used_battery[h, d]) == model.load_param[h, d] + model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d] # + model.boat_load1[h, d] + model.boat_load2[h, d] + model.boat_load3[h, d]
     model.load_balance_constraint = Constraint(model.HOURS, model.DAYS, rule=load_balance_rule)
 
     # The load must be met by the self-sufficiency, electricity from the grid and the batteries, 
@@ -150,15 +145,6 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
         return model.grid_used_load[h, d] + model.grid_used_battery[h, d] <= grid_limit
     model.grid_usage_constraint = Constraint(model.HOURS, model.DAYS, rule=grid_usage_rule)
 
-    # Sold electricity cannot exceed half of the grid limit
-    def grid_sold_limit(model, h, d):
-        return model.grid_sold[h, d] >= 0
-    model.grid_sold_constraint = Constraint(model.HOURS, model.DAYS, rule=grid_sold_limit)
-
-    # Sold electricity only from batteries
-    def grid_sold_from_batteries(model, h, d):
-        return model.grid_sold[h, d] <= model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d] + model.boat_discharge3[h, d]
-    model.grid_sold_from_batteries_constraint = Constraint(model.HOURS, model.DAYS, rule=grid_sold_from_batteries)
 
     # Batteries may only charge from the self-produced electricity (that is not used to meet the load) and from the grid)
     def battery_charge_rule(model, h, d):

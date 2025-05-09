@@ -51,15 +51,17 @@ def boat_load_cost(NUMBOAT, SPOTPRICE):
                 if USE1[h, d] == 1 and USE1[h+1, d] == 0:
                     BOATLOAD1[23, d-1] = 10 * NUMBOAT1
                     BOATLOAD1[0:6, d] = 10 * NUMBOAT1
-                elif USE2[h, d] == 1 and USE2[h+1, d] == 0:
+                else:
+                    BOATLOAD1[h-1, d] = 0
+                if USE2[h, d] == 1 and USE2[h+1, d] == 0:
                     BOATLOAD2[23, d-1] = 10 * NUMBOAT2
                     BOATLOAD2[0:6, d] = 10 * NUMBOAT2
-                elif USE3[h, d] == 1 and USE3[h+1, d] == 0:
+                else:
+                    BOATLOAD2[h-1, d] = 0
+                if USE3[h, d] == 1 and USE3[h+1, d] == 0:
                     BOATLOAD3[23, d-1] = 10 * NUMBOAT3
                     BOATLOAD3[0:6, d] = 10 * NUMBOAT3
                 else:
-                    BOATLOAD1[h-1, d] = 0
-                    BOATLOAD2[h-1, d] = 0
                     BOATLOAD3[h-1, d] = 0
     for d in range(365):
         for h in range(24):

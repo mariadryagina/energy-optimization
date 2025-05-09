@@ -3,6 +3,7 @@ import pandas as pd
 from math import *
 import matplotlib.pyplot as plt 
 from matplotlib.colors import LinearSegmentedColormap
+import el_cost
 
 #Different mondays when the boat is used for 14 days in a row
 #a=163 #måndag 12 juni
@@ -108,6 +109,48 @@ def boat_load(availability, SOC_leaving, SOC_arriving):
                     boat_load[h-1, d] = 0
     return boat_load
             
+def boat_load_cost(NUMBOAT):
+    USE1, _ = usage_pattern(162, 100, 0.9, 60)  # Example usage pattern for a specific day
+    USE2, _ = usage_pattern(183, 100, 0.9, 60)  # Example usage pattern for a specific day
+    USE3, _ = usage_pattern(204, 100, 0.9, 60)  # Example usage pattern for a specific day
+    BOATLOAD1 = zeros((24, 365))
+    BOATLOAD2 = zeros((24, 365))
+    BOATLOAD3 = zeros((24, 365))
+    NUMBOAT1 = 0
+    NUMBOAT2 = 0
+    NUMBOAT3 = 0
+    for b in range(NUMBOAT):
+        if b % 3 == 0:
+            NUMBOAT1 += 1
+        elif b % 3 == 1:
+            NUMBOAT2 += 1
+        else:
+            NUMBOAT3 += 1
+    for d in range(365):
+        for h in range(24):
+            if h == 23:
+                BOATLOAD1[h, d] == 0
+                BOATLOAD2[h, d] == 0
+                BOATLOAD3[h, d] == 0
+            else:
+                if USE1[h, d] == 1 and USE1[h+1, d] == 0:
+                    BOATLOAD1[23, d-1] = 10 * NUMBOAT1
+                    BOATLOAD1[0:6, d] = 10 * NUMBOAT1
+                elif USE2[h, d] == 1 and USE2[h+1, d] == 0:
+                    BOATLOAD2[23, d-1] = 10 * NUMBOAT2
+                    BOATLOAD2[0:6, d] = 10 * NUMBOAT2
+                elif USE3[h, d] == 1 and USE3[h+1, d] == 0:
+                    BOATLOAD3[23, d-1] = 10 * NUMBOAT3
+                    BOATLOAD3[0:6, d] = 10 * NUMBOAT3
+                else:
+                    BOATLOAD1[h-1, d] = 0
+                    BOATLOAD2[h-1, d] = 0
+                    BOATLOAD3[h-1, d] = 0
+            CHARGECOST1 = el_cost.cost(None, None, BOATLOAD1, 61.55, 0.439, 0.113, 1.25)
+            CHARGECOST2 = el_cost.cost(None, None, BOATLOAD2, 61.55, 0.439, 0.113, 1.25)
+            CHARGECOST3 = el_cost.cost(None, None, BOATLOAD3, 61.55, 0.439, 0.113, 1.25)
+            TOTCOST = CHARGECOST1 + CHARGECOST2 + CHARGECOST3
+    return TOTCOST
 
 def boat_market_availability():
     boat_market_availability = zeros((24, 365))

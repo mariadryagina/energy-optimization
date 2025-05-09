@@ -52,10 +52,10 @@ def boat_load_cost(NUMBOAT):
                     BOATLOAD1[h-1, d] = 0
                     BOATLOAD2[h-1, d] = 0
                     BOATLOAD3[h-1, d] = 0
-            CHARGECOST1 = el_cost.cost(None, None, BOATLOAD1, 61.55, 0.439, 0.113, 1.25)
-            CHARGECOST2 = el_cost.cost(None, None, BOATLOAD2, 61.55, 0.439, 0.113, 1.25)
-            CHARGECOST3 = el_cost.cost(None, None, BOATLOAD3, 61.55, 0.439, 0.113, 1.25)
-            TOTCOST = CHARGECOST1 + CHARGECOST2 + CHARGECOST3
+    CHARGECOST1 = el_cost.cost(None, None, BOATLOAD1, 61.55, 0.439, 0.113, 1.25)
+    CHARGECOST2 = el_cost.cost(None, None, BOATLOAD2, 61.55, 0.439, 0.113, 1.25)
+    CHARGECOST3 = el_cost.cost(None, None, BOATLOAD3, 61.55, 0.439, 0.113, 1.25)
+    TOTCOST = CHARGECOST1 + CHARGECOST2 + CHARGECOST3
     return TOTCOST
  
 for b in boat:
@@ -64,7 +64,7 @@ for b in boat:
     else:
         boat_load_cost_bj.append(boat_load_cost(b))
  
-print("Boat load cost: ", boat_load_cost_bj)
+print(f"Boat load cost: {boat_load_cost_bj}")
 
 #_____Case 1____________________________________________________________________________________________________________________________
 peak_grid_usage_bj = [123.52, 124.72, 126.15, 127.61, 129.07, 130.53, 137.83, 159.73]
@@ -185,6 +185,7 @@ optimized_cost_FCR_D_LFM_03_bj = [optimized_cost_LFM_03_bj[i] - FCR_D_up_revenue
 
 
 #____Per boat, revenue _____________________________________________________________________________________________________________________________
+#region
 revenue_per_boat_case1_bj = [
     (old_cost_bj[i] - peak_cost_bj[i])  / boat[i]
     if boat[i] != 0 else old_cost_bj[0] - peak_cost_bj[0]  # Skip division if boat[i] is 0
@@ -210,7 +211,7 @@ revenue_per_boat_case4_bj = [
 
 
 total_revenue_bj = [LFM_total_revenue_01_bj[i] + FCR_D_up_revenue_01_bj[i] + FCR_D_down_revenue_01_bj[i] for i in range(len(nord_pool_revenue_bj))]
-
+#endregion
 #____Calculating cool stuff___________________________________________________________________________________________________________________________
 #region
 final_cost = [optimized_cost_FCR_D_LFM_01_bj[i] - LFM_revenue_Nordpool_01_bj[i] - LFM_revenue_01_bj[i] - FCR_D_up_revenue_01_bj[i] - FCR_D_down_revenue_01_bj[i] for i in range(len(optimized_cost_FCR_D_LFM_01_bj))]
@@ -376,6 +377,6 @@ plt.show()
 
 #endregion
 
-new_grid_usage_kr = [old_grid_usage_bj[i] + 0.007*11*boat[i] for i in range(len(old_grid_usage_bj))]
+new_grid_usage_kr = [old_grid_usage_bj[i] + 0.07*11*boat[i] for i in range(len(old_grid_usage_bj))]
 
 print(f"Increased grid usage: {[round(value,2) for value in new_grid_usage_kr]}")

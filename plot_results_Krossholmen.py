@@ -236,7 +236,7 @@ total_revenue_kr = [FCR_D_up_revenue_01_kr[i] + FCR_D_down_revenue_01_kr[i] +LFM
 
 final_cost = [optimized_cost_FCR_D_LFM_01_kr[i] - LFM_revenue_Nordpool_01_kr[i] - LFM_revenue_01_kr[i] - FCR_D_up_revenue_01_kr[i] - FCR_D_down_revenue_01_kr[i] for i in range(len(optimized_cost_FCR_D_LFM_01_kr))]
 final_cost_per_boat = [final_cost[i] / boat[i] if boat[i] != 0 else final_cost[0] for i in range(len(final_cost))]
-total_savings = [old_cost_kr[i] - final_cost[i] for i in range(len(old_cost_kr))]
+total_savings = [reference_cost_kr[i] - final_cost[i] for i in range(len(old_cost_kr))]
 total_savings_per_boat = [total_savings[i] / boat[i] if boat[i] != 0 else total_savings[0] for i in range(len(total_savings))]
 
 bess_throughput_participation_factor = [(LFM_bess_throughput_01_kr[i]) / (LFM_bess_throughput_01_kr[i] + (LFM_boat_throughput_01_kr[i] * boat[i])) * 100 for i in range(len(LFM_bess_throughput_01_kr))]

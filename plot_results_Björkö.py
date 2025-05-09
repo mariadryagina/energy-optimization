@@ -193,6 +193,7 @@ optimized_cost_FCR_D_LFM_03_bj = [optimized_cost_LFM_03_bj[i] - FCR_D_up_revenue
 
 
 #____Per boat, revenue _____________________________________________________________________________________________________________________________
+#region
 revenue_per_boat_case1_bj = [
     (old_cost_bj[i] - peak_cost_bj[i])  / boat[i]
     if boat[i] != 0 else old_cost_bj[0] - peak_cost_bj[0]  # Skip division if boat[i] is 0
@@ -218,7 +219,7 @@ revenue_per_boat_case4_bj = [
 
 
 total_revenue_bj = [LFM_total_revenue_01_bj[i] + FCR_D_up_revenue_01_bj[i] + FCR_D_down_revenue_01_bj[i] for i in range(len(nord_pool_revenue_bj))]
-
+#endregion
 #____Calculating cool stuff___________________________________________________________________________________________________________________________
 #region
 final_cost = [optimized_cost_FCR_D_LFM_01_bj[i] - LFM_revenue_Nordpool_01_bj[i] - LFM_revenue_01_bj[i] - FCR_D_up_revenue_01_bj[i] - FCR_D_down_revenue_01_bj[i] for i in range(len(optimized_cost_FCR_D_LFM_01_bj))]
@@ -384,6 +385,6 @@ plt.show()
 
 #endregion
 
-new_grid_usage_kr = [old_grid_usage_bj[i] + 0.007*11*boat[i] for i in range(len(old_grid_usage_bj))]
+new_grid_usage_kr = [old_grid_usage_bj[i] + 0.07*11*boat[i] for i in range(len(old_grid_usage_bj))]
 
 print(f"Increased grid usage: {[round(value,2) for value in new_grid_usage_kr]}")

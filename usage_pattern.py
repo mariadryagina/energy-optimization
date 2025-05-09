@@ -249,11 +249,11 @@ charge_required1 = soc_target(P_b)
 # Charge_req_df = pd.DataFrame(charge_required1)
 # Charge_req_df.to_csv('charge_requirements.csv', index=False)
 
-# Convert the NumPy array to a DataFrame
-P_b_df = pd.DataFrame(P_b)
+# # Convert the NumPy array to a DataFrame
+# P_b_df = pd.DataFrame(P_b)
 
-# Save the frequency data to a CSV file for further analysis
-P_b_df.to_csv('usage_pattern_01.csv', index=False)
+# # Save the frequency data to a CSV file for further analysis
+# P_b_df.to_csv('usage_pattern_01.csv', index=False)
 
 
 #________________Anteckningar_______________________________________________________________________________

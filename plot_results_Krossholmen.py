@@ -355,7 +355,7 @@ plt.show()
 #Plot energy and cost together
 # Plot grid usage on the primary y-axis
 fig, ax1 = plt.subplots(figsize=(8, 5))
-#ax1.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.', label='Electricity usage')
+ax1.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.', label='Electricity usage')
 #ax1.plot(boat, nordpool_grid_usage_kr, color='teal', marker='.', label='Electricity usage')
 #ax1.plot(boat, LFM_grid_usage_01_kr, color='indianred', marker='.', label='Electricity usage')
 #ax1.plot(boat, LFM_grid_usage_01_kr, color='black', marker='.', label='Electricity usage')
@@ -365,7 +365,7 @@ ax1.tick_params(axis='y', labelcolor='black')
 ax1.grid(True)
 # Add a secondary y-axis for cost
 ax2 = ax1.twinx()
-#ax2.plot(boat, peak_cost_kr, color='olivedrab', marker='.', linestyle='--', label='Optimized Girud Usage Cost')
+ax2.plot(boat, peak_cost_kr, color='olivedrab', marker='.', linestyle='--', label='Optimized Girud Usage Cost')
 #ax2.plot(boat, optimized_cost_nordpool_kr, color='teal', marker='.', linestyle='--', label='Final Cost')
 #ax2.plot(boat, optimized_cost_LFM_01_kr, color='indianred', marker='.', linestyle='--', label='Final Cost')
 #ax2.plot(boat, optimized_cost_FCR_D_LFM_01_kr, color='black', marker='.', linestyle='--', label='Final Cost')

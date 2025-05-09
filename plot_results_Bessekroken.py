@@ -107,7 +107,8 @@ optimized_cost_nordpool_be = [nord_pool_cost_be[i] - nord_pool_revenue_be[i] for
 # ______Case 3____________________________________________________________________________________________________________________________
 LFM_grid_usage_01_be = [2.42, 2.9, 3.32, 4.2, 5.04, 5.52]
 LFM_bess_throughput_01_be = [23854, 14333, 9946, 9887, 8230 , 7389]
-LFM_boat_throughput_01_be = [0, 4576, 3306, 2184 , 1831, 1456]
+LFM_boat_throughput_01_before_be = [0, 4576, 3306, 2184 , 1831, 1456]
+LFM_boat_throughput_01_be = [(LFM_boat_throughput_01_before_be[i] * 2 - 0.07*11*boat[i])/2 for i in range(len(LFM_boat_throughput_01_before_be))]
 LFM_cost_01_be = [5085, 5780, 6194, 7476, 8996, 9955]
 
 LFM_throughput_01_be= [LFM_bess_throughput_01_be[i] + LFM_boat_throughput_01_be[i] for i in range(len(LFM_bess_throughput_01_be))]

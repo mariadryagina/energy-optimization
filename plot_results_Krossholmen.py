@@ -63,24 +63,6 @@ def boat_load_cost(NUMBOAT, SPOTPRICE):
     TOTCOST = BOATCOST1.sum() + BOATCOST2.sum() + BOATCOST3.sum()
     return TOTCOST, BOATCOST1, BOATCOST2, BOATCOST3, BOATLOAD1, BOATLOAD2, BOATLOAD3
 
-# boat_cost, chrcost1, chrcost2, chrcost3, boatload1, boatload2, boatload3 = boat_load_cost(3, spotprice)
-# print("Boat load cost: ", boat_cost)
-
-# spotprice_pd = pd.DataFrame(spotprice)
-# spotprice_pd.to_csv('SPOTPRICE.csv', index=False)
-# boatload1_pd = pd.DataFrame(boatload1)
-# boatload1_pd.to_csv('BOATLOAD1.csv', index=False)
-# boatload2_pd = pd.DataFrame(boatload2)
-# boatload2_pd.to_csv('BOATLOAD2.csv', index=False)
-# boatload3_pd = pd.DataFrame(boatload3)
-# boatload3_pd.to_csv('BOATLOAD3.csv', index=False)
-# chrcost1_pd = pd.DataFrame(chrcost1)
-# chrcost1_pd.to_csv('CHARGECOST1.csv', index=False)
-# chrcost2_pd = pd.DataFrame(chrcost2)
-# chrcost2_pd.to_csv('CHARGECOST2.csv', index=False)
-# chrcost3_pd = pd.DataFrame(chrcost3)
-# chrcost3_pd.to_csv('CHARGECOST3.csv', index=False)
-
 for b in boat:
     if b == 0:
         boat_load_cost_kr.append(0)

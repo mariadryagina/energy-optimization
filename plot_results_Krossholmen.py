@@ -294,22 +294,22 @@ print("Total savings/boat, allocated:", [total_savings_per_boat[i] * (boat_throu
 
 
 
-# #Costs
-# plt.figure(figsize=(7, 6))
-# #plt.plot(boat, old_cost_kr, color='orange', linestyle='--')
-# plt.plot(boat, peak_cost_kr , color='olivedrab', marker='.')
-# plt.plot(boat, nord_pool_cost_kr, marker='.', color='teal')
-# plt.plot(boat, LFM_cost_01_kr, marker='.', color='indianred')
-# # plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
-# plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM '])
-# plt.xlabel('Number of Electric Leisure Boats')
-# plt.ylabel('Cost of Electricity [SEK]')
-# plt.grid(True)
-# # Force full numbers on the y-axis
-# formatter = ScalarFormatter(useOffset=False, useMathText=False)
-# formatter.set_scientific(False)  # Disable scientific notation
-# plt.gca().yaxis.set_major_formatter(formatter)
-# plt.show()
+#Costs
+plt.figure(figsize=(7, 6))
+#plt.plot(boat, old_cost_kr, color='orange', linestyle='--')
+plt.plot(boat, peak_cost_kr , color='olivedrab', marker='.')
+plt.plot(boat, nord_pool_cost_kr, marker='.', color='teal')
+plt.plot(boat, LFM_cost_01_kr, marker='.', color='indianred')
+# plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
+plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM '])
+plt.xlabel('Number of Electric Leisure Boats')
+plt.ylabel('Optimized Grid Usage Cost [SEK]')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
 
 # #Case 4
 # #Costs
@@ -333,54 +333,54 @@ print("Total savings/boat, allocated:", [total_savings_per_boat[i] * (boat_throu
 # plt.gca().yaxis.set_major_formatter(formatter)
 # plt.show()
 
-# #Revenue
-# plt.figure(figsize=(7, 6))
-# #plt.plot(boat, old_cost_be, color='orange', linestyle='--')
-# plt.plot(boat, nord_pool_revenue_kr, marker='.', color='teal')
-# plt.plot(boat, LFM_total_revenue_01_kr, marker='.', color='indianred')
-# plt.plot(boat, FCR_D_up_revenue_01_kr, color='lightsteelblue', marker='.')
-# plt.plot(boat, FCR_D_down_revenue_01_kr, color='cornflowerblue', marker='.')
-# plt.plot(boat, total_revenue_kr, color='black', marker='.')
-# plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'FCR-D up ', 'FCR-D down', 'Case 4: FCR-D'])
-# plt.xlabel('Number of Electric Leisure Boats'), 
-# plt.ylabel('Revenue [SEK]')
-# plt.grid(True)
-# # Force full numbers on the y-axis
-# formatter = ScalarFormatter(useOffset=False, useMathText=False)
-# formatter.set_scientific(False)  # Disable scientific notation
-# plt.gca().yaxis.set_major_formatter(formatter)
-# plt.show()
+#Revenue
+plt.figure(figsize=(7, 6))
+#plt.plot(boat, old_cost_be, color='orange', linestyle='--')
+plt.plot(boat, nord_pool_revenue_kr, marker='.', color='teal')
+plt.plot(boat, LFM_total_revenue_01_kr, marker='.', color='indianred')
+plt.plot(boat, FCR_D_up_revenue_01_kr, color='lightsteelblue', marker='.')
+plt.plot(boat, FCR_D_down_revenue_01_kr, color='cornflowerblue', marker='.')
+plt.plot(boat, total_revenue_kr, color='black', marker='.')
+plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'FCR-D up ', 'FCR-D down', 'Case 4: FCR-D'])
+plt.xlabel('Number of Electric Leisure Boats'), 
+plt.ylabel('Revenue [SEK]')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
 
-# #Plot energy and cost together
-# # Plot grid usage on the primary y-axis
-# fig, ax1 = plt.subplots(figsize=(8, 5))
-# #ax1.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.', label='Electricity usage')
-# #ax1.plot(boat, nordpool_grid_usage_kr, color='teal', marker='.', label='Electricity usage')
-# ax1.plot(boat, LFM_grid_usage_01_kr, color='indianred', marker='.', label='Electricity usage')
-# ax1.set_xlabel('Number of Electric Leisure Boats')
-# ax1.set_ylabel('Grid usage [MWh]', color='black')
-# ax1.tick_params(axis='y', labelcolor='black')
-# ax1.grid(True)
-# # Add a secondary y-axis for cost
-# ax2 = ax1.twinx()
-# #ax2.plot(boat, peak_cost_kr, color='olivedrab', marker='.', linestyle='--', label='Final Cost')
-# #ax2.plot(boat, nord_pool_cost_kr, color='teal', marker='.', linestyle='--', label='Final Cost')
-# # ax2.plot(boat, optimized_cost_LFM_01_kr, color='indianred', marker='.', linestyle='--', label='Final Cost LFM')
-# # ax2.plot(boat, optimized_cost_FCR_D_up_LFM_01_kr, color='olivedrab', marker='.', linestyle='--', label='Final Cost FCR-D up')
-# # ax2.plot(boat, optimized_cost_FCR_D_down_LFM_01_kr, color='teal', marker='.', linestyle='--', label='Final Cost FCR-D down')
-# ax2.plot(boat, optimized_cost_FCR_D_LFM_01_kr, color='teal', marker='.', linestyle='--', label='Final Cost')
-# ax2.set_ylabel('Cost of Electricity [SEK]', color='dimgrey')
-# ax2.tick_params(axis='y', labelcolor='dimgrey')
-# # Force full numbers on the y-axis
-# formatter = ScalarFormatter(useOffset=False, useMathText=False)
-# formatter.set_scientific(False)  # Disable scientific notation
-# plt.gca().yaxis.set_major_formatter(formatter)
-# # Combine legends from both axes
-# lines_1, labels_1 = ax1.get_legend_handles_labels()
-# lines_2, labels_2 = ax2.get_legend_handles_labels()
-# ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper left')
-# plt.tight_layout()
-# plt.show()
+#Plot energy and cost together
+# Plot grid usage on the primary y-axis
+fig, ax1 = plt.subplots(figsize=(8, 5))
+#ax1.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.', label='Electricity usage')
+#ax1.plot(boat, nordpool_grid_usage_kr, color='teal', marker='.', label='Electricity usage')
+ax1.plot(boat, LFM_grid_usage_01_kr, color='indianred', marker='.', label='Electricity usage')
+ax1.set_xlabel('Number of Electric Leisure Boats')
+ax1.set_ylabel('Grid usage [MWh]', color='black')
+ax1.tick_params(axis='y', labelcolor='black')
+ax1.grid(True)
+# Add a secondary y-axis for cost
+ax2 = ax1.twinx()
+#ax2.plot(boat, peak_cost_kr, color='olivedrab', marker='.', linestyle='--', label='Final Cost')
+#ax2.plot(boat, nord_pool_cost_kr, color='teal', marker='.', linestyle='--', label='Final Cost')
+# ax2.plot(boat, optimized_cost_LFM_01_kr, color='indianred', marker='.', linestyle='--', label='Final Cost LFM')
+# ax2.plot(boat, optimized_cost_FCR_D_up_LFM_01_kr, color='olivedrab', marker='.', linestyle='--', label='Final Cost FCR-D up')
+# ax2.plot(boat, optimized_cost_FCR_D_down_LFM_01_kr, color='teal', marker='.', linestyle='--', label='Final Cost FCR-D down')
+ax2.plot(boat, optimized_cost_FCR_D_LFM_01_kr, color='indianred', marker='.', linestyle='--', label='Final Cost')
+ax2.set_ylabel('Final cost[SEK]', color='dimgrey')
+ax2.tick_params(axis='y', labelcolor='dimgrey')
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+# Combine legends from both axes
+lines_1, labels_1 = ax1.get_legend_handles_labels()
+lines_2, labels_2 = ax2.get_legend_handles_labels()
+ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper left')
+plt.tight_layout()
+plt.show()
 
 
 # #Plot revenue per boat

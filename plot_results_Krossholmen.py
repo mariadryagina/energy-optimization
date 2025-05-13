@@ -144,6 +144,9 @@ optimized_cost_FCR_D_up_LFM_01_kr = [optimized_cost_LFM_01_kr[i] - FCR_D_up_reve
 optimized_cost_FCR_D_down_LFM_01_kr = [optimized_cost_LFM_01_kr[i] - FCR_D_down_revenue_01_kr[i]  for i in range(len(optimized_cost_LFM_01_kr))]
 optimized_cost_FCR_D_LFM_01_kr = [optimized_cost_LFM_01_kr[i] - FCR_D_up_revenue_01_kr[i] - FCR_D_down_revenue_01_kr[i] for i in range(len(optimized_cost_LFM_01_kr))]
 
+#Total revenue
+total_revenue_kr = [FCR_D_up_revenue_01_kr[i] + FCR_D_down_revenue_01_kr[i] +LFM_revenue_01_kr[i] + LFM_revenue_Nordpool_01_kr[i] for i in range(len(LFM_revenue_01_kr))]
+
 #endregion
 
 #_____P_bid 0.2___________________________________________________________________________________________________________________________
@@ -163,6 +166,8 @@ LFM_revenue_02_kr = [(6567+14924), (9031+20524), (11495+26124), (13959+31724 ) ,
 #Nordpool:
 LFM_revenue_Nordpool_02_kr = [16737.6 , 26884.0,  38736.5, 50192.7 ,  50950.5,63554.6 , 85613.9 ,101710.3]
 
+LFM_total_revenue_02_kr = [LFM_revenue_02_kr[i] + LFM_revenue_Nordpool_02_kr[i] for i in range(len(LFM_revenue_02_kr))]
+
 #New costs
 optimized_cost_LFM_02_kr= [LFM_cost_02_kr[i] - LFM_revenue_02_kr[i] - LFM_revenue_Nordpool_02_kr[i] for i in range(len(LFM_cost_02_kr))]
 
@@ -177,6 +182,9 @@ FCR_D_down_revenue_02_kr = [91597.4,111764.6 ,129560.2 , 155571.2 , 178078.3 , 2
 optimized_cost_FCR_D_up_LFM_02_kr = [optimized_cost_LFM_02_kr[i] - FCR_D_up_revenue_02_kr[i]  for i in range(len(optimized_cost_LFM_02_kr))]
 optimized_cost_FCR_D_down_LFM_02_kr = [optimized_cost_LFM_02_kr[i] - FCR_D_down_revenue_02_kr[i]  for i in range(len(optimized_cost_LFM_02_kr))]
 optimized_cost_FCR_D_LFM_02_kr = [optimized_cost_LFM_02_kr[i] - FCR_D_up_revenue_02_kr[i] - FCR_D_down_revenue_02_kr[i] for i in range(len(optimized_cost_LFM_02_kr))]
+
+#Total revenue
+total_revenue_02_kr = [FCR_D_up_revenue_02_kr[i] + FCR_D_down_revenue_02_kr[i] +LFM_revenue_02_kr[i] + LFM_revenue_Nordpool_02_kr[i] for i in range(len(LFM_revenue_01_kr))]
 
 #endregion
 
@@ -197,6 +205,8 @@ LFM_revenue_03_kr = [(9850+22386),(13546+30786), (17242+39186),(20938+47586) , (
 #Nordpool:
 LFM_revenue_Nordpool_03_kr = [14865.0,27251.5 ,38325.9  ,46934.4 ,62051.3 ,63855.7 , 90369.4  , 149817.0 ]
 
+LFM_total_revenue_03_kr = [LFM_revenue_03_kr[i] + LFM_revenue_Nordpool_03_kr[i] for i in range(len(LFM_revenue_03_kr))]
+
 #New costs
 optimized_cost_LFM_03_kr= [LFM_cost_03_kr[i] - LFM_revenue_03_kr[i] - LFM_revenue_Nordpool_03_kr[i] for i in range(len(LFM_cost_03_kr))]
 
@@ -213,10 +223,54 @@ optimized_cost_FCR_D_up_LFM_03_kr = [optimized_cost_LFM_03_kr[i] - FCR_D_up_reve
 optimized_cost_FCR_D_down_LFM_03_kr = [optimized_cost_LFM_03_kr[i] - FCR_D_down_revenue_03_kr[i]  for i in range(len(optimized_cost_LFM_03_kr))]
 optimized_cost_FCR_D_LFM_03_kr = [optimized_cost_LFM_03_kr[i] - FCR_D_up_revenue_03_kr[i] - FCR_D_down_revenue_03_kr[i] for i in range(len(optimized_cost_LFM_03_kr))]
 
+#Total revenue
+total_revenue_03_kr = [FCR_D_up_revenue_03_kr[i] + FCR_D_down_revenue_03_kr[i] +LFM_revenue_03_kr[i] + LFM_revenue_Nordpool_03_kr[i] for i in range(len(LFM_revenue_03_kr))]
+
+#endregion
+
+#_____P_bid 0.35___________________________________________________________________________________________________________________________
+#region
+# ______Case 3____________________________________________________________________________________________________________________________
+LFM_grid_usage_35_kr = [865.65, 872.71, 879.91,  887.64,  894.82, 903.26, 936.88, 1027.26 ]
+LFM_bess_throughput_35_kr = [117116, 111663, 104804, 101543, 95692, 91316, 84166, 62071  ]
+LFM_boat_throughput_35_kr = [0, 16491, 15539, 14543, 14350, 14165, 10628, 6732 ]
+LFM_cost_35_kr = [1455648, 1448659, 1447959, 1454160, 1454754, 1464444, 1496297, 1638697 ]
+
+LFM_throughput_35_kr= [LFM_bess_throughput_35_kr[i] + LFM_boat_throughput_35_kr[i] for i in range(len(LFM_bess_throughput_35_kr))]  
+
+#Revenue
+# LFM:
+LFM_revenue_35_kr = [(11491+26117), (15803+35917), (20115+45717), (24427+55517), (28739+65317), (33051+75117), (54611+124117), (119291+271117)]
+
+#Nordpool:
+LFM_revenue_Nordpool_35_kr = [15443.7, 24934.6, 35390.8, 48196.0, 60281.7, 71582.7, 95018.5, 153255.3]
+
+LFM_total_revenue_35_kr = [LFM_revenue_35_kr[i] + LFM_revenue_Nordpool_35_kr[i] for i in range(len(LFM_revenue_35_kr))]
+
+#New costs
+optimized_cost_LFM_35_kr= [LFM_cost_35_kr[i] - LFM_revenue_35_kr[i] - LFM_revenue_Nordpool_35_kr[i] for i in range(len(LFM_cost_35_kr))]
+
+
+#______Case 4____________________________________________________________________________________________________________________________
+# FCR-D up: 
+FCR_D_up_revenue_35_kr = [22930.4, 30454.7, 35676.0, 43804.3, 49548.7, 58079.6, 96545.1, 254465.1]
+
+# FCR-D up: 
+FCR_D_down_revenue_35_kr = [90924.5, 109294.2, 132645, 155603.4, 177589.9, 203821.0, 300064.7, 708645.8]
+
+#New costs
+optimized_cost_FCR_D_up_LFM_35_kr = [optimized_cost_LFM_35_kr[i] - FCR_D_up_revenue_35_kr[i]  for i in range(len(optimized_cost_LFM_35_kr))]
+optimized_cost_FCR_D_down_LFM_35_kr = [optimized_cost_LFM_35_kr[i] - FCR_D_down_revenue_35_kr[i]  for i in range(len(optimized_cost_LFM_35_kr))]
+optimized_cost_FCR_D_LFM_35_kr = [optimized_cost_LFM_35_kr[i] - FCR_D_up_revenue_35_kr[i] - FCR_D_down_revenue_35_kr[i] for i in range(len(optimized_cost_LFM_35_kr))]
+
+#Total revenue
+total_revenue_35_kr = [FCR_D_up_revenue_35_kr[i] + FCR_D_down_revenue_35_kr[i] +LFM_revenue_35_kr[i] + LFM_revenue_Nordpool_35_kr[i] for i in range(len(LFM_revenue_35_kr))]
+
 #endregion
 
 
 #____Per boat, revenue _____________________________________________________________________________________________________________________________
+#region
 revenue_per_boat_case1_kr = [
     (old_cost_kr[i] - peak_cost_kr[i])  / boat[i]
     if boat[i] != 0 else old_cost_kr[0] - peak_cost_kr[0]  # Skip division if boat[i] is 0
@@ -239,9 +293,9 @@ revenue_per_boat_case4_kr = [
     if boat[i] != 0 else old_cost_kr[0] - LFM_cost_01_kr[0] + LFM_revenue_01_kr[0] + LFM_revenue_Nordpool_01_kr[0] + FCR_D_down_revenue_01_kr[0] + FCR_D_up_revenue_01_kr[0]  # Skip division if boat[i] is 0
     for i in range(len(LFM_revenue_01_kr))
 ]
+#endregion
 
-#Total revenue
-total_revenue_kr = [FCR_D_up_revenue_01_kr[i] + FCR_D_down_revenue_01_kr[i] +LFM_revenue_01_kr[i] + LFM_revenue_Nordpool_01_kr[i] for i in range(len(LFM_revenue_01_kr))]
+
 
 final_cost = [LFM_cost_01_kr[i] - LFM_revenue_Nordpool_01_kr[i] - LFM_revenue_01_kr[i] - FCR_D_up_revenue_01_kr[i] - FCR_D_down_revenue_01_kr[i] for i in range(len(optimized_cost_FCR_D_LFM_01_kr))]
 final_cost_per_boat = [final_cost[i] / boat[i] if boat[i] != 0 else final_cost[0] for i in range(len(final_cost))]
@@ -263,7 +317,211 @@ print("Total savings/boat, allocated:", [total_savings_per_boat[i] * (boat_throu
 
 
 # #__Plotting___________________________________________________________________________________________________________________________
-# #region
+#region
+#Costs
+plt.figure(figsize=(7, 6))
+#plt.plot(boat, old_cost_kr, color='orange', linestyle='--')
+plt.plot(boat, array(peak_cost_kr)/1000 , color='olivedrab', marker='.')
+plt.plot(boat, array(nord_pool_cost_kr)/1000, marker='.', color='teal')
+plt.plot(boat, array(LFM_cost_01_kr)/1000, marker='.', color='indianred')
+# plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
+plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM '])
+plt.xlabel('Number of Electric Leisure Boats')
+plt.ylabel('Optimized Grid Usage Cost [kSEK]')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+
+
+
+#Revenue
+plt.figure(figsize=(7, 6))
+#plt.plot(boat, old_cost_be, color='orange', linestyle='--')
+plt.plot(boat, array(nord_pool_revenue_kr)/1000, marker='.', color='teal')
+plt.plot(boat, array(LFM_total_revenue_01_kr)/1000, marker='.', color='indianred')
+plt.plot(boat, array(FCR_D_up_revenue_01_kr)/1000, color='lightsteelblue', marker='.')
+plt.plot(boat, array(FCR_D_down_revenue_01_kr)/1000, color='cornflowerblue', marker='.')
+plt.plot(boat, array(total_revenue_kr)/1000, color='black', marker='.')
+plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'FCR-D up ', 'FCR-D down', 'Case 4: FCR-D'])
+plt.xlabel('Number of Electric Leisure Boats'), 
+plt.ylabel('Revenue [kSEK]')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+
+#Plot energy and cost together
+# Plot grid usage on the primary y-axis
+fig, ax1 = plt.subplots(figsize=(8, 5))
+ax1.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.', label='Electricity usage')
+#ax1.plot(boat, nordpool_grid_usage_kr, color='teal', marker='.', label='Electricity usage')
+#ax1.plot(boat, LFM_grid_usage_01_kr, color='indianred', marker='.', label='Electricity usage')
+#ax1.plot(boat, LFM_grid_usage_01_kr, color='black', marker='.', label='Electricity usage')
+ax1.set_xlabel('Number of Electric Leisure Boats')
+ax1.set_ylabel('Grid Usage [MWh]', color='black')
+ax1.tick_params(axis='y', labelcolor='black')
+ax1.grid(True)
+# Add a secondary y-axis for cost
+ax2 = ax1.twinx()
+ax2.plot(boat, array(peak_cost_kr)/1000, color='olivedrab', marker='.', linestyle='--', label='Optimized Girud Usage Cost')
+#ax2.plot(boat, array(optimized_cost_nordpool_kr)/1000, color='teal', marker='.', linestyle='--', label='Final Cost')
+#ax2.plot(boat, array(optimized_cost_LFM_01_kr)/1000, color='indianred', marker='.', linestyle='--', label='Final Cost')
+#ax2.plot(boat, array(optimized_cost_FCR_D_LFM_01_kr)/1000, color='black', marker='.', linestyle='--', label='Final Cost')
+ax2.set_ylabel('Optimized Girud Usage Cost [kSEK]', color='dimgrey')
+ax2.tick_params(axis='y', labelcolor='dimgrey')
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+# Combine legends from both axes
+lines_1, labels_1 = ax1.get_legend_handles_labels()
+lines_2, labels_2 = ax2.get_legend_handles_labels()
+ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper left')
+plt.tight_layout()
+plt.show()
+
+#endregion
+
+
+#_____Plotting Sensitivity analysis______________________________________________________________________________________________________
+# Grid usage
+plt.figure(figsize=(7, 6))
+plt.plot(boat, old_grid_usage_kr, color='orange', linestyle='--')
+plt.plot(boat, LFM_grid_usage_01_kr, color='firebrick', marker='.')
+plt.plot(boat, LFM_grid_usage_02_kr,  color='indianred', marker='.')
+plt.plot(boat, LFM_grid_usage_03_kr, color='lightcoral', marker='.')
+plt.plot(boat, LFM_grid_usage_35_kr, color='rosybrown', marker='.')
+plt.legend(['Reference Case','Bid size: 0.1', 'Bid size: 0.2', 'Bid size: 0.3', 'Bid size: 0.35'])
+plt.xlabel('Number of Electric Leisure Boats')
+plt.ylabel('Grid usage [MWh]')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+#Costs
+plt.figure(figsize=(7, 6))
+plt.plot(boat, array(old_cost_kr)/1000, color='orange', linestyle='--')
+plt.plot(boat, array(LFM_cost_01_kr)/1000 , color='firebrick', marker='.')
+plt.plot(boat, array(LFM_cost_02_kr)/1000, marker='.', color='indianred')
+plt.plot(boat, array(LFM_cost_03_kr)/1000, marker='.', color='lightcoral')
+plt.plot(boat, array(LFM_cost_35_kr)/1000, marker='.', color='rosybrown')
+plt.legend(['Reference case','Bid size: 0.1', 'Bid size: 0.2', 'Bid size: 0.3', 'Bid size: 0.35'])
+plt.xlabel('Number of Electric Leisure Boats')
+plt.ylabel('Optimized Grid Usage Cost [kSEK]')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+
+#Revenue
+plt.figure(figsize=(7, 6))
+plt.plot(boat, array(LFM_total_revenue_01_kr)/1000, marker='.', color='firebrick')
+plt.plot(boat, array(LFM_total_revenue_02_kr)/1000, marker='.', color='indianred')
+plt.plot(boat, array(LFM_total_revenue_03_kr)/1000, color='lightcoral', marker='.')
+plt.plot(boat, array(LFM_total_revenue_35_kr)/1000, color='rosybrown', marker='.')
+plt.legend(['Bid size: 0.1', 'Bid size: 0.2', 'Bid size: 0.3', 'Bis size: 0.35'])
+plt.xlabel('Number of Electric Leisure Boats'), 
+plt.ylabel('Revenue [kSEK]')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+
+#Revenue
+plt.figure(figsize=(7, 6))
+plt.plot(boat, (array(FCR_D_down_revenue_01_kr) + array(FCR_D_up_revenue_01_kr))/1000, marker='.', color='black')
+plt.plot(boat, (array(FCR_D_down_revenue_02_kr) + array(FCR_D_up_revenue_02_kr))/1000, marker='.', color='dimgrey')
+plt.plot(boat, (array(FCR_D_down_revenue_03_kr) + array(FCR_D_up_revenue_03_kr))/1000, color='darkgrey', marker='.')
+plt.plot(boat, (array(FCR_D_down_revenue_35_kr) + array(FCR_D_up_revenue_35_kr))/1000, color='silver', marker='.')
+plt.legend(['Bid size: 0.1', 'Bid size: 0.2', 'Bid size: 0.3', 'Bis size: 0.35'])
+plt.xlabel('Number of Electric Leisure Boats'), 
+plt.ylabel('Revenue [kSEK]')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+
+#Final cost Case 4
+plt.figure(figsize=(7, 6))
+plt.plot(boat, array(optimized_cost_LFM_01_kr)/1000 , color='firebrick', marker='.')
+plt.plot(boat, array(optimized_cost_LFM_02_kr)/1000, marker='.', color='indianred')
+plt.plot(boat, array(optimized_cost_LFM_03_kr)/1000, marker='.', color='lightcoral')
+plt.plot(boat, array(optimized_cost_LFM_35_kr)/1000, marker='.', color='rosybrown')
+plt.legend(['Bid size: 0.1', 'Bid size: 0.2', 'Bid size: 0.3', 'Bid size: 0.35'])
+plt.xlabel('Number of Electric Leisure Boats')
+plt.ylabel('Final cost [kSEK]')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+
+#Final cost Case 5
+plt.figure(figsize=(7, 6))
+plt.plot(boat, array(optimized_cost_FCR_D_LFM_01_kr)/1000 , color='black', marker='.')
+plt.plot(boat, array(optimized_cost_FCR_D_LFM_02_kr)/1000, marker='.', color='dimgrey')
+plt.plot(boat, array(optimized_cost_FCR_D_LFM_03_kr)/1000, marker='.', color='darkgrey')
+plt.plot(boat, array(optimized_cost_FCR_D_LFM_35_kr)/1000, marker='.', color='silver')
+plt.legend(['Bid size: 0.1', 'Bid size: 0.2', 'Bid size: 0.3', 'Bid size: 0.35'])
+plt.xlabel('Number of Electric Leisure Boats')
+plt.ylabel('Final cost [kSEK]')
+plt.grid(True)
+# Force full numbers on the y-axis
+formatter = ScalarFormatter(useOffset=False, useMathText=False)
+formatter.set_scientific(False)  # Disable scientific notation
+plt.gca().yaxis.set_major_formatter(formatter)
+plt.show()
+
+
+#___Old plots___________________________________________________________________________________________________________________________
+#region
+# #Plot revenue per boat
+# plt.figure(figsize=(8, 5))
+# plt.plot(boat, revenue_per_boat_case1_kr, color='olivedrab', marker='.')
+# plt.plot(boat, revenue_per_boat_case2_kr, color='teal', marker='.')
+# plt.plot(boat, revenue_per_boat_case3_kr, color='indianred', marker='.')
+# plt.plot(boat, revenue_per_boat_case4_kr, color='royalblue', marker='.')
+# plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM', 'Case 4: FCR-D'])
+# plt.xlabel('Number of Electric Leisure Boats')
+# plt.ylabel('Revenue per boat [SEK]')
+# plt.grid(True)
+# plt.tight_layout()
+# plt.show()
+
+# #Case 4
+# #Costs
+# plt.figure(figsize=(8, 5))
+# plt.plot(boat, old_cost_kr, color='orange', linestyle='--')
+# plt.plot(boat, peak_cost_kr , color='olivedrab',  marker='.')
+# plt.plot(boat, nord_pool_cost_kr, marker='.', color='teal', linestyle='--')
+# plt.plot(boat, optimized_cost_nordpool_kr, marker='.', color='teal')
+# plt.plot(boat, LFM_cost_01_kr, marker='.', color='indianred', linestyle='--')
+# plt.plot(boat, optimized_cost_LFM_01_kr, marker='.', color='indianred')
+# plt.plot(boat, optimized_cost_FCR_D_up_LFM_01_kr, color='lightsteelblue', marker='.', linestyle='--')
+# plt.plot(boat, optimized_cost_FCR_D_down_LFM_01_kr, color='cornflowerblue', marker='.', linestyle='--')
+# plt.plot(boat, optimized_cost_FCR_D_LFM_01_kr, color='royalblue', marker='.')
+# plt.legend(['Optimized cost Case 1: Peak Shaved', 'Optimized cost Case 2: Spot Price', 'Cost after revenue Case 2: Spot Price ', 'Optimized cost Case 3: LFM ', 'Cost after revenue Case 3: LFM', 'Cost after revenue Case 4: FCR-D up', 'Cost after revenue Case 4: FCR-D down', "Cost after revenue Case 4: FCR-D"])
+# plt.xlabel('Number of Electric Leisure Boats'), 
+# plt.ylabel('Cost of Electricity [SEK]')
+# plt.grid(True)
+# # Force full numbers on the y-axis
+# formatter = ScalarFormatter(useOffset=False, useMathText=False)
+# formatter.set_scientific(False)  # Disable scientific notation
+# plt.gca().yaxis.set_major_formatter(formatter)
+# plt.show()
+
 # # Grid usage
 # plt.figure(figsize=(8, 5))
 # plt.plot(boat, old_grid_usage_kr, color='orange', linestyle='--')
@@ -301,112 +559,4 @@ print("Total savings/boat, allocated:", [total_savings_per_boat[i] * (boat_throu
 # plt.tight_layout()
 # plt.show()
 
-
-
-#Costs
-plt.figure(figsize=(7, 6))
-#plt.plot(boat, old_cost_kr, color='orange', linestyle='--')
-plt.plot(boat, peak_cost_kr , color='olivedrab', marker='.')
-plt.plot(boat, nord_pool_cost_kr, marker='.', color='teal')
-plt.plot(boat, LFM_cost_01_kr, marker='.', color='indianred')
-# plt.plot(boat, optimized_cost_FCR_D_LFM_kr, marker='o')
-plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM '])
-plt.xlabel('Number of Electric Leisure Boats')
-plt.ylabel('Optimized Grid Usage Cost [kSEK]')
-plt.grid(True)
-# Force full numbers on the y-axis
-formatter = ScalarFormatter(useOffset=False, useMathText=False)
-formatter.set_scientific(False)  # Disable scientific notation
-plt.gca().yaxis.set_major_formatter(formatter)
-plt.show()
-
-# #Case 4
-# #Costs
-# plt.figure(figsize=(8, 5))
-# plt.plot(boat, old_cost_kr, color='orange', linestyle='--')
-# plt.plot(boat, peak_cost_kr , color='olivedrab',  marker='.')
-# plt.plot(boat, nord_pool_cost_kr, marker='.', color='teal', linestyle='--')
-# plt.plot(boat, optimized_cost_nordpool_kr, marker='.', color='teal')
-# plt.plot(boat, LFM_cost_01_kr, marker='.', color='indianred', linestyle='--')
-# plt.plot(boat, optimized_cost_LFM_01_kr, marker='.', color='indianred')
-# plt.plot(boat, optimized_cost_FCR_D_up_LFM_01_kr, color='lightsteelblue', marker='.', linestyle='--')
-# plt.plot(boat, optimized_cost_FCR_D_down_LFM_01_kr, color='cornflowerblue', marker='.', linestyle='--')
-# plt.plot(boat, optimized_cost_FCR_D_LFM_01_kr, color='royalblue', marker='.')
-# plt.legend(['Optimized cost Case 1: Peak Shaved', 'Optimized cost Case 2: Spot Price', 'Cost after revenue Case 2: Spot Price ', 'Optimized cost Case 3: LFM ', 'Cost after revenue Case 3: LFM', 'Cost after revenue Case 4: FCR-D up', 'Cost after revenue Case 4: FCR-D down', "Cost after revenue Case 4: FCR-D"])
-# plt.xlabel('Number of Electric Leisure Boats'), 
-# plt.ylabel('Cost of Electricity [SEK]')
-# plt.grid(True)
-# # Force full numbers on the y-axis
-# formatter = ScalarFormatter(useOffset=False, useMathText=False)
-# formatter.set_scientific(False)  # Disable scientific notation
-# plt.gca().yaxis.set_major_formatter(formatter)
-# plt.show()
-
-#Revenue
-plt.figure(figsize=(7, 6))
-#plt.plot(boat, old_cost_be, color='orange', linestyle='--')
-plt.plot(boat, nord_pool_revenue_kr, marker='.', color='teal')
-plt.plot(boat, LFM_total_revenue_01_kr, marker='.', color='indianred')
-plt.plot(boat, FCR_D_up_revenue_01_kr, color='lightsteelblue', marker='.')
-plt.plot(boat, FCR_D_down_revenue_01_kr, color='cornflowerblue', marker='.')
-plt.plot(boat, total_revenue_kr, color='black', marker='.')
-plt.legend(['Case 2: Nord Pool', 'Case 3: LFM', 'FCR-D up ', 'FCR-D down', 'Case 4: FCR-D'])
-plt.xlabel('Number of Electric Leisure Boats'), 
-plt.ylabel('Revenue [kSEK]')
-plt.grid(True)
-# Force full numbers on the y-axis
-formatter = ScalarFormatter(useOffset=False, useMathText=False)
-formatter.set_scientific(False)  # Disable scientific notation
-plt.gca().yaxis.set_major_formatter(formatter)
-plt.show()
-
-#Plot energy and cost together
-# Plot grid usage on the primary y-axis
-fig, ax1 = plt.subplots(figsize=(8, 5))
-ax1.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.', label='Electricity usage')
-#ax1.plot(boat, nordpool_grid_usage_kr, color='teal', marker='.', label='Electricity usage')
-#ax1.plot(boat, LFM_grid_usage_01_kr, color='indianred', marker='.', label='Electricity usage')
-#ax1.plot(boat, LFM_grid_usage_01_kr, color='black', marker='.', label='Electricity usage')
-ax1.set_xlabel('Number of Electric Leisure Boats')
-ax1.set_ylabel('Grid Usage [MWh]', color='black')
-ax1.tick_params(axis='y', labelcolor='black')
-ax1.grid(True)
-# Add a secondary y-axis for cost
-ax2 = ax1.twinx()
-ax2.plot(boat, peak_cost_kr, color='olivedrab', marker='.', linestyle='--', label='Optimized Girud Usage Cost')
-#ax2.plot(boat, optimized_cost_nordpool_kr, color='teal', marker='.', linestyle='--', label='Final Cost')
-#ax2.plot(boat, optimized_cost_LFM_01_kr, color='indianred', marker='.', linestyle='--', label='Final Cost')
-#ax2.plot(boat, optimized_cost_FCR_D_LFM_01_kr, color='black', marker='.', linestyle='--', label='Final Cost')
-ax2.set_ylabel('Final Cost [kSEK]', color='dimgrey')
-ax2.tick_params(axis='y', labelcolor='dimgrey')
-# Force full numbers on the y-axis
-formatter = ScalarFormatter(useOffset=False, useMathText=False)
-formatter.set_scientific(False)  # Disable scientific notation
-plt.gca().yaxis.set_major_formatter(formatter)
-# Combine legends from both axes
-lines_1, labels_1 = ax1.get_legend_handles_labels()
-lines_2, labels_2 = ax2.get_legend_handles_labels()
-ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='upper left')
-plt.tight_layout()
-plt.show()
-
-
-# #Plot revenue per boat
-# plt.figure(figsize=(8, 5))
-# plt.plot(boat, revenue_per_boat_case1_kr, color='olivedrab', marker='.')
-# plt.plot(boat, revenue_per_boat_case2_kr, color='teal', marker='.')
-# plt.plot(boat, revenue_per_boat_case3_kr, color='indianred', marker='.')
-# plt.plot(boat, revenue_per_boat_case4_kr, color='royalblue', marker='.')
-# plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM', 'Case 4: FCR-D'])
-# plt.xlabel('Number of Electric Leisure Boats')
-# plt.ylabel('Revenue per boat [SEK]')
-# plt.grid(True)
-# plt.tight_layout()
-# plt.show()
-
-# #endregion
-
-# #____Esay calculation of increased grid usage without any cool stuff____________________________________________________________________________________________________________________________
-# new_grid_usage_kr = [old_grid_usage_kr[i] + 0.007*11*boat[i] for i in range(len(old_grid_usage_kr))]
-
-# print(f"Increased grid usage: {[round(value,2) for value in new_grid_usage_kr]}")
+#endregion

@@ -49,6 +49,7 @@ watt=np.array([0,0,0.1,0.2,0.35,0.5,0.8,1.3,2,2.7,3.7,5,6,6])
 m_s=np.array([0,1,2,3,4,5,6,7,8,9,10,11,12,13])
 #f = interp1d(m_s, watt)
 
+#Interpolating the wind power
 def wind(n):
     watt_new=np.interp(V, m_s, watt)*n
     return watt_new

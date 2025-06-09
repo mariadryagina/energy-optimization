@@ -15,6 +15,7 @@ import el_cost
 #Plug in the SOC_lower 10%
 #Plug in the capacity of the charger in kW [P_charger]
 
+#Sets the usage pattern for a boat(1 = on a trip, 0 = available for B2G)
 def usage_pattern(a, P_battery, SOC_upper, P_charger):
     P_b = zeros((24, 365))
     P_b_power = zeros((24, 365))  # kWh
@@ -86,6 +87,7 @@ def soc_target(availability, full=1.0, arrival=0.2, empty=None):
                 else:
                     soc_required[h-1, d] == empty
     return soc_required
+
 
 def boat_load(availability, SOC_leaving, SOC_arriving):
     boat_load = zeros((24, 365))

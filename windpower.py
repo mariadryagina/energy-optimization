@@ -54,23 +54,4 @@ def wind(n):
      return P_wind
 #_______________________________________________________________________________#
 
-# #Calling on function
-# P_wind1=wind(1)
-
-# print(P_wind1)
-# # Calculating the sum of the array
-# total_sum=ceil(sum(P_wind1))
-# print(f"The yearly production of wind power is {total_sum}kWh")
-
-#_______________________________________________________________________________#
-# # Creating a plot
-# plt.figure(figsize=(10, 5))
-# plt.plot(range(0, a), P_wind1*1000, label='Daily Wind Power Production')
-# plt.xlabel('Day of the Year')
-# plt.ylabel('Wind Power Production (kWh)')
-# plt.title('Daily Wind Power Production')
-# plt.legend()
-# plt.grid(True)
-# plt.show()
-
 

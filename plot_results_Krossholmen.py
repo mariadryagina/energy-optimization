@@ -83,6 +83,7 @@ print("Boat load cost: ", boat_load_cost_kr)
 print("Reference cost: ", reference_cost_kr)
 
 #_____Case 1____________________________________________________________________________________________________________________________
+#Peak Shaving
 peak_grid_usage_kr = [859.56, 860.46, 861.87, 863.29, 864.75, 866.21, 873.51, 895.41]
 peak_bess_throughput_kr = [101740, 95537, 87362, 80747, 73730, 70761, 55495, 40327]
 peak_boat_throughput_kr = [0, 14376, 12882, 11509, 10526, 9369, 6673, 3771]
@@ -110,6 +111,7 @@ optimized_cost_nordpool_kr = [nord_pool_cost_kr[i] - nord_pool_revenue_kr[i] for
 #_____P_bid 0.1___________________________________________________________________________________________________________________________
 #region
 # ______Case 3____________________________________________________________________________________________________________________________
+#Adding LFM
 LFM_grid_usage_01_kr = [860.55,  864.9 , 870.72, 875.53, 880.84, 885.72, 905.48, 947.77]
 LFM_bess_throughput_01_kr = [114142, 106131, 96510, 87003, 83137, 77825, 63501, 40565]
 LFM_boat_throughput_01_before_kr = [0, 16515, 14499, 13565, 12198, 11388, 7923 , 4464]
@@ -152,6 +154,7 @@ total_revenue_kr = [FCR_D_up_revenue_01_kr[i] + FCR_D_down_revenue_01_kr[i] +LFM
 #_____P_bid 0.2___________________________________________________________________________________________________________________________
 #region
 # ______Case 3____________________________________________________________________________________________________________________________
+#Adding LFM
 LFM_grid_usage_02_kr = [862.25,  868.2  , 873.96 , 880.18,  887.14 , 891.9 , 915.3, 970.61 ]
 LFM_bess_throughput_02_kr = [114291, 104619, 95491, 86090, 83420 , 79648, 59175 , 45829]
 LFM_boat_throughput_02_kr = [0, 16344 , 14772,  13875 , 12252 , 11005 ,7994, 4541]
@@ -191,6 +194,7 @@ total_revenue_02_kr = [FCR_D_up_revenue_02_kr[i] + FCR_D_down_revenue_02_kr[i] +
 #_____P_bid 0.3___________________________________________________________________________________________________________________________
 #region
 # ______Case 3____________________________________________________________________________________________________________________________
+#Adding LFM
 LFM_grid_usage_03_kr = [864.37, 870.69,877.84,886.09, 891.98,898.7,928.27 ,1012.71  ]
 LFM_bess_throughput_03_kr = [115440 ,108076 , 99536 ,94949 , 90699 ,86428 , 77703 , 57789 ]
 LFM_boat_throughput_03_kr = [0,16378 ,15002 ,14432 , 13920  ,12648  ,10178 ,6798]
@@ -231,6 +235,7 @@ total_revenue_03_kr = [FCR_D_up_revenue_03_kr[i] + FCR_D_down_revenue_03_kr[i] +
 #_____P_bid 0.35___________________________________________________________________________________________________________________________
 #region
 # ______Case 3____________________________________________________________________________________________________________________________
+#Adding LFM
 LFM_grid_usage_35_kr = [865.65, 872.71, 879.91,  887.64,  894.82, 903.26, 936.88, 1027.26 ]
 LFM_bess_throughput_35_kr = [117116, 111663, 104804, 101543, 95692, 91316, 84166, 62071  ]
 LFM_boat_throughput_35_kr = [0, 16491, 15539, 14543, 14350, 14165, 10628, 6732 ]
@@ -485,78 +490,3 @@ plt.gca().yaxis.set_major_formatter(formatter)
 plt.show()
 
 
-#___Old plots___________________________________________________________________________________________________________________________
-#region
-# #Plot revenue per boat
-# plt.figure(figsize=(8, 5))
-# plt.plot(boat, revenue_per_boat_case1_kr, color='olivedrab', marker='.')
-# plt.plot(boat, revenue_per_boat_case2_kr, color='teal', marker='.')
-# plt.plot(boat, revenue_per_boat_case3_kr, color='indianred', marker='.')
-# plt.plot(boat, revenue_per_boat_case4_kr, color='royalblue', marker='.')
-# plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM', 'Case 4: FCR-D'])
-# plt.xlabel('Number of Electric Leisure Boats')
-# plt.ylabel('Revenue per boat [SEK]')
-# plt.grid(True)
-# plt.tight_layout()
-# plt.show()
-
-# #Case 4
-# #Costs
-# plt.figure(figsize=(8, 5))
-# plt.plot(boat, old_cost_kr, color='orange', linestyle='--')
-# plt.plot(boat, peak_cost_kr , color='olivedrab',  marker='.')
-# plt.plot(boat, nord_pool_cost_kr, marker='.', color='teal', linestyle='--')
-# plt.plot(boat, optimized_cost_nordpool_kr, marker='.', color='teal')
-# plt.plot(boat, LFM_cost_01_kr, marker='.', color='indianred', linestyle='--')
-# plt.plot(boat, optimized_cost_LFM_01_kr, marker='.', color='indianred')
-# plt.plot(boat, optimized_cost_FCR_D_up_LFM_01_kr, color='lightsteelblue', marker='.', linestyle='--')
-# plt.plot(boat, optimized_cost_FCR_D_down_LFM_01_kr, color='cornflowerblue', marker='.', linestyle='--')
-# plt.plot(boat, optimized_cost_FCR_D_LFM_01_kr, color='royalblue', marker='.')
-# plt.legend(['Optimized cost Case 1: Peak Shaved', 'Optimized cost Case 2: Spot Price', 'Cost after revenue Case 2: Spot Price ', 'Optimized cost Case 3: LFM ', 'Cost after revenue Case 3: LFM', 'Cost after revenue Case 4: FCR-D up', 'Cost after revenue Case 4: FCR-D down', "Cost after revenue Case 4: FCR-D"])
-# plt.xlabel('Number of Electric Leisure Boats'), 
-# plt.ylabel('Cost of Electricity [SEK]')
-# plt.grid(True)
-# # Force full numbers on the y-axis
-# formatter = ScalarFormatter(useOffset=False, useMathText=False)
-# formatter.set_scientific(False)  # Disable scientific notation
-# plt.gca().yaxis.set_major_formatter(formatter)
-# plt.show()
-
-# # Grid usage
-# plt.figure(figsize=(8, 5))
-# plt.plot(boat, old_grid_usage_kr, color='orange', linestyle='--')
-# plt.plot(boat, peak_grid_usage_kr, color='olivedrab', marker='.')
-# plt.plot(boat, nordpool_grid_usage_kr,color='teal', marker='.')
-# plt.plot(boat, LFM_grid_usage_01_kr, color='indianred', marker='.')
-# plt.legend(['Reference Case','Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM'])
-# plt.xlabel('Number of Electric Leisure Boats')
-# plt.ylabel('Grid usage [MWh]')
-# plt.grid(True)
-# plt.tight_layout()
-# plt.show()
-
-# #Energy throughput BESS
-# plt.figure(figsize=(7, 6))
-# plt.plot(boat, peak_bess_throughput_kr , color='olivedrab', marker='.')
-# plt.plot(boat, nord_bess_throughput_kr, color='teal', marker='.')
-# plt.plot(boat, LFM_bess_throughput_01_kr , color='indianred', marker='.')
-# plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM'])
-# plt.xlabel('Number of Electric Leisure Boats')
-# plt.ylabel('Electricity Throughput BESS [kWh]')
-# plt.grid(True)
-# plt.tight_layout()
-# plt.show()
-
-# #Energy throughput boat
-# plt.figure(figsize=(7, 6))
-# plt.plot(boat[1:], peak_boat_throughput_kr[1:] , color='olivedrab', marker='.')
-# plt.plot(boat[1:], nord_boat_throughput_kr[1:], color='teal', marker='.')
-# plt.plot(boat[1:], LFM_boat_throughput_01_kr[1:] , color='indianred' , marker='.')
-# plt.legend(['Case 1: Peak Shaved', 'Case 2: Spot Price', 'Case 3: LFM'])
-# plt.xlabel('Number of Electric Leisure Boats')
-# plt.ylabel('Electricity Throughput per Boat [kWh]')
-# plt.grid(True)
-# plt.tight_layout()
-# plt.show()
-
-#endregion

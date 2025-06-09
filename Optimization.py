@@ -83,23 +83,28 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
         electricity_cost = sum(
             (energy_tax + transmission_fee + model.spot_price[h, d]) * (model.grid_used_load[h, d] + model.grid_used_battery[h, d])*1.25 #Cost of electricity
             for h in model.HOURS for d in model.DAYS)
+            # Cost of electricity based on the spot price and other costs depending on the electricity per hour
         
         peak_total_cost = sum(
             peak_cost * model.peak_month[m] * 1.25
             for m in model.MONTHS)
+            # Cost for the electricity peak each month
         
         peak_penalty = sum(
             1000 * (model.peak_old_month[m] * 1.25)
             for m in model.MONTHS)
+            # Penalty for not peak shaving
 
         electricity_revenue = sum(
             (model.spot_price[h, d] + 0.07) * model.grid_sold[h, d] #Revenue from selling electricity
             for h in model.HOURS for d in model.DAYS)
+            # Revenue from selling electricity to the grid
             
         cycling_cost = sum((model.bess_charge[h, d] + model.boat_charge1[h, d] + model.boat_charge2[h, d] + model.boat_charge3[h, d]
                            + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d] + model.boat_discharge3[h, d])
                            * 0.2378/2
                            for h in model.HOURS for d in model.DAYS)
+                           # Cost for cycling the battery or the BESS
         
         return (electricity_cost + peak_total_cost + 1000000*peak_penalty - electricity_revenue + cycling_cost) #Cost of electricity
     model.objective = Objective(rule=total_grid_cost, sense=minimize)
@@ -112,6 +117,7 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
         return Constraint.Skip 
     model.peak_month_constraint = Constraint(model.HOURS, model.DAYS, rule=peak_month_rule)
 
+    # Limits the load to never be higher than the old peaks
     def new_peak_month_rule(model, h, d):
         for month, (start, end) in month_day_ranges.items():
             if start <= d <= end:
@@ -119,6 +125,7 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
         return Constraint.Skip
     model.new_peak_month_constraint = Constraint(model.HOURS, model.DAYS, rule=new_peak_month_rule)
 
+    # Sets the peaks for the months
     def peak_rule(model, h, d):
         for month, (start, end) in month_day_ranges.items():
             if start <= d <= end:
@@ -141,6 +148,7 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
         return model.load_param[h, d] >= model.self_sufficiency[h, d] + model.grid_used_load[h, d]
     model.lower_load_supply_constraint = Constraint(model.HOURS, model.DAYS, rule=lower_load_supply_rule)
 
+    # The load always has to be met by the electricity from solar+wind, batteries and from the grid
     def upper_load_supply_rule(model, h, d):
         return model.load_param[h, d] <= model.self_sufficiency[h, d] + model.bess_discharge[h, d] + model.boat_discharge1[h, d] + model.boat_discharge2[h, d] + model.boat_discharge3[h, d] + model.grid_used_load[h, d]
     model.upper_load_supply_constraint = Constraint(model.HOURS, model.DAYS, rule=upper_load_supply_rule)

@@ -86,7 +86,6 @@ peak_bess_throughput_be = [6764, 3490, 2454, 2312, 2170, 2723]
 peak_boat_throughput_be = [0, 1916, 1402, 1082, 922, 756]
 
 peak_throughput_be= [peak_bess_throughput_be[i] + peak_boat_throughput_be[i] for i in range(len(peak_bess_throughput_be))] 
-
 peak_cost_be = [0, 271, 271, 387, 722, 722]
 
 
@@ -100,10 +99,8 @@ nord_boat_throughput_be = [0, 5614, 3284, 2234, 1832, 1569]
 
 nord_throughput_be= [nord_bess_throughput_be[i] + nord_boat_throughput_be[i] for i in range(len(nord_bess_throughput_be))]
 
-
 #New costs
 optimized_cost_nordpool_be = [nord_pool_cost_be[i] - nord_pool_revenue_be[i] for i in range(len(nord_pool_cost_be))]
-
 
 #_____P_bid 0.1___________________________________________________________________________________________________________________________
 #region
@@ -167,8 +164,6 @@ optimized_cost_FCR_D_down_LFM_02_be = [optimized_cost_LFM_02_be[i] - FCR_D_down_
 optimized_cost_FCR_D_LFM_02_be = [optimized_cost_LFM_02_be[i] - FCR_D_up_revenue_02_be[i] - FCR_D_down_revenue_02_be[i] for i in range(len(optimized_cost_LFM_02_be))]
 
 #endregion
-
-
 #____Per boat, revenue _____________________________________________________________________________________________________________________________
 revenue_per_boat_case1_be = [
     (old_cost_be[i] - peak_cost_be[i])  / boat[i]
@@ -212,7 +207,6 @@ print("Total savings/boat: ", total_savings_per_boat)
 print("BESS throughput: ", LFM_bess_throughput_01_be, "participation factor: ", bess_throughput_participation_factor, "%")
 print("Boat throughput: ", LFM_boat_throughput_01_be, "participation factor: ", boat_throughput_participation_factor, "%")
 print("Total savings/boat, allocated:", [total_savings_per_boat[i] * (boat_throughput_participation_factor[i] / 100) for i in range(len(total_savings_per_boat))])
-
 
 
 #__Plotting___________________________________________________________________________________________________________________________

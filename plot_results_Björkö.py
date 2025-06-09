@@ -140,6 +140,7 @@ optimized_cost_FCR_D_LFM_01_bj = [LFM_cost_01_bj[i] - LFM_revenue_01_bj[i]- LFM_
 #_____P_bid 0.2___________________________________________________________________________________________________________________________
 #region
 # ______Case 3____________________________________________________________________________________________________________________________
+#Adding LFM
 LFM_grid_usage_02_bj = [139.72 , 145.51 , 151.88 ,  157.5, 162.49 ,  166.7, 186.34 , 246.47]
 LFM_bess_throughput_02_bj = [55317, 42390, 36394 , 32145 , 27748 , 26643, 23445 , 17048]
 LFM_boat_throughput_02_bj = [0,9622 ,7825  , 6594 , 5865,5202 , 3302, 2282]
@@ -171,6 +172,7 @@ optimized_cost_FCR_D_LFM_02_bj = [optimized_cost_LFM_02_bj[i] - FCR_D_up_revenue
 #_____P_bid 0.3___________________________________________________________________________________________________________________________
 #region
 # ______Case 3____________________________________________________________________________________________________________________________
+#Adding LFM
 LFM_grid_usage_03_bj = [141.56, 149.02 ,157.0 , 163.76 ,170.7 ,178.02  ,  207.25  , 0]
 LFM_bess_throughput_03_bj = [ 55144,44505, 41780, 35094  ,34188 ,31397  ,27445, 0 ]
 LFM_boat_throughput_03_bj = [0,10021 , 7645 , 7093 ,6336 ,6128  ,4395  , 0 ]
@@ -226,7 +228,8 @@ revenue_per_boat_case4_bj = [
 
 total_revenue_bj = [LFM_total_revenue_01_bj[i] + FCR_D_up_revenue_01_bj[i] + FCR_D_down_revenue_01_bj[i] for i in range(len(nord_pool_revenue_bj))]
 #endregion
-#____Calculating cool stuff___________________________________________________________________________________________________________________________
+
+
 #region
 final_cost = [LFM_cost_01_bj[i] - LFM_revenue_Nordpool_01_bj[i] - LFM_revenue_01_bj[i] - FCR_D_up_revenue_01_bj[i] - FCR_D_down_revenue_01_bj[i] for i in range(len(optimized_cost_FCR_D_LFM_01_bj))]
 final_cost_per_boat = [final_cost[i] / boat[i] if boat[i] != 0 else final_cost[0] for i in range(len(final_cost))]

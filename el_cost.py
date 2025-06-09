@@ -1,6 +1,7 @@
 import numpy as np
 import el_price
 
+#Calculating the cost of electricity
 def cost(P_sun, P_wind, P_load, power_tariff, tax_cost, transmission_cost, VAT):
     if P_sun is None:
         P_sun = np.zeros((24, 365))

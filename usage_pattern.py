@@ -62,33 +62,6 @@ def usage_pattern(a, P_battery, SOC_upper, P_charger):
 
     return P_b, P_b_power
 
-# def soc_target(availability, full=1.0, arrival=0.2, empty=None):
-#     soc_required = zeros((24, 365))
-#     for d in range(365):
-#         for h in range(24):
-#             if h == 0 and d == 0:  # Fix logical error
-#                 soc_required[h, d] == empty
-#             elif h == 0:
-#                 prev = availability[23, d - 1]
-#                 now = availability[h, d]
-#                 if prev == 1 and now == 0:
-#                     soc_required[23, d-1] = full
-#                 elif prev == 0 and now == 1:
-#                     soc_required[23, d-1] = arrival
-#                 else:
-#                     soc_required[23, d-1] == empty
-#             else:
-#                 prev = availability[h - 1, d]
-#                 now = availability[h, d]
-#                 if prev == 1 and now == 0:
-#                     soc_required[h-1, d] = full
-#                 elif prev == 0 and now == 1:
-#                     soc_required[h-1, d] = arrival
-#                 else:
-#                     soc_required[h-1, d] == empty
-#     return soc_required
-
-
 def boat_load(availability, SOC_leaving, SOC_arriving):
     boat_load = zeros((24, 365))
     for d in range(365):

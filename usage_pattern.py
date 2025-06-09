@@ -62,31 +62,31 @@ def usage_pattern(a, P_battery, SOC_upper, P_charger):
 
     return P_b, P_b_power
 
-def soc_target(availability, full=1.0, arrival=0.2, empty=None):
-    soc_required = zeros((24, 365))
-    for d in range(365):
-        for h in range(24):
-            if h == 0 and d == 0:  # Fix logical error
-                soc_required[h, d] == empty
-            elif h == 0:
-                prev = availability[23, d - 1]
-                now = availability[h, d]
-                if prev == 1 and now == 0:
-                    soc_required[23, d-1] = full
-                elif prev == 0 and now == 1:
-                    soc_required[23, d-1] = arrival
-                else:
-                    soc_required[23, d-1] == empty
-            else:
-                prev = availability[h - 1, d]
-                now = availability[h, d]
-                if prev == 1 and now == 0:
-                    soc_required[h-1, d] = full
-                elif prev == 0 and now == 1:
-                    soc_required[h-1, d] = arrival
-                else:
-                    soc_required[h-1, d] == empty
-    return soc_required
+# def soc_target(availability, full=1.0, arrival=0.2, empty=None):
+#     soc_required = zeros((24, 365))
+#     for d in range(365):
+#         for h in range(24):
+#             if h == 0 and d == 0:  # Fix logical error
+#                 soc_required[h, d] == empty
+#             elif h == 0:
+#                 prev = availability[23, d - 1]
+#                 now = availability[h, d]
+#                 if prev == 1 and now == 0:
+#                     soc_required[23, d-1] = full
+#                 elif prev == 0 and now == 1:
+#                     soc_required[23, d-1] = arrival
+#                 else:
+#                     soc_required[23, d-1] == empty
+#             else:
+#                 prev = availability[h - 1, d]
+#                 now = availability[h, d]
+#                 if prev == 1 and now == 0:
+#                     soc_required[h-1, d] = full
+#                 elif prev == 0 and now == 1:
+#                     soc_required[h-1, d] = arrival
+#                 else:
+#                     soc_required[h-1, d] == empty
+#     return soc_required
 
 
 def boat_load(availability, SOC_leaving, SOC_arriving):
@@ -110,58 +110,7 @@ def boat_load(availability, SOC_leaving, SOC_arriving):
                 else:
                     boat_load[h-1, d] = 0
     return boat_load
-            
-def boat_load_cost(NUMBOAT):
-    USE1, _ = usage_pattern(162, 100, 0.9, 60)  # Example usage pattern for a specific day
-    USE2, _ = usage_pattern(183, 100, 0.9, 60)  # Example usage pattern for a specific day
-    USE3, _ = usage_pattern(204, 100, 0.9, 60)  # Example usage pattern for a specific day
-    BOATLOAD1 = zeros((24, 365))
-    BOATLOAD2 = zeros((24, 365))
-    BOATLOAD3 = zeros((24, 365))
-    NUMBOAT1 = 0
-    NUMBOAT2 = 0
-    NUMBOAT3 = 0
-    for b in range(NUMBOAT):
-        if b % 3 == 0:
-            NUMBOAT1 += 1
-        elif b % 3 == 1:
-            NUMBOAT2 += 1
-        else:
-            NUMBOAT3 += 1
-    for d in range(365):
-        for h in range(24):
-            if h == 23:
-                BOATLOAD1[h, d] == 0
-                BOATLOAD2[h, d] == 0
-                BOATLOAD3[h, d] == 0
-            else:
-                if USE1[h, d] == 1 and USE1[h+1, d] == 0:
-                    BOATLOAD1[23, d-1] = 10 * NUMBOAT1
-                    BOATLOAD1[0:6, d] = 10 * NUMBOAT1
-                elif USE2[h, d] == 1 and USE2[h+1, d] == 0:
-                    BOATLOAD2[23, d-1] = 10 * NUMBOAT2
-                    BOATLOAD2[0:6, d] = 10 * NUMBOAT2
-                elif USE3[h, d] == 1 and USE3[h+1, d] == 0:
-                    BOATLOAD3[23, d-1] = 10 * NUMBOAT3
-                    BOATLOAD3[0:6, d] = 10 * NUMBOAT3
-                else:
-                    BOATLOAD1[h-1, d] = 0
-                    BOATLOAD2[h-1, d] = 0
-                    BOATLOAD3[h-1, d] = 0
-            CHARGECOST1 = el_cost.cost(None, None, BOATLOAD1, 61.55, 0.439, 0.113, 1.25)
-            CHARGECOST2 = el_cost.cost(None, None, BOATLOAD2, 61.55, 0.439, 0.113, 1.25)
-            CHARGECOST3 = el_cost.cost(None, None, BOATLOAD3, 61.55, 0.439, 0.113, 1.25)
-            TOTCOST = CHARGECOST1 + CHARGECOST2 + CHARGECOST3
-    return TOTCOST
 
-def boat_market_availability():
-    boat_market_availability = zeros((24, 365))
-    for d in range(365):
-        for h in range(24):
-            boat_market_availability[h, 120:273] = 0  # Summer season
-            boat_market_availability[h, 0:120] = 1  # Winter season
-            boat_market_availability[h, 273:365] = 1  # Autumn season
-    return boat_market_availability
 # #region Calling on function
 
 P_b, P_b_power=usage_pattern(205, 100, 0.9, 60)
@@ -172,8 +121,6 @@ P_b_power_flat = P_b_power.flatten(order='F')
 P_b_flat=P_b.flatten(order='F')
 P_b_power_day=P_b_power_flat[3024:3049]
 P_b_power_week=P_b_power_flat[a*24:a*24+24*14]
-
-charge_required1 = soc_target(P_b)
 
 #endregion
 
@@ -187,39 +134,6 @@ charge_required1 = soc_target(P_b)
 # plt.xticks(ticks=range(25), labels=range(25))
 # plt.xlim(0, 24)
 # plt.grid(True)
-# plt.legend()
-# plt.show()
-
-# # Plotting the battery power usage pattern as a line plot
-# plt.figure(figsize=(10, 5))
-# plt.plot(P_b_power_week, label='Battery Power')
-# plt.xlabel('Hours')
-# plt.ylabel('Battery Power (kWh)')
-# plt.title('Boat battery avilability')
-# plt.xlim(312, 336)
-# plt.grid(True)
-# plt.legend()
-# plt.show()
-
-# # Plotting the battery power usage pattern as a line plot
-# plt.figure(figsize=(10, 5))
-# plt.plot(P_b_power_flat, label='Battery Power')
-# plt.xlabel('Hours')
-# plt.ylabel('Battery Power (kWh)')
-# plt.title('Boat Usage Pattern')
-# plt.xlim(0, 8760)
-# plt.grid(True)
-# plt.legend()
-# plt.show()
-
-# # Plotting the battery power usage pattern as a line plot
-# plt.figure(figsize=(10, 5))
-# plt.plot(P_b_flat, label='')
-# plt.fill_between(range(8760), P_b_flat, alpha=0.3)
-# plt.xlabel('Hours')
-# plt.ylabel('')
-# plt.title('Boat Usage Pattern')
-# plt.xlim(0, 8760)
 # plt.legend()
 # plt.show()
 

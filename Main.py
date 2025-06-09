@@ -33,14 +33,14 @@ user = 1 #User: Maja = 1, Maria = 2
 # load_summer_krossholmen = load_krossholmen_2023.load_summer
 
 # marinas = ['Björkö', 'Krossholmen', 'Bessekroken']
-marinas = ['Krossholmen'] #, 'Krossholmen', 'Bessekroken']
+marinas = ['Krossholmen'] #Choose which marina to simulate
 
 for i in list(marinas):
     if i == 'Björkö':
         load_data = load_björkö.load
         solar_panel_area = (75+50)*0.85 # m^2
         turbines = 0 # Number of wind turbines
-        grid_limit = 242.2 #Limitations of grid, abbonerad effekt [kW]
+        grid_limit = 242.2 #Limitations of grid (abonnerad effekt) [kW]
 
         bess_capacity = 533 #kWh
         bess_charge_rate = 352 #kW
@@ -53,7 +53,7 @@ for i in list(marinas):
         load_data = load_krossholmen_2023.load
         solar_panel_area = 167 # m^2
         turbines = 1 # Number of wind turbines
-        grid_limit = 1680 #Limitations of grid, abbonerad effekt [kW]
+        grid_limit = 1680 #Limitations of grid (abonnerad effekt) [kW]
 
         bess_capacity = 533 #kWh
         bess_charge_rate = 352 #kW
@@ -66,7 +66,7 @@ for i in list(marinas):
         load_data = load_björkö_bessekroken.load
         solar_panel_area = 250*0.85 # m^2
         turbines = 1
-        grid_limit = 13.8 #Limitations of grid, abbonerad effekt [kW]
+        grid_limit = 13.8 #Limitations of grid (abonnerad effekt) [kW]
 
         bess_capacity = 533 #kWh
         bess_charge_rate = 352 #kW
@@ -147,10 +147,9 @@ for i in range(365):
 #endregion
 #_________Case 1_________________________________________________________________________________________________________
 #region Calculating selfproduced electricity
-#Calling on function, change the values to get the desired result
 
-solar_power=solarpower.solar(solar_panel_area,0.20) #20% efficiency
-#wind_power=windpower.wind(turbines) # Function set for a turbine rated at 5,5kW
+#Calling on functions for solar production and wind production, change the values to get the desired result
+solar_power=solarpower.solar(solar_panel_area, 0.20) #20% efficiency
 wind_power=windequation.wind(turbines) # Function set for a turbine rated at 5,5kW
 
 #Calculating the sum of the array for the solar power 1X365
@@ -177,7 +176,7 @@ for i in range(365):
 # for i in range(365):
 #     P_self1[i] = sum(P_self[:, i])
 
-#Calculating the total 
+#Calculating the total electricity production from solar and wind power
 total_sum_sun=round(sum(P_solar)*10,1)/10
 print(f"The yearly production of solar power is {round(total_sum_sun/1000, 2)} MWh")
 
@@ -193,44 +192,8 @@ print(f"The yearly production of wind power is {round(total_sum_wind/1000, 2)} M
 # plt.xlabel('Days')
 # plt.show()
 
-#______Plotting Case 1___________________________________________________________________________________________________
-#region Maybe remove??
-# Plotting the daily electricity load
-# plt.figure(figsize=(10, 5))
-# #plt.plot(range(len(P_solar)), P_solar, label='Solar Power Production')
-# plt.plot(range(len(yearly_load_bessekroken)), yearly_load_bessekroken, label='The load of Bessekroken')
-# plt.fill_between(range(len(yearly_load_bessekroken)), yearly_load_bessekroken, alpha=1)
-# plt.plot(range(len(P_self1)), P_self1, label='The load of Bessekroken after self-produced electricity')
-# plt.fill_between(range(len(P_self1)), P_self1, alpha=1)
-
-# #plt.plot(range(len(P_wind)), P_wind, label='Wind Power Production')
-# plt.xlabel('Days of the year')
-# plt.ylabel('kWh')
-# plt.title('Self-produced electricity and load of Bessekroken')
-# plt.legend()
-# plt.xlim(0, 364)  # Set x-axis limits to start at 0 and end at 364
-# plt.ylim(0, (max(max(yearly_load_bessekroken), max(P_self1))+5)) 
-# #plt.grid(True)
-# plt.show(block=False)
-# plt.show()
-
-# #Plotting the selfproduced electricity of wind and solar power
-# plt.figure(figsize=(10, 5))
-# plt.plot(range(len(P_wind)), P_wind, label='Wind Power Production')
-# plt.plot(range(len(P_solar)), P_solar, label='Solar Power Production')
-# plt.xlabel('Days of the year')
-# plt.ylabel('kWh')
-# plt.title('Self-produced electricity')
-# plt.legend()
-# plt.xlim(0, 364)  # Set x-axis limits to start at 0 and end at 364
-# plt.ylim(0, (max(max(P_wind), max(P_solar))+5)) 
-# #plt.grid(True)
-# plt.show(block=False)
-# plt.show()
-#endregion
-
 #______Boat availability and power________________________________________________________________________________________
-# Boat availability and power
+# Boat availability and power (available = 0, unavailable = 1, power is unused)
 boat_availability1, boat_power1 = usage_pattern.usage_pattern(a, 100, 90, 60)  # 24x365
 boat_availability2, boat_power2 = usage_pattern.usage_pattern(b, 100, 90, 60)  # 24x365
 boat_availability3, boat_power3 = usage_pattern.usage_pattern(c, 100, 90, 60)  # 24x365
@@ -252,29 +215,32 @@ for b in range(number_boats):
 
 cycl_cost = round((((3000000*0.35) + (9.66 * 150 * boat_capacity * number_boats)) * (1 - 0.3)) / (5380 * (bess_capacity + boat_capacity * number_boats)), 3)
 print(f"Cycl cost: {cycl_cost} SEK/kWh")
-#cycl_cost_boat = ((9.66 * 150 * boat_capacity * (number_boats1 + number_boats2 + number_boats3)) * (1 - 0.4)) / (5380 * (boat_capacity * (number_boats1 + number_boats2 + number_boats3)))
-#cycl_cost_bess = ((3000000 * 0.35) * (1 - 0.4)) / (5380 * (bess_capacity))
 
+#Boat load is an array representing electricity need for the boat. This is used to control the SOC och the boat batteries in the optimization code.
+#Before a trip SOC = 90 %, during a trip SOC = 10 %, when arriving back SOC = 20 %
 boat_load1 = usage_pattern.boat_load(boat_availability1, (battery_upper_limit-battery_lower_limit)*boat_capacity*number_boats1, 0.1*boat_capacity*number_boats1)
 boat_load2 = usage_pattern.boat_load(boat_availability2, (battery_upper_limit-battery_lower_limit)*boat_capacity*number_boats2, 0.1*boat_capacity*number_boats2)
 boat_load3 = usage_pattern.boat_load(boat_availability3, (battery_upper_limit-battery_lower_limit)*boat_capacity*number_boats3, 0.1*boat_capacity*number_boats3)
 
 #______LCM: Effekthandel väst________________________________________________________________________________________
-# LCM: Matrix for bids and activation'
-bids_effekthandelväst_data = effekthandel_väst.I_bid
-activated_bids_effekthandelväst_data = effekthandel_väst.I_activated
+# LCM: Matrix for bids and activated
+bids_effekthandelväst_data = effekthandel_väst.I_bid #  (0 = no bid, 1 = bid)
+activated_bids_effekthandelväst_data = effekthandel_väst.I_activated # (0 = no bid or no activation of bid, 1 = bid activated)
+# This is used when simulating no the case of no participation on LFM
 # bids_effekthandelväst_data = np.zeros((24,365))
 # activated_bids_effekthandelväst_data = np.zeros((24,365))
 
-# Matrix with bids for the different batteries
+# Matrix with the bids and their sizes for the different batteries
 bid_bess = activated_bids_effekthandelväst_data * bess_capacity * bid_size
 bid_boat1 = activated_bids_effekthandelväst_data * boat_capacity * number_boats1 * bid_size
 bid_boat2 = activated_bids_effekthandelväst_data * boat_capacity * number_boats2 * bid_size
 bid_boat3 = activated_bids_effekthandelväst_data * boat_capacity * number_boats3 * bid_size
 
+#Cost of electricity for the reference case
 old_cost = el_cost.cost(None, None, load_data, 61.55, 0.439, 0.113, 1.25)
 
 #______Calling optimization function________________________________________________________________________________________
+Calling the optimization function
 model = Optimization.optimize_microgrid(solar_power, wind_power, load_data, spot_price, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, battery_lower_limit, battery_upper_limit, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, cycl_cost, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, bid_bess, bid_boat1, bid_boat2, bid_boat3, bid_size)
 
 #______Plotting results________________________________________________________________________________________
@@ -324,7 +290,7 @@ for h in model.HOURS:
         #bidplaced [h, d] = model.bid_placed[h, d].value  # Bid placed data
         spotprice [h, d] = spot_price[h][d]  # Spot price data
 
-#old_cost = el_cost.cost(None, None, old_grid_usage, 61.55, 0.439, 0.113, 1.25)
+#Calculating the cost of electricity for the opttimized grid usage
 opt_cost = el_cost.cost(None, None, grid_used_load + grid_used_battery, 61.55, 0.439, 0.113, 1.25)
 
 total_grid_usage = np.zeros((24, 365))
@@ -360,6 +326,7 @@ sold_electricity_hourly = np.zeros(8760)
 sold_electricity_solar_hourly = np.zeros(8760)
 spot_price_hourly = np.zeros(8760)
 
+# Function used to calculate the energy throughput
 def hourly_values(SOC, SOCRES, CHR, CHRRES, DIS, BOAT):
     i = 0
     for d in range(365):
@@ -463,15 +430,13 @@ plt.show()
 
 # plt.figure(figsize=(12, 6))
 
-# # Plot old grid usage
+# # Plot the sold electricity
 # plt.plot((sold_electricity_hourly))
 # plt.title('Sold electricity')
 # plt.xlim(0, 8760)  # Set x-axis limits to start at 0 and end at 8760
 # plt.xlabel('Hour')
 # plt.ylabel('kWh')
 # plt.show()
-
-
 
 # # Plot BESS and boat
 # plt.figure

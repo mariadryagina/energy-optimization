@@ -3,6 +3,8 @@ import numpy as np
 import requests
 from io import BytesIO
 
+# Writing the spot prices into matrixes
+
 # URL to the Excel file on GitHub
 url23 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Spotpriser/price_2023.csv"
 url24 = "https://raw.githubusercontent.com/mariadryagina/energy-optimization/main/Spotpriser/price_2024.csv"

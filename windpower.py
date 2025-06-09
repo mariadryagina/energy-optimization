@@ -40,7 +40,7 @@ for i in range(24):
         if V[i, j] < 2.8:
             V[i, j] = 0
 
-
+#Function for calculating wind power
 #_Function begins_______________________________________________________________#
 #V - wind speed in m/s
 #n - amount of turbines

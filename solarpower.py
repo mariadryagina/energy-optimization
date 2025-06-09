@@ -33,6 +33,8 @@ for i in range(a):
     for j in range(24):
          I[j,i]=df.iloc[i*24+j,2]
 #endregion
+
+#Function for calculating solar power
 #Function begins___________________________________________________________________________#
 # I - irradiation in W/m^2
 #A - amount of panels in m^2

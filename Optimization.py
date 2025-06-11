@@ -378,7 +378,7 @@ def optimize_microgrid(solar_data, wind_data, load_data, spot_price_data, grid_l
     if user == 1:
         solver = SolverFactory('glpk', executable='C:\\Users\\a518244\\Python\\energy-optimization\\winglpk-4.65\\glpk-4.65\\w64\\glpsol.exe')
     elif user == 2:
-        solver = SolverFactory('glpk', executable='C:\\Users\\a517469\\Python\\energy-optimization\\glpk-4.65\\w64\\glpsol.exe')
+        solver = SolverFactory('glpk', executable='C:\\Users\\maria\\Python\\winglpk-4.65\\glpk-4.65\\w64\\glpsol.exe')
     results = solver.solve(model, tee=True)
 
     if (results.solver.status != SolverStatus.ok) or (results.solver.termination_condition != TerminationCondition.optimal):

@@ -25,7 +25,7 @@ from Effekthandel_väst import effekthandel_väst
 from Frequency import frequency_price
 import windequation
 
-user = 1 #User: Maja = 1, Maria = 2
+user = 2 #User: Maja = 1, Maria = 2
 #endregion
 #______Variable and parameters___________________________________________________________________________________________
 #region
@@ -240,7 +240,7 @@ bid_boat3 = activated_bids_effekthandelväst_data * boat_capacity * number_boats
 old_cost = el_cost.cost(None, None, load_data, 61.55, 0.439, 0.113, 1.25)
 
 #______Calling optimization function________________________________________________________________________________________
-Calling the optimization function
+#Calling the optimization function
 model = Optimization.optimize_microgrid(solar_power, wind_power, load_data, spot_price, grid_limit, bess_capacity, bess_charge_rate, bess_discharge_rate, boat_capacity, boat_charge_rate, boat_discharge_rate, battery_lower_limit, battery_upper_limit, number_boats1, number_boats2, number_boats3, boat_availability1, boat_availability2, boat_availability3, boat_load1, boat_load2, boat_load3, user, energy_tax, transmission_fee, cycl_cost, peak_cost, bids_effekthandelväst_data, activated_bids_effekthandelväst_data, bid_bess, bid_boat1, bid_boat2, bid_boat3, bid_size)
 
 #______Plotting results________________________________________________________________________________________

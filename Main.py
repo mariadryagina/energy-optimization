@@ -145,7 +145,7 @@ for i in range(365):
 # #axs[1].grid(True)
 
 #endregion
-#_________Case 1_________________________________________________________________________________________________________
+#__________________________________________________________________________________________________________________
 #region Calculating selfproduced electricity
 
 #Calling on functions for solar production and wind production, change the values to get the desired result
@@ -416,6 +416,200 @@ print(f"Power activated revenue: {round(3.5*(bid_bess+bid_boat1+bid_boat2+bid_bo
 #print(f'Power throughput BESS: {round((bess_discharge.sum))}, Power throughput boat (mean): {round(((boat_discharge1+boat_discharge2+boat_discharge3)/number_boats).sum())} MWh')
 #print(f"Self sufficiency: {round(((self_sufficiency_hourly/(grid_used_battery_hourly + grid_used_load_hourly))*100).sum())} %")
 
+
+
+
+#Arrays for daytype for each month, 0 = weekday, 1 = weekend
+jan_daytype = np.array([1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0])
+feb_daytype = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0])
+mar_daytype = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0])
+apr_daytype = np.array([1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1])
+may_daytype = np.array([1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0])
+jun_daytype = np.array([0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0])
+jul_daytype = np.array([1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0])
+aug_daytype = np.array([0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0])
+sep_daytype = np.array([0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1])
+oct_daytype = np.array([1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0])
+nov_daytype = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0])
+dec_daytype = np.array([0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1])
+
+winter_daytype = np.concatenate((dec_daytype, jan_daytype, feb_daytype))
+spring_daytype = np.concatenate((mar_daytype, apr_daytype, may_daytype))
+summer_daytype = np.concatenate((jun_daytype, jul_daytype, aug_daytype))
+autumn_daytype = np.concatenate((sep_daytype, oct_daytype, nov_daytype))
+
+#Empty matrixes for the next step
+old_load_winter_weekday = []
+old_load_winter_weekend = []
+old_load_spring_weekday = []
+old_load_spring_weekend = []
+old_load_summer_weekday = []
+old_load_summer_weekend = []
+old_load_autumn_weekday = []
+old_load_autumn_weekend = []
+new_load_winter_weekday = []
+new_load_winter_weekend = []
+new_load_spring_weekday = []
+new_load_spring_weekend = []
+new_load_summer_weekday = []
+new_load_summer_weekend = []
+new_load_autumn_weekday = []
+new_load_autumn_weekend = []
+spot_price_winter_weekday = []
+spot_price_winter_weekend = []
+spot_price_summer_weekday = []
+spot_price_summer_weekend = []
+
+#for-loops positioning the load values for either weekday or weekend in different matrixes
+#each row represents the load for one hour in the day
+
+def load_weekday_weekend(DAYTYPE, WEEKDAY, WEEKEND, OLDLOAD):
+    for i, value in enumerate(DAYTYPE):
+        if value == 0:
+            WEEKDAY.append(OLDLOAD[:, i])
+        if value == 1:
+            WEEKEND.append(OLDLOAD[:, i])
+    return WEEKDAY, WEEKEND
+old_load_winter_weekday, old_load_winter_weekend = load_weekday_weekend(winter_daytype, old_load_winter_weekday, old_load_winter_weekend, old_load_winter)
+old_load_spring_weekday, old_load_spring_weekend = load_weekday_weekend(spring_daytype, old_load_spring_weekday, old_load_spring_weekend, old_load_spring)
+old_load_summer_weekday, old_load_summer_weekend = load_weekday_weekend(summer_daytype, old_load_summer_weekday, old_load_summer_weekend, old_load_summer)
+old_load_autumn_weekday, old_load_autumn_weekend = load_weekday_weekend(autumn_daytype, old_load_autumn_weekday, old_load_autumn_weekend, old_load_autumn)
+new_load_winter_weekday, new_load_winter_weekend = load_weekday_weekend(winter_daytype, new_load_winter_weekday, new_load_winter_weekend, new_load_winter)
+new_load_spring_weekday, new_load_spring_weekend = load_weekday_weekend(spring_daytype, new_load_spring_weekday, new_load_spring_weekend, new_load_spring)
+new_load_summer_weekday, new_load_summer_weekend = load_weekday_weekend(summer_daytype, new_load_summer_weekday, new_load_summer_weekend, new_load_summer)
+new_load_autumn_weekday, new_load_autumn_weekend = load_weekday_weekend(autumn_daytype, new_load_autumn_weekday, new_load_autumn_weekend, new_load_autumn)
+spot_price_winter_weekday, spot_price_winter_weekend = load_weekday_weekend(winter_daytype, spot_price_winter_weekday, spot_price_winter_weekend, spot_price_winter)
+spot_price_summer_weekday, spot_price_summer_weekend = load_weekday_weekend(summer_daytype, spot_price_summer_weekday, spot_price_summer_weekend, spot_price_summer)
+
+
+
+
+#_____Frequency market: FCR-D_________________________________________________________________________________________________________
+#region
+#FCR-D up revenue
+#total_soc=bess_soc_values + boat_soc1_values + boat_soc2_values + boat_soc3_values
+total_boat=boat_soc1 + boat_soc2 + boat_soc3
+TOTAL_CAPACITY = bess_capacity + boat_capacity * number_boats
+P_bud = 0.5 * TOTAL_CAPACITY - 0.1 * TOTAL_CAPACITY # 50% of the total capacity
+P_bud_summer = 0.5 * bess_capacity - 0.1 * bess_capacity #
+
+
+# Initialize a 24x365 matrix with zeros
+total_soc1 = np.zeros((24, 365)) # Battery state of charge data (total charge)
+bid_matrix = np.zeros((24, 365))
+# Set 1s for hours 0-7 and 19-23
+bid_matrix[0:6, :] = 1  # Hours 0-7
+bid_matrix[6:19, :] = None
+bid_matrix[19:24, :] = 1  # Hours 19-23
+
+
+# Reshape the matrix to 8760x1 in column-major order
+bid_matrix_reshaped = bid_matrix.reshape(-1, order='F')
+
+for i in range(365):
+    for j in range(24):
+        if  121 <= i <= 273:
+            total_soc1[j, i] = bess_soc[j, i]
+        else:
+            total_soc1[j,i] = bess_soc[j,i] + boat_soc1[j,i] + boat_soc2[j,i] + boat_soc3[j,i]
+
+total_soc2=bid_matrix * total_soc1
+
+
+#FCR-D up revenue________________________________________________________________________________________________________   
+FCR_D_up_price_data=(frequency_price.FCR_D_up_2024)/1000
+bid_soc = np.zeros((24,365)) # Battery state of charge data (total charge)
+total_fcr_revenue=np.zeros((24,365)) 
+# hours=np.zeros(24,365)
+count=0
+
+# Iterate over the indices and values of total_soc
+for i in range(365):
+    for j in range(24):
+        if j < 23:
+            if 0 <= i <= 120 and total_soc2[j,i] >= 0.6 * TOTAL_CAPACITY and total_soc2[j+1, i] >= 0.6 * TOTAL_CAPACITY:
+                count += 1
+                total_fcr_revenue[j,i]= FCR_D_up_price_data[j,i].item() * P_bud
+                bid_soc[j,i] = total_soc2[j,i]
+            elif 121 <= i <= 273 and total_soc2[j,i] >= 0.6 * bess_capacity and total_soc2[j+1,i] >= 0.6 * bess_capacity:
+                count += 1
+                total_fcr_revenue[j,i]= FCR_D_up_price_data[j,i].item() * P_bud_summer
+                bid_soc[j,i] = total_soc2[j,i]
+            elif 274 <= i <= 365 and total_soc2[j,i] >= 0.6 * TOTAL_CAPACITY and total_soc2[j+1, i] >= 0.6 * TOTAL_CAPACITY:
+                count += 1
+                total_fcr_revenue[j,i]= FCR_D_up_price_data[j,i].item() * P_bud
+                bid_soc[j,i] = total_soc2[j,i]
+        else:  # For hour 23 (last hour of the day)
+            if 0 <= i <= 120 and total_soc2[j, i] >= 0.6 * TOTAL_CAPACITY:
+                count += 1
+                total_fcr_revenue[j, i] = FCR_D_up_price_data[j, i].item() * P_bud
+                bid_soc[j, i] = total_soc2[j, i]
+            elif 121 <= i <= 273 and total_soc2[j, i] >= 0.6 * bess_capacity:
+                count += 1
+                total_fcr_revenue[j, i] = FCR_D_up_price_data[j, i].item() * P_bud_summer
+                bid_soc[j, i] = total_soc2[j, i]
+            elif 274 <= i <= 365 and total_soc2[j, i] >= 0.6 * TOTAL_CAPACITY:
+                count += 1
+                total_fcr_revenue[j, i] = FCR_D_up_price_data[j, i].item() * P_bud
+                bid_soc[j, i] = total_soc2[j, i]
+
+
+
+total_fcr_revenue_reshaped=np.zeros((365))  
+for i in range(365):
+    total_fcr_revenue_reshaped[i] = sum(total_fcr_revenue[:, i])
+
+print(f"FCR-D up revenue: {sum(total_fcr_revenue_reshaped)} SEK")
+print(f"FCR-D up participant: {count} h")
+#_________________________________________________________________________________________________________________________
+
+#FCR-D down revenue______________________________________________________________________________________________________
+FCR_D_down_price_data=(frequency_price.FCR_D_down_2024)/1000
+total_fcr_down_revenue=np.zeros((24,365)) 
+count_1=0
+bid_soc_down = np.zeros((24,365))
+
+# Iterate over the indices and values of total_soc
+for i in range(365):
+    for j in range(24):
+        if j < 23:
+            if 0 <= i <= 120 and total_soc2[j,i] < 0.4 * TOTAL_CAPACITY and total_soc2[j+1, i] < 0.4 * TOTAL_CAPACITY:
+                count_1 += 1
+                total_fcr_down_revenue[j,i]= FCR_D_down_price_data[j,i].item() * P_bud
+                bid_soc_down[j,i] = total_soc2[j,i]
+            elif 121 <= i <= 273 and total_soc2[j,i] < 0.4 * bess_capacity and total_soc2[j+1,i] < 0.4 * bess_capacity:
+                count_1 += 1
+                total_fcr_down_revenue[j,i]= FCR_D_down_price_data[j,i].item() * P_bud_summer
+                bid_soc_down[j,i] = total_soc2[j,i]
+            elif 274 <= i <= 365 and total_soc2[j,i] < 0.4 * TOTAL_CAPACITY and total_soc2[j+1, i] < 0.4 * TOTAL_CAPACITY:
+                count_1 += 1
+                total_fcr_down_revenue[j,i]= FCR_D_down_price_data[j,i].item() * P_bud
+                bid_soc_down[j,i] = total_soc2[j,i]
+        else:  # For hour 23 (last hour of the day)
+            if 0 <= i <= 120 and total_soc2[j, i] < 0.4 * TOTAL_CAPACITY:
+                count_1 += 1
+                total_fcr_down_revenue[j, i] = FCR_D_down_price_data[j, i].item() * P_bud
+                bid_soc_down[j, i] = total_soc2[j, i]
+            elif 121 <= i <= 273 and total_soc2[j, i] < 0.4 * bess_capacity:
+                count_1 += 1
+                total_fcr_down_revenue[j, i] = FCR_D_down_price_data[j, i].item() * P_bud_summer
+                bid_soc_down[j, i] = total_soc2[j, i]
+            elif 274 <= i <= 365 and total_soc2[j, i] < 0.4 * TOTAL_CAPACITY:
+                count_1 += 1
+                total_fcr_down_revenue[j, i] = FCR_D_down_price_data[j, i].item() * P_bud
+                bid_soc_down[j, i] = total_soc2[j, i]
+
+
+total_fcr_down_revenue_reshaped=np.zeros((365))  
+for i in range(365):
+    total_fcr_down_revenue_reshaped[i] = sum(total_fcr_down_revenue[:, i])
+
+print(f"FCR-D down revenue: {sum(total_fcr_down_revenue_reshaped)} SEK")
+print(f"FCR-D down participant: {count_1} h")
+
+
+# #_____________________________________________________________________________________________
+# #PLOT
 # Plotting)
 plt.figure(figsize=(12, 6))
 
@@ -525,71 +719,8 @@ plt.show()
 # plt.tight_layout()
 # plt.show()
 
+#_________________________________________________________________________________________________________________________________________________________
 
-#Arrays for daytype for each month, 0 = weekday, 1 = weekend
-jan_daytype = np.array([1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0])
-feb_daytype = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0])
-mar_daytype = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0])
-apr_daytype = np.array([1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1])
-may_daytype = np.array([1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0])
-jun_daytype = np.array([0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0])
-jul_daytype = np.array([1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0])
-aug_daytype = np.array([0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0])
-sep_daytype = np.array([0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1])
-oct_daytype = np.array([1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0])
-nov_daytype = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0])
-dec_daytype = np.array([0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1])
-
-winter_daytype = np.concatenate((dec_daytype, jan_daytype, feb_daytype))
-spring_daytype = np.concatenate((mar_daytype, apr_daytype, may_daytype))
-summer_daytype = np.concatenate((jun_daytype, jul_daytype, aug_daytype))
-autumn_daytype = np.concatenate((sep_daytype, oct_daytype, nov_daytype))
-
-#Empty matrixes for the next step
-old_load_winter_weekday = []
-old_load_winter_weekend = []
-old_load_spring_weekday = []
-old_load_spring_weekend = []
-old_load_summer_weekday = []
-old_load_summer_weekend = []
-old_load_autumn_weekday = []
-old_load_autumn_weekend = []
-new_load_winter_weekday = []
-new_load_winter_weekend = []
-new_load_spring_weekday = []
-new_load_spring_weekend = []
-new_load_summer_weekday = []
-new_load_summer_weekend = []
-new_load_autumn_weekday = []
-new_load_autumn_weekend = []
-spot_price_winter_weekday = []
-spot_price_winter_weekend = []
-spot_price_summer_weekday = []
-spot_price_summer_weekend = []
-
-#for-loops positioning the load values for either weekday or weekend in different matrixes
-#each row represents the load for one hour in the day
-
-def load_weekday_weekend(DAYTYPE, WEEKDAY, WEEKEND, OLDLOAD):
-    for i, value in enumerate(DAYTYPE):
-        if value == 0:
-            WEEKDAY.append(OLDLOAD[:, i])
-        if value == 1:
-            WEEKEND.append(OLDLOAD[:, i])
-    return WEEKDAY, WEEKEND
-old_load_winter_weekday, old_load_winter_weekend = load_weekday_weekend(winter_daytype, old_load_winter_weekday, old_load_winter_weekend, old_load_winter)
-old_load_spring_weekday, old_load_spring_weekend = load_weekday_weekend(spring_daytype, old_load_spring_weekday, old_load_spring_weekend, old_load_spring)
-old_load_summer_weekday, old_load_summer_weekend = load_weekday_weekend(summer_daytype, old_load_summer_weekday, old_load_summer_weekend, old_load_summer)
-old_load_autumn_weekday, old_load_autumn_weekend = load_weekday_weekend(autumn_daytype, old_load_autumn_weekday, old_load_autumn_weekend, old_load_autumn)
-new_load_winter_weekday, new_load_winter_weekend = load_weekday_weekend(winter_daytype, new_load_winter_weekday, new_load_winter_weekend, new_load_winter)
-new_load_spring_weekday, new_load_spring_weekend = load_weekday_weekend(spring_daytype, new_load_spring_weekday, new_load_spring_weekend, new_load_spring)
-new_load_summer_weekday, new_load_summer_weekend = load_weekday_weekend(summer_daytype, new_load_summer_weekday, new_load_summer_weekend, new_load_summer)
-new_load_autumn_weekday, new_load_autumn_weekend = load_weekday_weekend(autumn_daytype, new_load_autumn_weekday, new_load_autumn_weekend, new_load_autumn)
-spot_price_winter_weekday, spot_price_winter_weekend = load_weekday_weekend(winter_daytype, spot_price_winter_weekday, spot_price_winter_weekend, spot_price_winter)
-spot_price_summer_weekday, spot_price_summer_weekend = load_weekday_weekend(summer_daytype, spot_price_summer_weekday, spot_price_summer_weekend, spot_price_summer)
-
-# #_____________________________________________________________________________________________
-# #PLOT
 # #position for the time on the x-axis
 tick_locations = [0, 6, 12, 18, 24]
 
@@ -727,220 +858,8 @@ ax2.legend(loc='upper right')
 plt.tight_layout()
 plt.show()
 
-
-
-# #_____Frequency market: FCR-D_________________________________________________________________________________________________________
-# #region
-# #FCR-D up revenue
-# #total_soc=bess_soc_values + boat_soc1_values + boat_soc2_values + boat_soc3_values
-# total_boat=boat_soc1 + boat_soc2 + boat_soc3
-# TOTAL_CAPACITY = bess_capacity + boat_capacity * number_boats
-# P_bud = 0.5 * TOTAL_CAPACITY - 0.1 * TOTAL_CAPACITY # 50% of the total capacity
-# P_bud_summer = 0.5 * bess_capacity - 0.1 * bess_capacity #
-
-
-# # Initialize a 24x365 matrix with zeros
-# total_soc1 = np.zeros((24, 365)) # Battery state of charge data (total charge)
-# bid_matrix = np.zeros((24, 365))
-# # Set 1s for hours 0-7 and 19-23
-# bid_matrix[0:6, :] = 1  # Hours 0-7
-# bid_matrix[6:19, :] = None
-# bid_matrix[19:24, :] = 1  # Hours 19-23
-
-
-# # Reshape the matrix to 8760x1 in column-major order
-# bid_matrix_reshaped = bid_matrix.reshape(-1, order='F')
-
-# for i in range(365):
-#     for j in range(24):
-#         if  121 <= i <= 273:
-#             total_soc1[j, i] = bess_soc[j, i]
-#         else:
-#             total_soc1[j,i] = bess_soc[j,i] + boat_soc1[j,i] + boat_soc2[j,i] + boat_soc3[j,i]
-
-# total_soc2=bid_matrix * total_soc1
-
-
-# #FCR-D revenue   
-# FCR_D_up_price_data=(frequency_price.FCR_D_up_2024)/1000
-# bid_soc = np.zeros((24,365)) # Battery state of charge data (total charge)
-# total_fcr_revenue=np.zeros((24,365)) 
-# # hours=np.zeros(24,365)
-# count=0
-
-# # Iterate over the indices and values of total_soc
-# for i in range(365):
-#     for j in range(24):
-#         if j < 23:
-#             if 0 <= i <= 120 and total_soc2[j,i] >= 0.6 * TOTAL_CAPACITY and total_soc2[j+1, i] >= 0.6 * TOTAL_CAPACITY:
-#                 count += 1
-#                 total_fcr_revenue[j,i]= FCR_D_up_price_data[j,i].item() * P_bud
-#                 bid_soc[j,i] = total_soc2[j,i]
-#             elif 121 <= i <= 273 and total_soc2[j,i] >= 0.6 * bess_capacity and total_soc2[j+1,i] >= 0.6 * bess_capacity:
-#                 count += 1
-#                 total_fcr_revenue[j,i]= FCR_D_up_price_data[j,i].item() * P_bud_summer
-#                 bid_soc[j,i] = total_soc2[j,i]
-#             elif 274 <= i <= 365 and total_soc2[j,i] >= 0.6 * TOTAL_CAPACITY and total_soc2[j+1, i] >= 0.6 * TOTAL_CAPACITY:
-#                 count += 1
-#                 total_fcr_revenue[j,i]= FCR_D_up_price_data[j,i].item() * P_bud
-#                 bid_soc[j,i] = total_soc2[j,i]
-#         else:  # For hour 23 (last hour of the day)
-#             if 0 <= i <= 120 and total_soc2[j, i] >= 0.6 * TOTAL_CAPACITY:
-#                 count += 1
-#                 total_fcr_revenue[j, i] = FCR_D_up_price_data[j, i].item() * P_bud
-#                 bid_soc[j, i] = total_soc2[j, i]
-#             elif 121 <= i <= 273 and total_soc2[j, i] >= 0.6 * bess_capacity:
-#                 count += 1
-#                 total_fcr_revenue[j, i] = FCR_D_up_price_data[j, i].item() * P_bud_summer
-#                 bid_soc[j, i] = total_soc2[j, i]
-#             elif 274 <= i <= 365 and total_soc2[j, i] >= 0.6 * TOTAL_CAPACITY:
-#                 count += 1
-#                 total_fcr_revenue[j, i] = FCR_D_up_price_data[j, i].item() * P_bud
-#                 bid_soc[j, i] = total_soc2[j, i]
+#
 
 
 
-# total_fcr_revenue_reshaped=np.zeros((365))  
-# for i in range(365):
-#     total_fcr_revenue_reshaped[i] = sum(total_fcr_revenue[:, i])
 
-# print(f"FCR-D up revenue: {sum(total_fcr_revenue_reshaped)} SEK")
-# print(f"FCR-D up participant: {count} h")
-
-
-# #FCR-D down revenue
-# FCR_D_down_price_data=(frequency_price.FCR_D_down_2024)/1000
-# total_fcr_down_revenue=np.zeros((24,365)) 
-# count_1=0
-# bid_soc_down = np.zeros((24,365))
-
-# # Iterate over the indices and values of total_soc
-# for i in range(365):
-#     for j in range(24):
-#         if j < 23:
-#             if 0 <= i <= 120 and total_soc2[j,i] < 0.4 * TOTAL_CAPACITY and total_soc2[j+1, i] < 0.4 * TOTAL_CAPACITY:
-#                 count_1 += 1
-#                 total_fcr_down_revenue[j,i]= FCR_D_down_price_data[j,i].item() * P_bud
-#                 bid_soc_down[j,i] = total_soc2[j,i]
-#             elif 121 <= i <= 273 and total_soc2[j,i] < 0.4 * bess_capacity and total_soc2[j+1,i] < 0.4 * bess_capacity:
-#                 count_1 += 1
-#                 total_fcr_down_revenue[j,i]= FCR_D_down_price_data[j,i].item() * P_bud_summer
-#                 bid_soc_down[j,i] = total_soc2[j,i]
-#             elif 274 <= i <= 365 and total_soc2[j,i] < 0.4 * TOTAL_CAPACITY and total_soc2[j+1, i] < 0.4 * TOTAL_CAPACITY:
-#                 count_1 += 1
-#                 total_fcr_down_revenue[j,i]= FCR_D_down_price_data[j,i].item() * P_bud
-#                 bid_soc_down[j,i] = total_soc2[j,i]
-#         else:  # For hour 23 (last hour of the day)
-#             if 0 <= i <= 120 and total_soc2[j, i] < 0.4 * TOTAL_CAPACITY:
-#                 count_1 += 1
-#                 total_fcr_down_revenue[j, i] = FCR_D_down_price_data[j, i].item() * P_bud
-#                 bid_soc_down[j, i] = total_soc2[j, i]
-#             elif 121 <= i <= 273 and total_soc2[j, i] < 0.4 * bess_capacity:
-#                 count_1 += 1
-#                 total_fcr_down_revenue[j, i] = FCR_D_down_price_data[j, i].item() * P_bud_summer
-#                 bid_soc_down[j, i] = total_soc2[j, i]
-#             elif 274 <= i <= 365 and total_soc2[j, i] < 0.4 * TOTAL_CAPACITY:
-#                 count_1 += 1
-#                 total_fcr_down_revenue[j, i] = FCR_D_down_price_data[j, i].item() * P_bud
-#                 bid_soc_down[j, i] = total_soc2[j, i]
-
-
-# total_fcr_down_revenue_reshaped=np.zeros((365))  
-# for i in range(365):
-#     total_fcr_down_revenue_reshaped[i] = sum(total_fcr_down_revenue[:, i])
-
-# print(f"FCR-D down revenue: {sum(total_fcr_down_revenue_reshaped)} SEK")
-# print(f"FCR-D down participant: {count_1} h")
-
-
-# #region
-# # # Creating csv files
-
-# # bid_activated_pd = pd.DataFrame(activated_bids_effekthandelväst_data)
-# # bid_activated_pd.to_csv('bid_activated.csv', index=False)
-
-# # boat_load1_pd = pd.DataFrame(boat_load1)
-# # boat_load1_pd.to_csv('BOAT_LOAD.csv', index=False)
-
-# # boat_soc1_pd = pd.DataFrame(boat_soc1)
-# # boat_soc1_pd.to_csv('BOAT_SOC_1.csv', index=False)
-
-# # boat_soc2_pd = pd.DataFrame(boat_soc2)
-# # boat_soc2_pd.to_csv('BOAT_SOC_2.csv', index=False)
-
-# # boat_soc3_pd = pd.DataFrame(boat_soc3)
-# # boat_soc3_pd.to_csv('BOAT_SOC_3.csv', index=False)
-
-# # spot_price_pd = pd.DataFrame(spot_price)
-# # spot_price_pd.to_csv('spot_price.csv', index=False)
-
-# # sold_electricity_pd = pd.DataFrame(sold_electricity)
-# # sold_electricity_pd.to_csv('sold_electricity.csv', index=False)
-
-# # self_production_pd = pd.DataFrame(self_production)
-# # self_production_pd.to_csv('self_production.csv', index=False)
-
-# # self_production_used_pd = pd.DataFrame(self_production_used)
-# # self_production_used_pd.to_csv('self_production_used.csv', index=False)
-
-# # spot_price_pd = pd.DataFrame(spot_price)
-# # spot_price_pd.to_csv('spot_price.csv', index=False)
-
-# # sold_electricity_pd = pd.DataFrame(sold_electricity)
-# # sold_electricity_pd.to_csv('sold_electricity.csv', index=False)
-
-# # grid_used_battery_pd = pd.DataFrame(grid_used_battery)
-# # grid_used_battery_pd.to_csv('grid_used_battery.csv', index=False)
-
-# # grid_used_load_pd = pd.DataFrame(grid_used_load)
-# # grid_used_load_pd.to_csv('grid_used_load.csv', index=False)
-
-# # grid_total_pd = pd.DataFrame(grid_used_battery + grid_used_load)
-# # grid_total_pd.to_csv('grid_total.csv', index=False)
-
-# # old_grid_usage_pd = pd.DataFrame(old_grid_usage)
-# # old_grid_usage_pd.to_csv('old_grid_usage.csv', index=False)
-
-# # hours_pd = pd.DataFrame(hours_1)
-# # hours_pd.to_csv('Hours_soc.csv', index=False)
-
-# # bess_soc_pd = pd.DataFrame(bess_soc)
-# # bess_soc_pd.to_csv('bess_soc.csv', index=False)
-
-# # boat_soc1_pd = pd.DataFrame(boat_soc1)
-# # boat_soc1_pd.to_csv('boat_soc1.csv', index=False)
-
-# # boat_discharge1_pd = pd.DataFrame(boat_discharge1)
-# # boat_discharge1_pd.to_csv('boat_discharge1.csv', index=False)
-
-# # boat_charge1_pd = pd.DataFrame(boat_charge1)
-# # boat_charge1_pd.to_csv('boat_charge1.csv', index=False)
-
-# # boat_soc2_pd = pd.DataFrame(boat_soc2)
-# # boat_soc2_pd.to_csv('boat_soc2.csv', index=False)
-
-# # boat_soc3_pd = pd.DataFrame(boat_soc3)
-# # boat_soc3_pd.to_csv('boat_soc3.csv', index=False)
-
-# # total_soc2_pd = pd.DataFrame(total_soc2)
-# # total_soc2_pd.to_csv('total_soc2.csv', index=False)
-
-# # bid_soc_pd = pd.DataFrame(bid_soc)
-# # bid_soc_pd.to_csv('bid_soc.csv', index=False)
-
-# # bid_soc_down_pd = pd.DataFrame(bid_soc_down)
-# # bid_soc_down_pd.to_csv('bid_soc_down.csv', index=False)
-
-# # total_boat_pd = pd.DataFrame(total_boat)
-# # total_boat_pd.to_csv('total_boat_soc.csv', index=False)
-
-# # FCR_D_down_price_data_pd = pd.DataFrame(FCR_D_down_price_data)
-# # FCR_D_down_price_data_pd.to_csv('FCR_D_down_price_data.csv', index=False)
-
-# # total_fcr_revenue_pd = pd.DataFrame(total_fcr_revenue)
-# # total_fcr_revenue_pd.to_csv('total_fcr_revenue.csv', index=False)
-
-# # total_fcr_down_revenue_pd = pd.DataFrame(total_fcr_down_revenue)
-# # total_fcr_down_revenue_pd.to_csv('total_fcr_down_revenue.csv', index=False)
-# #endregion
-# #endregion

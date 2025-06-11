@@ -17,14 +17,6 @@ response.raise_for_status()  # Check if the request was successful
 # Read the Excel file into a DataFrame
 df = pd.read_excel(BytesIO(response.content))
 
-# Ensure the date column is in datetime format
-df['Date'] = pd.to_datetime(df['Date'])  # Replace 'Date' with the actual column name in your DataFrame
-
-# Filter data for each year
-df_2022 = df[df['Date'].dt.year == 2022]
-df_2023 = df[df['Date'].dt.year == 2023]
-df_2024 = df[df['Date'].dt.year == 2024]
-
 
 #endregion
 
